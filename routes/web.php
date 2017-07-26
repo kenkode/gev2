@@ -15,13 +15,10 @@ Route::get('/register', function() {
     return view('register');
 })->name('register');
 
-Route::get('/login', function() {
-    return view('login');
-})->name('login');
+Route::get('/login', 'GeController\LoginController@index')->name('login');
+Route::post('/login', 'GeController\LoginController@login');
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', 'GeController\GeController@index')->middleware('geuser');
 
 Route::get('/home', function() {
     return view('dashboard', ['header'=>'Dashboard', 'description'=>'Admin Dashboard']);

@@ -5,7 +5,7 @@
   <div class="col-md-12">
     <div class="box">
       <div class="box-header with-border">
-        <h3 class="box-title">Monthly Recap Report</h3>
+        <h3 class="box-title">Latest Orders</h3>
 
         <div class="box-tools pull-right">
           <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
@@ -33,9 +33,9 @@
                 <thead>
                 <tr>
                   <th>Order ID</th>
-                  <th>Item</th>
+                  <th>Order Type</th>
+                  <th>Order Date</th>
                   <th>Status</th>
-                  <th>Popularity</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -107,7 +107,7 @@
               <span class="info-box-icon"><i class="ion ion-ios-pricetag-outline"></i></span>
 
               <div class="info-box-content">
-                <span class="info-box-text">Inventory</span>
+                <span class="info-box-text">Pending Orders</span>
                 <span class="info-box-number">5,200</span>
 
                 <div class="progress">
@@ -121,10 +121,9 @@
             </div>
             <!-- /.info-box -->
             <div class="info-box bg-green">
-              <span class="info-box-icon"><i class="ion ion-ios-heart-outline"></i></span>
-
               <div class="info-box-content">
-                <span class="info-box-text">Mentions</span>
+              <span class="info-box-icon"><i class="ion ion-ios-heart-outline"></i></span>
+                <span class="info-box-text">Delivered Orders</span>
                 <span class="info-box-number">92,050</span>
 
                 <div class="progress">
@@ -141,7 +140,7 @@
               <span class="info-box-icon"><i class="ion ion-ios-cloud-download-outline"></i></span>
 
               <div class="info-box-content">
-                <span class="info-box-text">Downloads</span>
+                <span class="info-box-text">Canceled Orders</span>
                 <span class="info-box-number">114,381</span>
 
                 <div class="progress">
@@ -154,7 +153,7 @@
               <!-- /.info-box-content -->
             </div>
             <!-- /.info-box -->
-            
+
             </div>
             <!-- /.box -->
         </div>
