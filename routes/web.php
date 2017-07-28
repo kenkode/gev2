@@ -11,31 +11,34 @@
 |
 */
 
-Route::get('/register', function() {
-    return view('register');
-})->name('register');
+Auth::routes();
 
-Route::get('/login', 'GeController\LoginController@index')->name('login');
-Route::post('/login', 'GeController\LoginController@login');
+Route::middleware('auth')->group(function() {
 
-Route::get('/', 'GeController\GeController@index')->middleware('geuser');
+  Route::get('/', 'GeController\GeController@index')->name('home');
 
-Route::get('/home', function() {
-    return view('dashboard', ['header'=>'Dashboard', 'description'=>'Admin Dashboard']);
-})->name('home');
+  Route::get('/get_updates', 'GeController\GeController@getUpdate');
 
-Route::get('/stock', function() {
-    return view('stock', ['header'=>'Stock', 'description'=>'Live Stock']);
-})->name('stock');
+  Route::get('/orders', function() {
+      return view('stock', ['header'=>'Stock', 'description'=>'Live Stock']);
+  })->name('orders');
 
-Route::get('/users', function() {
-    return view('users', ['header'=>'Users', 'description'=>'Customers']);
-})->name('users');
+  Route::get('/orders/{order}', 'GeController\GeController@orderDetails');
 
-Route::get('/manage', function() {
-    return view('manage', ['header'=>'Products', 'description'=>'Manage Products']);
-})->name('manage');
+  Route::get('/stock', function() {
+      return view('stock', ['header'=>'Stock', 'description'=>'Live Stock']);
+  })->name('stock');
 
-Route::get('/suppliers', function() {
-    return view('supplier', ['header'=>'Suppliers', 'description'=>'Suppliers']);
-})->name('suppliers');
+  Route::get('/users', 'GeController\GeController@users')->name('users');
+
+  Route::get('/manage', 'GeController\GeController@manage')->name('manage');
+
+  Route::get('/suppliers', 'GeController\GeController@supplier')->name('suppliers');
+
+  Route::post('/add_supplier', 'GeController\GeController@addSupplier');
+
+  Route::post('/edit_supplier', 'GeController\GeController@editSupplier');
+
+  Route::post('/delete_supplier', 'GeController\GeController@deleteSupplier');
+
+});

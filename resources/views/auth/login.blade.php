@@ -35,22 +35,40 @@
 
     <form action="{{ route('login') }}" method="post">
       {{ csrf_field() }}
+      @if ($errors->has('email'))
+      <div class="form-group has-error">
+      @else
       <div class="form-group has-feedback">
-        <input type="username" class="form-control" placeholder="Username" name="username">
+      @endif
+        <input type="email" class="form-control" placeholder="Email" name="email" value="{{ old('email') }}" required="required">
         <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+        @if ($errors->has('email'))
+            <span class="help-block">
+                <strong>{{ $errors->first('email') }}</strong>
+            </span>
+        @endif
       </div>
+      @if ($errors->has('password'))
+      <div class="form-group has-error">
+      @else
       <div class="form-group has-feedback">
-        <input type="password" class="form-control" placeholder="Password" name="password">
+      @endif
+        <input type="password" class="form-control" placeholder="Password" name="password" required="required">
         <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+        @if ($errors->has('password'))
+            <span class="help-block">
+                <strong>{{ $errors->first('password') }}</strong>
+            </span>
+        @endif
       </div>
       <div class="row">
-        <!-- <div class="col-xs-8">
+        <div class="col-xs-8">
           <div class="checkbox icheck">
             <label>
-              <input type="checkbox"> Remember Me
+              <input type="checkbox" {{ old('checked') ? ' checked' : ''}} name="remember"> Remember Me
             </label>
           </div>
-        </div> -->
+        </div>
         <!-- /.col -->
         <div class="col-xs-12">
           <button type="submit" class="btn btn-primary btn-block btn-flat">Sign In</button>

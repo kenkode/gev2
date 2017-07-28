@@ -16,13 +16,9 @@
         <div class="form-group">
           <label>Gas Type:</label>
           <select class="form-control select2" style="width: 100%;">
-            <option selected="selected">Alabama</option>
-            <option>Alaska</option>
-            <option disabled="disabled">California (disabled)</option>
-            <option>Delaware</option>
-            <option>Tennessee</option>
-            <option>Texas</option>
-            <option>Washington</option>
+            @foreach($gases as $gas)
+              <option value="{{ $gas['id'] }}">{{ $gas['name'] }}</option>
+            @endforeach
           </select>
         </div>
         <div class="form-group">
@@ -73,8 +69,8 @@
           <div class="form-group">
             <label>Type:</label>
             <select class="form-control select2" style="width: 100%;">
-              <option selected="selected">Service</option>
-              <option>Accessory</option>
+              <option value="0">Service</option>
+              <option value="1">Accessory</option>
             </select>
           </div>
           <div class="form-group">
@@ -118,7 +114,7 @@
         <div class="col-md-12">
           <div class="form-group">
             <label>Current Price: 125</label>
-          </div>          
+          </div>
           <div class="form-group">
             <label>Price:</label>
             <div class="input-group">

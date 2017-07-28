@@ -2,8 +2,8 @@
 <footer class="main-footer">
   <!-- To the right -->
   <div class="pull-right hidden-xs">
-    Anything you want
+    Gas Express Management
   </div>
   <!-- Default to the left -->
-  <strong>Copyright &copy; 2015 <a href="#">Company</a>.</strong> All rights reserved.
+  <strong>Copyright &copy; {{date('Y')}} <a href="http://www.gx.co.ke">Gas Express</a>.</strong> All rights reserved.
 </footer>

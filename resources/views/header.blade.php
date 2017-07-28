@@ -26,6 +26,11 @@
                     <i class="fa fa-users text-aqua"></i> 5 new members joined today
                   </a>
                 </li>
+                <li>
+                  <a href="#">
+                    <i class="fa fa-users text-aqua"></i> 5 new members joined today
+                  </a>
+                </li>
               </ul>
             </li>
             <li class="footer"><a href="#">View all</a></li>
@@ -34,37 +39,36 @@
 
         <li class="dropdown user user-menu">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-            <img src="dist/img/user2-160x160.jpg" class="user-image" alt="User Image">
-            <span class="hidden-xs">Alexander Pierce</span>
+            <img src="{{ asset('dist/img/avatar.png') }}" class="user-image" alt="User Image">
+            <span class="hidden-xs">{{ Auth::user()->name }}</span>
           </a>
           <ul class="dropdown-menu">
             <li class="user-header">
-              <img src="dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
-
+              <img src="{{ asset('dist/img/avatar.png') }}" class="img-circle" alt="User Image">
               <p>
-                Alexander Pierce - Web Developer
-                <small>Member since Nov. 2012</small>
+                {{ Auth::user()->name }}
+                <small>{{ Auth::user()->email }}</small>
               </p>
             </li>
-            <li class="user-body">
+            <!-- <li class="user-body">
               <div class="row">
                 <div class="col-xs-4 text-center">
-                  <a href="#">Followers</a>
+                  <a href="#"></a>
                 </div>
                 <div class="col-xs-4 text-center">
-                  <a href="#">Sales</a>
+                  <a href="#"></a>
                 </div>
                 <div class="col-xs-4 text-center">
-                  <a href="#">Friends</a>
+                  <a href="#"></a>
                 </div>
               </div>
-            </li>
+            </li> -->
             <li class="user-footer">
-              <div class="pull-left">
-                <a href="#" class="btn btn-default btn-flat">Profile</a>
-              </div>
               <div class="pull-right">
-                <a href="#" class="btn btn-default btn-flat">Sign out</a>
+                <form action="{{ route('logout') }}" method="post">
+                  {{ csrf_field() }}
+                  <button class="btn btn-default btn-flat">Sign out</button>
+                </form>
               </div>
             </li>
           </ul>
