@@ -12,7 +12,7 @@
     </a>
     <div class="navbar-custom-menu">
       <ul class="nav navbar-nav">
-        <li class="dropdown notifications-menu">
+        <!-- <li class="dropdown notifications-menu">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
             <i class="fa fa-bell-o"></i>
             <span class="label label-warning">10</span>
@@ -35,7 +35,7 @@
             </li>
             <li class="footer"><a href="#">View all</a></li>
           </ul>
-        </li>
+        </li> -->
 
         <li class="dropdown user user-menu">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">

@@ -148,9 +148,14 @@ class GeController extends GeBaseController {
   }
 
   public function manage(Request $request) {
-    $gases = Gas::orderby('name', 'asc')->get();
-    $sizes = Size::join('gas', 'gas_id', 'gas.id')->select('sizes.id', 'name', 'size', 'price', 'gas_id')->get();
-    return view('manage', ['header'=>'Products', 'description'=>'Manage Products', "gases" => $gases, 'sizes'=>$sizes]);
+    // $gases = Gas::orderby('name', 'asc')->get();
+    // $sizes = Size::join('gas', 'gas_id', 'gas.id')->select('sizes.id', 'name', 'size', 'price', 'gas_id')->get();
+    // return view('coming_soon', ['header'=>'Products', 'description'=>'Manage Products', "gases" => $gases, 'sizes'=>$sizes]);
+    return view('coming_soon', ['header'=>'Products', 'description'=>'Manage Products']);
+  }
+
+  public function stock(Request $request) {
+    return view('coming_soon', ['header'=>'Stock', 'description'=>'Live Stock']);
   }
 
 // Supplier
@@ -206,6 +211,31 @@ class GeController extends GeBaseController {
     ]);
 
   }
+
+
+  /*
+
+  Mobile
+
+  */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }
 

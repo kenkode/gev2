@@ -25,13 +25,11 @@ Route::middleware('auth')->group(function() {
 
   Route::get('/orders/{order}', 'GeController\GeController@orderDetails');
 
-  Route::get('/stock', function() {
-      return view('stock', ['header'=>'Stock', 'description'=>'Live Stock']);
-  })->name('stock');
-
   Route::get('/users', 'GeController\GeController@users')->name('users');
 
   Route::get('/manage', 'GeController\GeController@manage')->name('manage');
+
+  Route::get('/stock', 'GeController\GeController@stock')->name('stock');
 
   Route::get('/suppliers', 'GeController\GeController@supplier')->name('suppliers');
 

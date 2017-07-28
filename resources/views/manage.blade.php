@@ -16,9 +16,9 @@
         <div class="form-group">
           <label>Gas Type:</label>
           <select class="form-control select2" style="width: 100%;">
-            @foreach($gases as $gas)
+            <!-- @foreach($gases as $gas)
               <option value="{{ $gas['id'] }}">{{ $gas['name'] }}</option>
-            @endforeach
+            @endforeach -->
           </select>
         </div>
         <div class="form-group">
@@ -55,7 +55,7 @@
     </div>
   </div>
   <div class="col-md-4">
-    <div class="box box-warning direct-chat direct-chat-success">
+    <div class="box box-default direct-chat direct-chat-success">
       <div class="box-header with-border">
         <h3 class="box-title">Product</h3>
         <div class="box-tools pull-right">
@@ -101,7 +101,7 @@
   </div>
   <!-- /.col -->
   <div class="col-md-4">
-    <div class="box box-warning direct-chat direct-chat-success">
+    <div class="box box-default direct-chat direct-chat-success">
       <div class="box-header with-border">
         <h3 class="box-title">Bulk Gas</h3>
         <div class="box-tools pull-right">
