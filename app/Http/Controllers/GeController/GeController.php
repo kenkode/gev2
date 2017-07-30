@@ -14,6 +14,7 @@ use App\Http\Models\Accessory;
 use App\Http\Models\DeliveryLocation;
 use App\Http\Models\Supplier;
 use App\Http\Models\Item;
+use App\Http\Models\Service;
 
 class GeController extends GeBaseController {
 
@@ -148,35 +149,82 @@ class GeController extends GeBaseController {
   }
 
   public function manage(Request $request) {
-    // $gases = Gas::orderby('name', 'asc')->get();
-    // $sizes = Size::join('gas', 'gas_id', 'gas.id')->select('sizes.id', 'name', 'size', 'price', 'gas_id')->get();
-    // return view('coming_soon', ['header'=>'Products', 'description'=>'Manage Products', "gases" => $gases, 'sizes'=>$sizes]);
-    return view('coming_soon', ['header'=>'Products', 'description'=>'Manage Products']);
+    $gases = Gas::orderby('name', 'asc')->get();
+    $bulk = BulkGas::first()['price'];
+    $sizes = Size::join('gas', 'gas_id', 'gas.id')->select('sizes.id', 'name', 'size', 'price', 'gas_id')->get();
+    return view('manage', ['header'=>'Products', 'description'=>'Manage Products', "gases" => $gases, 'sizes'=>$sizes, 'bulk'=>$bulk]);
   }
 
   public function stock(Request $request) {
-    return view('coming_soon', ['header'=>'Stock', 'description'=>'Live Stock']);
+    $accessories = Accessory::all();
+
+    return view('stock', ['header'=>'Stock', 'description'=>'Live Stock', 'accessories'=>$accessories]);
   }
 
 // Supplier
 
   public function supplier() {
-    $suppliers = Supplier::join('items', 'items.id', 'suppliers.item')
-      ->where('status', 1)
-      ->select('suppliers.id as id', 'items.item as name', 'suppliers.supplier_name as supplier', 'items.id as item_id')->orderby('suppliers.created_at', 'desc')->get();
+    $suppliersData = Supplier::where('status', 1)
+      ->orderby('created_at', 'desc')->get();
 
-    $items = Item::all();
+    $suppliers = array();
 
-    return view('supplier', ['header'=>'Suppliers', 'description'=>'Suppliers', 'suppliers'=>$suppliers, 'items'=>$items]);
+    foreach($suppliersData as $data) {
+      $subSupplier = array();
+      $subSupplier['id'] = $data['id'];
+      $subSupplier['name'] = $data['supplier_name'];
+      $subSupplier['item_id'] = $data['item'];
+      $subSupplier['item_type'] = $data['item_type'];
+      switch ($data['item_type']) {
+        case '1':
+          $subSupplier['item'] = Accessory::where('id', $data['item'])->first()['name'];
+          break;
+        case '2':
+          $subSupplier['item'] = Gas::where('id', $data['item'])->first()['name'];
+        break;
+        default:
+          $subSupplier['item'] = 'Unknown';
+        break;
+      }
+
+      array_push($suppliers, $subSupplier);
+    }
+
+    $items = Accessory::all();
+    $sizes = Gas::all();
+
+    $data = array();
+
+    foreach($items as $item) {
+      $array = array(
+        'id' => $item['id'],
+        'name' => $item['name'],
+        'type' => 1
+      );
+      array_push($data, $array);
+    }
+
+    foreach($sizes as $size) {
+      $array = array(
+        'id' => $size['id'],
+        'name' => $size['name'],
+        'type' => 2
+      );
+      array_push($data, $array);
+    }
+
+    return view('supplier', ['header'=>'Suppliers', 'description'=>'Suppliers', 'suppliers'=>$suppliers, 'items'=>$data]);
   }
 
   public function addSupplier(Request $request) {
     $supplierName = $request->input('supplier');
     $supplierType = $request->input('type');
+    $itemType = $request->input('item_type');
 
     Supplier::create([
       'supplier_name' => $supplierName,
-      'item' => $supplierType
+      'item' => $supplierType,
+      'item_type' => $itemType
     ]);
 
     $id = Supplier::orderBy('created_at', 'desc')->first()['id'];
@@ -189,14 +237,28 @@ class GeController extends GeBaseController {
     $supplierName = $request->input('supplier');
     $supplierType = $request->input('type');
     $supplierId = $request->input('id');
+    $itemType = $request->input('item_type');
 
     Supplier::where('id', $supplierId)
     ->update([
       'supplier_name' => $supplierName,
-      'item' => $supplierType
+      'item' => $supplierType,
+      'item_type' => $itemType
     ]);
 
-    $itemName = Item::where('id', $supplierType)->first()['item'];
+    $itemName = '';
+
+    switch ($itemType) {
+      case '1':
+        $itemName = Accessory::where('id', $supplierType)->first()['name'];
+        break;
+      case '2':
+        $itemName = Gas::where('id', $supplierType)->first()['name'];
+      break;
+      default:
+        $itemName = 'Unknown';
+      break;
+    }
 
     echo $itemName;
 
@@ -211,6 +273,91 @@ class GeController extends GeBaseController {
     ]);
 
   }
+
+// Manage
+public function addGasType(Request $request) {
+  $name = $request->input('type');
+  $id = 1;
+
+  while(Gas::where('id', $id)->exists()) {
+    $id++;
+  }
+
+  Gas::create([
+    'id' => $id,
+    'name' => $name
+  ]);
+
+  echo $id;
+
+}
+
+public function addGas(Request $request) {
+  $id = $request->input('type');
+  $size = $request->input('size');
+  $price = $request->input('price');
+
+  if(!Size::where('gas_id', $id)->where('size', $size)->exists()) {
+    Size::create([
+      'gas_id' => $id,
+      'size' => $size,
+      'price' => $price
+    ]);
+  }else {
+    echo "E";
+  }
+}
+
+public function addProduct(Request $request) {
+    $id = 10099;
+    $type = $request->input('type');
+    $name = $request->input('name');
+    $price = $request->input('price');
+
+    while(Accessory::where('id', $id)->exists()) {
+        $id++;
+    }
+
+    switch ($type) {
+      case '0':
+        Service::create([
+          "name" => $name
+        ]);
+        break;
+      case '1':
+        Accessory::create([
+          "id" => $id,
+          "name" => $name,
+          "price" => $price
+        ]);
+        break;
+    }
+
+    echo $name;
+
+}
+
+public function addBulkGas(Request $request) {
+  $id = 10099;
+  $price = $request->input('price');
+  $bulk = BulkGas::where('id', $id);
+
+  if($bulk->exists()) {
+      $bulk->update([
+        'price' => $price
+      ]);
+  }else {
+    BulkGas::create([
+    "id" => $id,
+    "price" => $price
+  ]);
+  }
+
+  echo $price;
+}
+
+
+
 
 
   /*

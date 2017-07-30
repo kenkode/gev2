@@ -38,11 +38,11 @@
                 @foreach($suppliers as $supplier)
                 <tr>
                   <td>{{ $supplier['id'] }}</td>
-                  <td>{{ $supplier['supplier'] }}</td>
                   <td>{{ $supplier['name'] }}</td>
+                  <td>{{ $supplier['item'] }}</td>
                   <td>
                     <div class="btn-group">
-                      <button type="button" class="btn btn-default edit_supplier" data-item="{{ $supplier['item_id'] }}">Edit</button>
+                      <button type="button" class="btn btn-default edit_supplier" data-type="{{ $supplier['item_type'] }}" data-item="{{ $supplier['item_id'] }}">Edit</button>
                       <button type="button" class="btn btn-default delete_supplier" data-supplier="{{ $supplier['id'] }}">Delete</button>
                     </div>
                   </td>
@@ -82,7 +82,7 @@
           <label>Type:</label>
           <select class="form-control select2" style="width: 100%;" id="supplierFormType">
             @foreach($items as $item)
-            <option value="{{ $item['id'] }}">{{ $item['item'] }}</option>
+              <option data-type="{{ $item['type'] }}" value="{{ $item['id'] }}">{{ $item['name'] }}</option>
             @endforeach
           </select>
         </div>

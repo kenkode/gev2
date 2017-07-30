@@ -17,6 +17,7 @@ Ajax Setup
   $('#submitSupplierForm').click(function() {
     var supplier = $('#supplierFormName').val();
     var item = $('#supplierFormType option:selected').val();
+    var item_type = $('#supplierFormType option:selected').data('type');
     var itemName = $('#supplierFormType option:selected').text();
 
     $.ajax({
@@ -25,7 +26,8 @@ Ajax Setup
       data: {
         id : supplier_id,
         supplier : supplier,
-        type: item
+        type: item,
+        item_type: item_type
       },
       success: function(data) {
         if(supplierRedirect == '/add_supplier') {
@@ -84,6 +86,185 @@ Ajax Setup
         console.log(data);
       }
     });
+  });
+
+  $("#update-gas").click(function () {
+    var type = $("#gas_type_input").val();
+
+    if(type == '') {
+      $(this).parentsUntil('div.box-footer').addClass('has-error');
+      return;
+    }else {
+      $(this).parentsUntil('div.box-footer').removeClass('has-error');
+    }
+
+    if (type.length > 0) {
+      $.ajax({
+        url: "/add_gas_type",
+        type: "post",
+        data: {
+          'type': type
+        },
+        success: function (data) {
+          $.notify({
+            icon: 'pe-7s-check',
+            message: "Successfully added " + type
+          }, {
+            type: 'success',
+            timer: 1000
+          });
+          $("select#gas_types").append("<option value=" + data + ">" + type + "</option>");
+          $("#gas_type_input").val("");
+        }
+      });
+    } else {
+      $.notify({
+        icon: 'pe-7s-attention',
+        message: "Invalid input detected."
+
+      }, {
+        type: 'warning',
+        timer: 1000
+      });
+    }
+  });
+
+  $("#add-gas").click(function () {
+    var type = $("select#gas_types option:selected").val();
+    var name = $("select#gas_types option:selected").text();
+    var size = $("#gas_size").val();
+    var price = $("#gas_price").val();
+
+    if (size.length < 1 || price.length < 1) {
+      $.notify({
+        icon: 'pe-7s-attention',
+        message: "Invalid input detected."
+
+      }, {
+        type: 'warning',
+        timer: 1000
+      });
+    } else {
+      $.ajax({
+        url: "/add_gas",
+        type: "post",
+        data: {
+          'type': type,
+          'size': size,
+          'price': price
+        },
+        success: function (data) {
+          if (data == "E") {
+            $.notify({
+              icon: 'pe-7s-attention',
+              message: "Gas already added."
+
+            }, {
+              type: 'warning',
+              timer: 1000
+            });
+          } else {
+            $.notify({
+              icon: 'pe-7s-check',
+              message: "Successfully added."
+
+            }, {
+              type: 'success',
+              timer: 1000
+            });
+          }
+
+          $("#gas_size").val("");
+          $("#gas_price").val("");
+        }
+      });
+    }
+  });
+
+  $("button#add_product").click(function () {
+    var type = $("select#product_type").val();
+    var name = $("input#prd_name").val();
+    var price = $("input#prd_price").val();
+
+    if (name.length < 1 || (price.length < 1 && type == 1)) {
+      $.notify({
+        icon: 'pe-7s-attention',
+        message: "Fill in required details"
+
+      }, {
+        type: 'warning',
+        timer: 1000
+      });
+    } else {
+      $.ajax({
+        url: "/add_product",
+        type: "post",
+        data: {
+          'type': type,
+          'name': name,
+          'price': price
+        },
+        success: function (data) {
+          $.notify({
+            icon: 'pe-7s-check',
+            message: "Successfully added " + name
+          }, {
+            type: 'success',
+            timer: 1000
+          });
+          $("input#prd_name").val("");
+          $("input#prd_price").val("");
+        }
+      });
+    }
+  });
+
+  $("button#add_bulk").click(function () {
+    var price = $("input#add_bulk_price").val();
+
+    if (price.length < 1) {
+      $.notify({
+        icon: 'pe-7s-attention',
+        message: "Fill in required details"
+
+      }, {
+        type: 'warning',
+        timer: 1000
+      });
+      return;
+    }
+
+    if (price.length < 1) {
+      $.notify({
+        icon: 'pe-7s-attention',
+        message: "Fill in required details"
+
+      }, {
+        type: 'warning',
+        timer: 1000
+      });
+    } else {
+      $.ajax({
+        url: "/add_bulkgas",
+        type: "post",
+        data: {
+          price: price
+        },
+        success: function (data) {
+          $.notify({
+            icon: 'pe-7s-check',
+            message: "Updated to " + data
+          }, {
+            type: 'success',
+            timer: 1000
+          });
+          $("input#add_bulk_price").val("");
+          $("span#price").text(data);
+        }
+      });
+    }
+
+
   });
 
 });

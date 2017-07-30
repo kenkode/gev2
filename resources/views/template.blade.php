@@ -167,7 +167,8 @@ desired effect
 <script src="{{ asset('plugins/fastclick/fastclick.js') }}"></script>
 <!-- AdminLTE App -->
 <script src="{{ asset('dist/js/app.min.js') }}"></script>
-<!-- AdminLTE for demo purposes -->
+
+<script src="{{ asset('js/bootstrap-notify.js') }}"></script>
 <script src="{{ asset('dist/js/demo.js') }}"></script>
 <script src="{{ asset('js/jquery.js') }}"></script>
 <script src="{{ asset('js/socket.js') }}"></script>

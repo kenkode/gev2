@@ -39,4 +39,14 @@ Route::middleware('auth')->group(function() {
 
   Route::post('/delete_supplier', 'GeController\GeController@deleteSupplier');
 
+// Manage
+
+  Route::post('/add_gas_type', 'GeController\GeController@addGasType');
+
+  Route::post('/add_gas', 'GeController\GeController@addGas');
+
+  Route::post('/add_product', 'GeController\GeController@addProduct');
+
+  Route::post('/add_bulkgas', 'GeController\GeController@addBulkGas');
+
 });
