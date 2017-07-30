@@ -11,6 +11,10 @@
 |
 */
 
+Route::get('/register', function() {
+  return view('coming', ['header'=>'Stock', 'description'=>'Live Stock']);
+})->name('reg');
+
 Auth::routes();
 
 Route::middleware('auth')->group(function() {
@@ -31,6 +35,8 @@ Route::middleware('auth')->group(function() {
 
   Route::get('/stock', 'GeController\GeController@stock')->name('stock');
 
+  Route::post('/update_stock', 'GeController\GeController@addStock');
+
   Route::get('/suppliers', 'GeController\GeController@supplier')->name('suppliers');
 
   Route::post('/add_supplier', 'GeController\GeController@addSupplier');
@@ -38,6 +44,8 @@ Route::middleware('auth')->group(function() {
   Route::post('/edit_supplier', 'GeController\GeController@editSupplier');
 
   Route::post('/delete_supplier', 'GeController\GeController@deleteSupplier');
+
+  Route::post('/get_supplier', 'GeController\GeController@getSupplier');
 
 // Manage
 

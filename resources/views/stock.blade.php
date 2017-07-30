@@ -31,9 +31,9 @@
           @foreach($accessories as $accessory)
           <tr>
             <td>{{ $accessory['name'] }}</td>
-            <td>23</td>
+            <td>{{ $accessory['stock'] }}</td>
             <td>{{ $accessory['price'] }}</td>
-            <td><button type="button" class="btn btn-info" data-toggle="modal" data-target="#update_modal" data-id="{{ $accessory['id'] }}">Update</button></td>
+            <td><button type="button" class="btn btn-info stock_update_button" data-type="1" data-id="{{ $accessory['id'] }}">Update</button></td>
           </tr>
           @endforeach
           </tbody>
@@ -44,7 +44,6 @@
 </div>
 
 <div class="row">
-
   <div class="col-md-12">
     <div class="box collapsed-box">
       <div class="box-header with-border">
@@ -60,348 +59,20 @@
           <thead>
           <tr>
             <th>Name</th>
-            <th>Stock No.</th>
+            <th>Size</th>
             <th>Price</th>
             <th>Update Stock</th>
-            <th></th>
           </tr>
           </thead>
           <tbody>
+          @foreach($gases as $gas)
           <tr>
-            <td>Misc</td>
-            <td>NetFront 3.4</td>
-            <td>Embedded devices</td>
-            <td><div class="btn-group">
-              <button type="button" class="btn bg-red btn-flat">-</button>
-              <div class="btn-group">
-                <input type="text" class="form-control" style="text-align: center; width: 52px" disabled="disabled">
-              </div>
-              <button type="button" class="btn bg-green btn-flat">+</button>
-            </div></td>
-            <td>
-              <div class="btn-group">
-                <button type="button" class="btn btn-info">Action</button>
-                <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
-                  <span class="caret"></span>
-                  <span class="sr-only">Toggle Dropdown</span>
-                </button>
-                <ul class="dropdown-menu" role="menu">
-                  <li><a href="#">Action</a></li>
-                  <li><a href="#">Another action</a></li>
-                  <li><a href="#">Something else here</a></li>
-                  <li class="divider"></li>
-                  <li><a href="#">Separated link</a></li>
-                </ul>
-              </div>
-            </td>
+            <td>{{ $gas['name'] }}</td>
+            <td>{{ $gas['size'] }}</td>
+            <td>{{ $gas['price'] }}</td>
+            <td><button type="button" class="btn btn-info stock_update_button" data-type="2" data-id="{{ $gas['id'] }}">Update</button></td>
           </tr>
-          <tr>
-            <td>Misc</td>
-            <td>NetFront 3.4</td>
-            <td>Embedded devices</td>
-            <td><div class="btn-group">
-              <button type="button" class="btn bg-red btn-flat">-</button>
-              <div class="btn-group">
-                <input type="text" class="form-control" style="text-align: center; width: 52px" disabled="disabled">
-              </div>
-              <button type="button" class="btn bg-green btn-flat">+</button>
-            </div></td>
-            <td>
-              <div class="btn-group">
-                <button type="button" class="btn btn-info">Action</button>
-                <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
-                  <span class="caret"></span>
-                  <span class="sr-only">Toggle Dropdown</span>
-                </button>
-                <ul class="dropdown-menu" role="menu">
-                  <li><a href="#">Action</a></li>
-                  <li><a href="#">Another action</a></li>
-                  <li><a href="#">Something else here</a></li>
-                  <li class="divider"></li>
-                  <li><a href="#">Separated link</a></li>
-                </ul>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td>Misc</td>
-            <td>NetFront 3.4</td>
-            <td>Embedded devices</td>
-            <td><div class="btn-group">
-              <button type="button" class="btn bg-red btn-flat">-</button>
-              <div class="btn-group">
-                <input type="text" class="form-control" style="text-align: center; width: 52px" disabled="disabled">
-              </div>
-              <button type="button" class="btn bg-green btn-flat">+</button>
-            </div></td>
-            <td>
-              <div class="btn-group">
-                <button type="button" class="btn btn-info">Action</button>
-                <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
-                  <span class="caret"></span>
-                  <span class="sr-only">Toggle Dropdown</span>
-                </button>
-                <ul class="dropdown-menu" role="menu">
-                  <li><a href="#">Action</a></li>
-                  <li><a href="#">Another action</a></li>
-                  <li><a href="#">Something else here</a></li>
-                  <li class="divider"></li>
-                  <li><a href="#">Separated link</a></li>
-                </ul>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td>Misc</td>
-            <td>NetFront 3.4</td>
-            <td>Embedded devices</td>
-            <td><div class="btn-group">
-              <button type="button" class="btn bg-red btn-flat">-</button>
-              <div class="btn-group">
-                <input type="text" class="form-control" style="text-align: center; width: 52px" disabled="disabled">
-              </div>
-              <button type="button" class="btn bg-green btn-flat">+</button>
-            </div></td>
-            <td>
-              <div class="btn-group">
-                <button type="button" class="btn btn-info">Action</button>
-                <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
-                  <span class="caret"></span>
-                  <span class="sr-only">Toggle Dropdown</span>
-                </button>
-                <ul class="dropdown-menu" role="menu">
-                  <li><a href="#">Action</a></li>
-                  <li><a href="#">Another action</a></li>
-                  <li><a href="#">Something else here</a></li>
-                  <li class="divider"></li>
-                  <li><a href="#">Separated link</a></li>
-                </ul>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td>Misc</td>
-            <td>NetFront 3.4</td>
-            <td>Embedded devices</td>
-            <td><div class="btn-group">
-              <button type="button" class="btn bg-red btn-flat">-</button>
-              <div class="btn-group">
-                <input type="text" class="form-control" style="text-align: center; width: 52px" disabled="disabled">
-              </div>
-              <button type="button" class="btn bg-green btn-flat">+</button>
-            </div></td>
-            <td>
-              <div class="btn-group">
-                <button type="button" class="btn btn-info">Action</button>
-                <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
-                  <span class="caret"></span>
-                  <span class="sr-only">Toggle Dropdown</span>
-                </button>
-                <ul class="dropdown-menu" role="menu">
-                  <li><a href="#">Action</a></li>
-                  <li><a href="#">Another action</a></li>
-                  <li><a href="#">Something else here</a></li>
-                  <li class="divider"></li>
-                  <li><a href="#">Separated link</a></li>
-                </ul>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td>Misc</td>
-            <td>NetFront 3.4</td>
-            <td>Embedded devices</td>
-            <td><div class="btn-group">
-              <button type="button" class="btn bg-red btn-flat">-</button>
-              <div class="btn-group">
-                <input type="text" class="form-control" style="text-align: center; width: 52px" disabled="disabled">
-              </div>
-              <button type="button" class="btn bg-green btn-flat">+</button>
-            </div></td>
-            <td>
-              <div class="btn-group">
-                <button type="button" class="btn btn-info">Action</button>
-                <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
-                  <span class="caret"></span>
-                  <span class="sr-only">Toggle Dropdown</span>
-                </button>
-                <ul class="dropdown-menu" role="menu">
-                  <li><a href="#">Action</a></li>
-                  <li><a href="#">Another action</a></li>
-                  <li><a href="#">Something else here</a></li>
-                  <li class="divider"></li>
-                  <li><a href="#">Separated link</a></li>
-                </ul>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td>Misc</td>
-            <td>NetFront 3.4</td>
-            <td>Embedded devices</td>
-            <td>
-              <!-- Button trigger modal -->
-              <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#update_modal">
-                Update
-              </button>
-            </td>
-            <td>
-              <div class="btn-group">
-                <button type="button" class="btn btn-info">Action</button>
-                <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
-                  <span class="caret"></span>
-                  <span class="sr-only">Toggle Dropdown</span>
-                </button>
-                <ul class="dropdown-menu" role="menu">
-                  <li><a href="#">Action</a></li>
-                  <li><a href="#">Another action</a></li>
-                  <li><a href="#">Something else here</a></li>
-                  <li class="divider"></li>
-                  <li><a href="#">Separated link</a></li>
-                </ul>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td>Misc</td>
-            <td>NetFront 3.4</td>
-            <td>Embedded devices</td>
-            <td><div class="btn-group">
-              <button type="button" class="btn bg-red btn-flat">-</button>
-              <div class="btn-group">
-                <input type="text" class="form-control" style="text-align: center; width: 52px" disabled="disabled">
-              </div>
-              <button type="button" class="btn bg-green btn-flat">+</button>
-            </div></td>
-            <td>
-              <div class="btn-group">
-                <button type="button" class="btn btn-info">Action</button>
-                <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
-                  <span class="caret"></span>
-                  <span class="sr-only">Toggle Dropdown</span>
-                </button>
-                <ul class="dropdown-menu" role="menu">
-                  <li><a href="#">Action</a></li>
-                  <li><a href="#">Another action</a></li>
-                  <li><a href="#">Something else here</a></li>
-                  <li class="divider"></li>
-                  <li><a href="#">Separated link</a></li>
-                </ul>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td>Misc</td>
-            <td>NetFront 3.4</td>
-            <td>Embedded devices</td>
-            <td><div class="btn-group">
-              <button type="button" class="btn bg-red btn-flat">-</button>
-              <div class="btn-group">
-                <input type="text" class="form-control" style="text-align: center; width: 52px" disabled="disabled">
-              </div>
-              <button type="button" class="btn bg-green btn-flat">+</button>
-            </div></td>
-            <td>
-              <div class="btn-group">
-                <button type="button" class="btn btn-info">Action</button>
-                <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
-                  <span class="caret"></span>
-                  <span class="sr-only">Toggle Dropdown</span>
-                </button>
-                <ul class="dropdown-menu" role="menu">
-                  <li><a href="#">Action</a></li>
-                  <li><a href="#">Another action</a></li>
-                  <li><a href="#">Something else here</a></li>
-                  <li class="divider"></li>
-                  <li><a href="#">Separated link</a></li>
-                </ul>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td>Misc</td>
-            <td>NetFront 3.4</td>
-            <td>Embedded devices</td>
-            <td><div class="btn-group">
-              <button type="button" class="btn bg-red btn-flat">-</button>
-              <div class="btn-group">
-                <input type="text" class="form-control" style="text-align: center; width: 52px" disabled="disabled">
-              </div>
-              <button type="button" class="btn bg-green btn-flat">+</button>
-            </div></td>
-            <td>
-              <div class="btn-group">
-                <button type="button" class="btn btn-info">Action</button>
-                <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
-                  <span class="caret"></span>
-                  <span class="sr-only">Toggle Dropdown</span>
-                </button>
-                <ul class="dropdown-menu" role="menu">
-                  <li><a href="#">Action</a></li>
-                  <li><a href="#">Another action</a></li>
-                  <li><a href="#">Something else here</a></li>
-                  <li class="divider"></li>
-                  <li><a href="#">Separated link</a></li>
-                </ul>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td>Misc</td>
-            <td>NetFront 3.4</td>
-            <td>Embedded devices</td>
-            <td><div class="btn-group">
-              <button type="button" class="btn bg-red btn-flat">-</button>
-              <div class="btn-group">
-                <input type="text" class="form-control" style="text-align: center; width: 52px" disabled="disabled">
-              </div>
-              <button type="button" class="btn bg-green btn-flat">+</button>
-            </div></td>
-            <td>
-              <div class="btn-group">
-                <button type="button" class="btn btn-info">Action</button>
-                <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
-                  <span class="caret"></span>
-                  <span class="sr-only">Toggle Dropdown</span>
-                </button>
-                <ul class="dropdown-menu" role="menu">
-                  <li><a href="#">Action</a></li>
-                  <li><a href="#">Another action</a></li>
-                  <li><a href="#">Something else here</a></li>
-                  <li class="divider"></li>
-                  <li><a href="#">Separated link</a></li>
-                </ul>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td>Misc</td>
-            <td>NetFront 3.4</td>
-            <td>Embedded devices</td>
-            <td><div class="btn-group">
-              <button type="button" class="btn bg-red btn-flat">-</button>
-              <div class="btn-group">
-                <input type="text" class="form-control" style="text-align: center; width: 52px" disabled="disabled">
-              </div>
-              <button type="button" class="btn bg-green btn-flat">+</button>
-            </div></td>
-            <td>
-              <div class="btn-group">
-                <button type="button" class="btn btn-default">Action</button>
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                  <span class="caret"></span>
-                  <span class="sr-only">Toggle Dropdown</span>
-                </button>
-                <ul class="dropdown-menu" role="menu">
-                  <li><a href="#">Action</a></li>
-                  <li><a href="#">Another action</a></li>
-                  <li><a href="#">Something else here</a></li>
-                  <li class="divider"></li>
-                  <li><a href="#">Separated link</a></li>
-                </ul>
-              </div>
-            </td>
-          </tr>
+          @endforeach
           </tbody>
         </table>
       </div>

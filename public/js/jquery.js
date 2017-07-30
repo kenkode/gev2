@@ -8,6 +8,10 @@ $(document).ready(function() {
   var supplierRedirect = '';
   var supplier_id = '';
   var parentTr = '';
+  var accessoriesUpdateButton = '';
+
+  var stockDetails = {};
+
 /*
 Ajax Setup
 */
@@ -264,7 +268,84 @@ Ajax Setup
       });
     }
 
-
   });
+
+
+  $('.stock_update_button').click(function() {
+    $("#current_stock_spinner").show();
+    $('#update_modal').modal();
+    var id = $(this).data('id');
+    var type = $(this).data('type');
+    accessoriesUpdateButton = $(this);
+    stockDetails.id = id;
+    stockDetails.type = type;
+
+    $.ajax({
+      url: "/get_supplier",
+      type: "post",
+      data: {
+        'id': id,
+        'type': type
+      },
+      success: function (data) {
+        var results = JSON.parse(data);
+        $("#current_stock_spinner").hide();
+        $("#current_stock_text").text(results['stock']);
+        stockDetails.level = results['stock'];
+
+        $("select#supplier_list").html("");
+        $.each(results['suppliers'], function(index, supplier) {
+          $("select#supplier_list").append(
+              '<option value="'+ supplier['id'] +'">'+ supplier['name'] +'</option>'
+          );
+        });
+      }
+    });
+  });
+
+  $("button#submit_stock_update").click(function() {
+      var level = $("input#stockLevel").val();
+      var supplier = $("select#supplier_list option:selected").val();
+
+      if(level <= stockDetails.level) {
+        $.notify({
+          icon: 'pe-7s-check',
+          message: "Stock level is less"
+        }, {
+          type: 'danger',
+          timer: 5000
+        });
+        return;
+      }
+
+      if(level.length <= 0 || supplier === undefined) {
+        $.notify({
+          icon: 'pe-7s-check',
+          message: "Provide the required values"
+        }, {
+          type: 'danger',
+          timer: 5000
+        });
+        return;
+      }else {
+        $.ajax({
+          url: "/update_stock",
+          type: "post",
+          data: {
+            'id': stockDetails.id,
+            'type': stockDetails.type,
+            'stock': level
+          },
+          success: function (data) {
+            $('#update_modal').modal('toggle');
+            accessoriesUpdateButton.parentsUntil('tbody').children('td:nth-child(2)').text(data);
+          }
+        });
+      }
+  });
+
+
+
+
 
 });

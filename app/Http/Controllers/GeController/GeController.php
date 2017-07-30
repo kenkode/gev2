@@ -15,6 +15,7 @@ use App\Http\Models\DeliveryLocation;
 use App\Http\Models\Supplier;
 use App\Http\Models\Item;
 use App\Http\Models\Service;
+use App\Http\Models\Stock;
 
 class GeController extends GeBaseController {
 
@@ -156,9 +157,37 @@ class GeController extends GeBaseController {
   }
 
   public function stock(Request $request) {
-    $accessories = Accessory::all();
+    $accessories = Accessory::join('stocks', 'stocks.item', 'accessories.id')
+        ->where('type', 1)
+        ->select('accessories.id as id', 'accessories.name as name', 'accessories.price as price', 'stocks.stock as stock')
+        ->get();
 
-    return view('stock', ['header'=>'Stock', 'description'=>'Live Stock', 'accessories'=>$accessories]);
+    $gases = Size::join('gas', 'gas.id', 'sizes.gas_id')->get();
+
+    return view('stock', ['header'=>'Stock', 'description'=>'Live Stock', 'accessories'=>$accessories, 'gases'=>$gases]);
+  }
+
+  public function addStock(Request $request) {
+    $stock = $request->input('stock');
+    $item = $request->input('id');
+    $type = $request->input('type');
+
+    $array = array(
+      "item" => $item,
+      "type" => $type
+    );
+
+    $prev = Stock::where($array)->first()['stock'];
+
+    $stock+=$prev;
+
+    Stock::where($array)
+      ->update([
+        "stock" => $stock
+    ]);
+
+    echo $stock;
+
   }
 
 // Supplier
@@ -271,6 +300,35 @@ class GeController extends GeBaseController {
     ->update([
       'status' => 0
     ]);
+
+  }
+
+  public function getSupplier(Request $request) {
+    $id = $request->input('id');
+    $type = $request->input('type');
+
+    $data = array(
+      'item' => $id,
+      'item_type' => $type
+    );
+
+    $suppliers = Supplier::where($data)
+        ->select('id', 'supplier_name as name')
+      ->get();
+
+    $array = array(
+      "item" => $id,
+      "type" => $type
+    );
+
+    $stock = Stock::where($array)->first()['stock'];
+
+    $data = array(
+      'suppliers' => $suppliers,
+      'stock' => $stock
+    );
+
+    echo json_encode($data);
 
   }
 
