@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="{{ asset('plugins/datatables/dataTables.bootstrap.css') }}">
   <link rel="stylesheet" href="{{ asset('dist/css/AdminLTE.min.css') }}">
   <link rel="stylesheet" href="{{ asset('dist/css/skins/_all-skins.min.css') }}">
+  <link rel="stylesheet" href="{{ asset('plugins/select2/select2.min.css') }}">
 
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -167,6 +168,8 @@ desired effect
 <script src="{{ asset('plugins/fastclick/fastclick.js') }}"></script>
 <!-- AdminLTE App -->
 <script src="{{ asset('dist/js/app.min.js') }}"></script>
+
+<script src="{{ asset('plugins/select2/select2.full.min.js') }}"></script>
 
 <script src="{{ asset('js/bootstrap-notify.js') }}"></script>
 <script src="{{ asset('dist/js/demo.js') }}"></script>

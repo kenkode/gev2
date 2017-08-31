@@ -22,7 +22,7 @@
 //       END//
 // '
 
-CREATE TRIGGER stock_report AFTER UPDATE ON stocks FOR EACH ROW BEGIN DECLARE deinc varchar(10); DECLARE amount INT; IF OLD.stock < NEW.stock THEN SET deinc = 'IN'; SET amount = NEW.stock - OLD.stock; ELSE SET deinc = 'OUT'; SET amount = OLD.stock - NEW.stock; END IF; INSERT INTO stock_reports(stock, item, type, choices, created_at, updated_at) VALUES (amount, OLD.item, OLD.type, deinc, NEW.updated_at, NEW.updated_at); END
+CREATE TRIGGER stock_report AFTER UPDATE ON stocks FOR EACH ROW BEGIN DECLARE deinc varchar(10); DECLARE amount INT; IF OLD.stock < NEW.stock THEN SET deinc = 'IN'; SET amount = NEW.stock - OLD.stock; ELSE SET deinc = 'OUT'; SET amount = OLD.stock - NEW.stock; END IF; INSERT INTO stock_reports(supplier, stock, item, type, choices, created_at, updated_at) VALUES (NEW.supplier, amount, OLD.item, OLD.type, deinc, NEW.updated_at, NEW.updated_at); END
 
 <!-- DELIMITER //
  CREATE PROCEDURE create_stock_report(IN supplier INT, IN stock INT, IN choice VARCHAR(10), IN created_at DATETIME, IN updated_at DATETIME)

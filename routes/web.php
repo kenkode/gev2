@@ -23,9 +23,9 @@ Route::middleware('auth')->group(function() {
 
   Route::get('/get_updates', 'GeController\GeController@getUpdate');
 
-  Route::get('/orders', function() {
-      return view('stock', ['header'=>'Stock', 'description'=>'Live Stock']);
-  })->name('orders');
+  Route::get('/orders', 'GeController\GeController@orders')->name('orders');
+
+  Route::get('/subsidiaries', 'GeController\GeController@subsidiary')->name('subsidiary');
 
   Route::get('/orders/{order}', 'GeController\GeController@orderDetails');
 
@@ -57,4 +57,13 @@ Route::middleware('auth')->group(function() {
 
   Route::post('/add_bulkgas', 'GeController\GeController@addBulkGas');
 
+  Route::prefix("subsidiary")->group(function() {
+      Route::post("/add_subsidiary", "GeController\SubsidiaryController@addSubsidiary");
+
+      Route::get("/add_ride", "GeController\SubsidiaryController@addRide");
+  });
+});
+
+Route::prefix("rider")->group(function() {
+  Route::post("login", "GeController\RiderController@login");
 });

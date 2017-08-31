@@ -1,5 +1,7 @@
 $(document).ready(function() {
 
+  var base_url = '';
+
   $.ajaxSetup({
       headers: {
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -25,7 +27,7 @@ Ajax Setup
     var itemName = $('#supplierFormType option:selected').text();
 
     $.ajax({
-      url: supplierRedirect,
+      url: base_url + supplierRedirect,
       type: 'post',
       data: {
         id : supplier_id,
@@ -78,7 +80,7 @@ Ajax Setup
     var parent = $(this).parentsUntil('tbody');
 
     $.ajax({
-      url: '/delete_supplier',
+      url: base_url + '/delete_supplier',
       type: 'post',
       data: {
         supplier : supplier
@@ -104,7 +106,7 @@ Ajax Setup
 
     if (type.length > 0) {
       $.ajax({
-        url: "/add_gas_type",
+        url: base_url + "/add_gas_type",
         type: "post",
         data: {
           'type': type
@@ -150,7 +152,7 @@ Ajax Setup
       });
     } else {
       $.ajax({
-        url: "/add_gas",
+        url: base_url + "/add_gas",
         type: "post",
         data: {
           'type': type,
@@ -201,7 +203,7 @@ Ajax Setup
       });
     } else {
       $.ajax({
-        url: "/add_product",
+        url: base_url + "/add_product",
         type: "post",
         data: {
           'type': type,
@@ -249,7 +251,7 @@ Ajax Setup
       });
     } else {
       $.ajax({
-        url: "/add_bulkgas",
+        url: base_url + "/add_bulkgas",
         type: "post",
         data: {
           price: price
@@ -281,7 +283,7 @@ Ajax Setup
     stockDetails.type = type;
 
     $.ajax({
-      url: "/get_supplier",
+      url: base_url + "/get_supplier",
       type: "post",
       data: {
         'id': id,
@@ -329,7 +331,7 @@ Ajax Setup
         return;
       }else {
         $.ajax({
-          url: "/update_stock",
+          url: base_url + "/update_stock",
           type: "post",
           data: {
             'id': stockDetails.id,
@@ -342,6 +344,52 @@ Ajax Setup
           }
         });
       }
+  });
+
+  $("select#order_search").change(function() {
+    window.location = base_url + "orders/" + $(this).val();
+  });
+
+  $("button#add_subsidiary_button").click(function() {
+    var name = $("input#name").val();
+    var location = $("input#location").val();
+    var email = $("input#email").val();
+    var phone = $("input#phone").val();
+
+    if(name.length < 1) {
+      $("input#name").parent().addClass("has-error");
+    }else if(location.length < 1) {
+      $("input#name").parent().removeClass("has-error");
+      $("input#location").parent().addClass("has-error");
+    }else {
+      $("input#name").parent().removeClass("has-error");
+      $("input#location").parent().removeClass("has-error");
+      $.ajax({
+        url: base_url + "/subsidiary/add_subsidiary",
+        type: "post",
+        data: {
+          'name': name,
+          'location': location,
+          'email': email,
+          'phone': phone
+        },
+        success: function (data) {
+          $("#add_subsidiary").modal("hide");
+          $("input#name").val("");
+          $("input#location").val("");
+          $.notify({
+            icon: 'pe-7s-check',
+            message: name + " added successfully"
+          }, {
+            type: 'success',
+            timer: 5000
+          });
+        }
+      });
+    }
+
+
+
   });
 
 

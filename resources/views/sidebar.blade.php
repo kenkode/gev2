@@ -24,6 +24,7 @@
     <ul class="sidebar-menu">
       <li class="header">NAVIGATION</li>
       <li class="active"><a href="{{ route('home') }}"><i class="fa fa-link"></i> <span>Dashboard</span></a></li>
+      <li><a href="{{ route('subsidiary') }}"><i class="fa fa-link"></i> <span>Subsidiaries</span></a></li>
       <li><a href="{{ route('suppliers') }}"><i class="fa fa-link"></i> <span>Suppliers</span></a></li>
       <li><a href="{{ route('manage') }}"><i class="fa fa-link"></i> <span>Manage products</span></a></li>
       <li><a href="{{ route('stock') }}"><i class="fa fa-link"></i> <span>Stock</span></a></li>

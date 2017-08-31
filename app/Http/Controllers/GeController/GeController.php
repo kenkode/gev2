@@ -16,11 +16,74 @@ use App\Http\Models\Supplier;
 use App\Http\Models\Item;
 use App\Http\Models\Service;
 use App\Http\Models\Stock;
+use App\Http\Models\Subsidiary;
 
 class GeController extends GeBaseController {
 
   public function index() {
     return view('dashboard', ['header'=>'Dashboard', 'description'=>'Admin Dashboard' ]);
+  }
+
+  public function orders() {
+    $orders = UserOrder::join('delivery_locations', 'delivery_locations.order_id', 'user_orders.order_id')
+      ->join('locations', 'locations.id', 'delivery_locations.location_id')
+      ->orderby('user_orders.created_at', 'desc')
+      ->get();
+
+    $ordersData = array();
+
+      foreach($orders as $o) {
+        $type;
+        $order;
+        $totalPrice = 0;
+        $total = Order::where('order_id', $o->order_id)->get();
+        $userOrder = UserOrder::where('order_id', $o->order_id)->first();
+        $user = Customer::where('id', $userOrder->user_id)->first();
+        if(count($total) >= 2) {
+          $type = "Multiple";
+        }else {
+          $type = "Single";
+        }
+
+        foreach($total as $t) {
+          $price = 0;
+          switch($t->type) {
+            case 0:
+              $gas = Size::where('id', $t->item_id)->first();
+              $price = $gas['price'] * $t['qty'];
+              break;
+            case 1:
+              $acc = Accessory::where('id', $t->item_id)->first();
+              $price = $acc['price'] * $t['qty'];
+              break;
+            case 3:
+              $gas = BulkGas::first();
+              $price = $gas['price'] * $t['qty'];
+              break;
+          }
+          $totalPrice += $price;
+        }
+
+        $order['cust_id'] = $user->id;
+        $order['fname'] = $user->fname;
+        $order['lname'] = $user->lname;
+        $order['phone'] = $user->phone;
+        $order['order_id'] = $o->order_id;
+        $order['type'] = $type;
+        $order['location'] = $o->address;
+        $order['price'] = $totalPrice;
+        $order['type'] = $type;
+        $order['status'] = $o->status;
+        $order['created_at'] = date('m.d.y  h:i:s', strtotime($o->created_at));
+        array_push($ordersData, $order);
+      }
+
+    return view('orders', ['header'=>'Orders', 'description'=>'Orders', 'orders'=>$ordersData]);
+  }
+
+  public function subsidiary() {
+    $subsidiaries = Subsidiary::join("users", "users.email", "subsidiaries.email")->get();
+    return view('subsidiary', ['header'=>'Subsidiaries', 'description'=>'Subsidiaries', 'subsidiaries'=>$subsidiaries]);
   }
 
   public function getUpdate(Request $request) {
@@ -413,6 +476,9 @@ public function addBulkGas(Request $request) {
 
   echo $price;
 }
+
+
+// Subsidiary
 
 
 
