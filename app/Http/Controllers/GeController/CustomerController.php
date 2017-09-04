@@ -1,9 +1,22 @@
 <?php
 
-namespace App\Http\Controller\GeController;
+namespace App\Http\Controllers\GeController;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Models\Customer;
+use App\Http\Models\Size;
+use App\Http\Models\BulkGas;
+use App\Http\Models\Service;
+use App\Http\Models\Gas;
+use App\Http\Models\Order;
+use App\Http\Models\UserOrder;
+use App\Http\Models\Accessory;
+use App\Http\Models\Location;
+use App\Http\Models\UserLocation;
+use App\Http\Models\DeliveryLocation;
+
+use App\Http\Controllers\GeController\AfricasTalking\AfricasTalkingController;
 
 class CustomerController extends Controller {
 
@@ -110,15 +123,15 @@ class CustomerController extends Controller {
           switch($t->type) {
             case 0:
               $gas = Size::where('id', $t->item_id)->first();
-              $price = $gas->price * $t->qty;
+              $price = $gas['price'] * $t->qty;
               break;
             case 1:
               $acc = Accessory::where('id', $t->item_id)->first();
-              $price = $acc->price * $t->qty;
+              $price = $acc['price'] * $t->qty;
               break;
             case 3:
               $gas = BulkGas::first();
-              $price = $gas->price * $t->qty;
+              $price = $gas['price'] * $t->qty;
               break;
           }
           $totalPrice += $price;
@@ -219,7 +232,6 @@ class CustomerController extends Controller {
   public function addLocation(Request $request) {
     $location = json_decode($request->input('location'));
     $user = $request->input('user');
-
     $type = $location->type;
     $address = $location->address;
     $lng = $location->lng;
@@ -272,14 +284,14 @@ class CustomerController extends Controller {
       'phone' => $phone
     );
 
-    $auth = User::where($details);
+    $auth = Customer::where($details);
 
     if($auth->exists()) {
       $africas = new AfricasTalkingController();
       $u = $auth->first();
       $user['status'] = 'E';
       $user['user'] = $u;
-      $user['token'] = $this->generateToken($u->id);
+      $user['token'] = session()->token();
       $user['pin'] = $africas->sendMessage(1, array("+" . $phone));
     }else {
       $user['status'] = 'DNE';
@@ -293,7 +305,7 @@ class CustomerController extends Controller {
     $userDetails = json_decode($request->input('user'));
     $locationDetails = json_decode($request->input('location'));
 
-    while (User::where('email', $userDetails->email)->exists()) {
+    while (Customer::where('email', $userDetails->email)->exists()) {
       $user['status'] = "EE";
       return json_encode($user);
       exit;
@@ -303,11 +315,11 @@ class CustomerController extends Controller {
 
     $userId = 1;
 
-    while (User::where('id', $userId)->exists()) {
+    while (Customer::where('id', $userId)->exists()) {
       $userId++;
     }
 
-    User::create([
+    Customer::create([
       "id" => $userId,
       "fname" => $userDetails->fname,
       "lname" => $userDetails->lname,
@@ -338,6 +350,30 @@ class CustomerController extends Controller {
     $user['pin'] = $africas->sendMessage(1, array("+" . $userDetails->phone));
 
     return json_encode($user);
+  }
+
+  public function updateUser(Request $request) {
+    $userDetails = json_decode($request->input('update'));
+    $userId = $request->input('user');
+    $message;
+
+    $user = Customer::whereNotIn("id", [$userId]);
+
+    if($user->where("phone", $userDetails->phone)->exists()) {
+      $message = "Phone number exists";
+    }else if($user->where("email", $userDetails->email)->exists()) {
+      $message = "Email exists";
+    }else {
+      Customer::where("id", $userId)
+        ->update([
+          "fname" => $userDetails->fname,
+          "lname" => $userDetails->lname,
+          "phone" => $userDetails->phone,
+          "email" => $userDetails->email
+      ]);
+      $message = "Successfully updated";
+    }
+      echo json_encode($message);
   }
 
 

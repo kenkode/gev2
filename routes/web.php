@@ -75,7 +75,10 @@ Route::prefix("rider")->group(function() {
 
 Route::prefix("customer")->group(function() {
   Route::get("authenticate_user", "GeController\CustomerController@authenticateUser");
-  Route::get("get_items", "GeController\CustomerController@getItems");
+  Route::get("add_user", "GeController\CustomerController@addUser");
+  Route::get("update_user", "GeController\CustomerController@updateUser");
+
+  Route::get("get_items", "GeController\CustomerController@getOrderItems");
   //
   Route::get("rating", "GeController\CustomerController@rating");
 
