@@ -1,6 +1,6 @@
 $(document).ready(function() {
 
-  var base_url = '';
+  var base_url = '/gev2';
 
   $.ajaxSetup({
       headers: {

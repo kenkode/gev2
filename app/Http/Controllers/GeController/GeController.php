@@ -24,11 +24,16 @@ class GeController extends GeBaseController {
     return view('dashboard', ['header'=>'Dashboard', 'description'=>'Admin Dashboard' ]);
   }
 
-  public function orders() {
+  public function getOrderDetails($order = null) {
     $orders = UserOrder::join('delivery_locations', 'delivery_locations.order_id', 'user_orders.order_id')
       ->join('locations', 'locations.id', 'delivery_locations.location_id')
-      ->orderby('user_orders.created_at', 'desc')
-      ->get();
+      ->orderby('user_orders.created_at', 'desc');
+
+    if($order != null) {
+      $orders = $orders->where('user_orders.order_id', $order);
+    }
+
+    $orders = $orders->get();
 
     $ordersData = array();
 
@@ -78,6 +83,12 @@ class GeController extends GeBaseController {
         array_push($ordersData, $order);
       }
 
+      return $ordersData;
+
+  }
+
+  public function orders() {
+    $ordersData = $this->getOrderDetails();
     return view('orders', ['header'=>'Orders', 'description'=>'Orders', 'orders'=>$ordersData]);
   }
 

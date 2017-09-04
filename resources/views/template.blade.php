@@ -6,15 +6,15 @@
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>Gas Express | {{ $header or "Gas Express" }}</title>
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-  <link rel="stylesheet" href="{{ asset('bootstrap/css/bootstrap.min.css') }}">
+  <link rel="stylesheet" href="{{ asset('/public/bootstrap/css/bootstrap.min.css') }}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
-  <link rel="stylesheet" href="{{ asset('dist/css/AdminLTE.min.css') }}">
-  <link rel="stylesheet" href="{{ asset('dist/css/skins/skin-blue.min.css') }}">
-  <link rel="stylesheet" href="{{ asset('plugins/datatables/dataTables.bootstrap.css') }}">
-  <link rel="stylesheet" href="{{ asset('dist/css/AdminLTE.min.css') }}">
-  <link rel="stylesheet" href="{{ asset('dist/css/skins/_all-skins.min.css') }}">
-  <link rel="stylesheet" href="{{ asset('plugins/select2/select2.min.css') }}">
+  <link rel="stylesheet" href="{{ asset('/public/dist/css/AdminLTE.min.css') }}">
+  <link rel="stylesheet" href="{{ asset('/public/dist/css/skins/skin-blue.min.css') }}">
+  <link rel="stylesheet" href="{{ asset('/public/plugins/datatables/dataTables.bootstrap.css') }}">
+  <link rel="stylesheet" href="{{ asset('/public/dist/css/AdminLTE.min.css') }}">
+  <link rel="stylesheet" href="{{ asset('/public/dist/css/skins/_all-skins.min.css') }}">
+  <link rel="stylesheet" href="{{ asset('/public/plugins/select2/select2.min.css') }}">
 
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -154,27 +154,27 @@ desired effect
   <div class="control-sidebar-bg"></div>
 </div>
 <!-- jQuery 2.2.0 -->
-<script src="{{ asset('plugins/jQuery/jQuery-2.2.0.min.js') }}"></script>
+<script src="{{ asset('public/plugins/jQuery/jQuery-2.2.0.min.js') }}"></script>
 <!-- Bootstrap 3.3.6 -->
-<script src="{{ asset('bootstrap/js/bootstrap.min.js') }}"></script>
+<script src="{{ asset('public/bootstrap/js/bootstrap.min.js') }}"></script>
 <!-- AdminLTE App -->
-<script src="{{ asset('dist/js/app.min.js') }}"></script>
+<script src="{{ asset('public/dist/js/app.min.js') }}"></script>
 
-<script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
-<script src="{{ asset('plugins/datatables/dataTables.bootstrap.min.js') }}"></script>
+<script src="{{ asset('public/plugins/datatables/jquery.dataTables.min.js') }}"></script>
+<script src="{{ asset('public/plugins/datatables/dataTables.bootstrap.min.js') }}"></script>
 <!-- SlimScroll -->
-<script src="{{ asset('plugins/slimScroll/jquery.slimscroll.min.js') }}"></script>
+<script src="{{ asset('public/plugins/slimScroll/jquery.slimscroll.min.js') }}"></script>
 <!-- FastClick -->
-<script src="{{ asset('plugins/fastclick/fastclick.js') }}"></script>
+<script src="{{ asset('public/plugins/fastclick/fastclick.js') }}"></script>
 <!-- AdminLTE App -->
-<script src="{{ asset('dist/js/app.min.js') }}"></script>
+<script src="{{ asset('public/dist/js/app.min.js') }}"></script>
 
-<script src="{{ asset('plugins/select2/select2.full.min.js') }}"></script>
+<script src="{{ asset('public/plugins/select2/select2.full.min.js') }}"></script>
 
-<script src="{{ asset('js/bootstrap-notify.js') }}"></script>
-<script src="{{ asset('dist/js/demo.js') }}"></script>
-<script src="{{ asset('js/jquery.js') }}"></script>
-<script src="{{ asset('js/socket.js') }}"></script>
+<script src="{{ asset('public/js/bootstrap-notify.js') }}"></script>
+<script src="{{ asset('public/dist/js/demo.js') }}"></script>
+<script src="{{ asset('public/js/jquery.js') }}"></script>
+<script src="{{ asset('public/js/socket.js') }}"></script>
 
 <script>
   $(function () {

@@ -1,5 +1,6 @@
 var previous;
 var firstQuery = true;
+var base_url = '/gev2';
 
 (function() {
   setInterval(() => {
@@ -11,7 +12,7 @@ function queryServer() {
 
   if(!firstQuery) {
     $.ajax({
-      url: '/get_updates',
+      url: base_url + '/get_updates',
       type: 'get',
       data: {
         previous: previous
@@ -43,7 +44,7 @@ function queryServer() {
 
           var message;
 
-          var audio = new Audio('assets/sounds/notif.mp3');
+          var audio = new Audio('public/assets/sounds/notif.mp3');
           audio.play();
 
           // $.notify({
@@ -59,7 +60,7 @@ function queryServer() {
     });
   }else {
     $.ajax({
-      url: '/get_updates',
+      url: base_url + '/get_updates',
       type: 'get',
       success: function(data) {
         firstQuery = false;

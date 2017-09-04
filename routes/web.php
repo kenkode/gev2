@@ -66,4 +66,27 @@ Route::middleware('auth')->group(function() {
 
 Route::prefix("rider")->group(function() {
   Route::post("login", "GeController\RiderController@login");
+  Route::get("earnings", "GeController\RiderController@earnings");
+  Route::get("ratings", "GeController\RiderController@ratings");
+
+  Route::get("pick_order", "GeController\RiderController@pickOrder");
+  Route::get("order_delivered", "GeController\RiderController@orderDelivered");
+});
+
+Route::prefix("customer")->group(function() {
+  Route::get("authenticate_user", "GeController\CustomerController@authenticateUser");
+  Route::get("get_items", "GeController\CustomerController@getItems");
+  //
+  Route::get("rating", "GeController\CustomerController@rating");
+
+  Route::get("my_orders", "GeController\CustomerController@getHistory");
+  Route::get("add_location", "GeController\CustomerController@addLocation");
+  Route::get("disable_location", "GeController\CustomerController@disableLocation");
+  Route::get("place_order", "GeController\CustomerController@placeOrder");
+  Route::get("get_accessories", "GeController\CustomerController@getAccessories");
+  Route::get("get_gases", "GeController\CustomerController@getGases");
+  Route::get("get_services", "GeController\CustomerController@getServices");
+  Route::get("get_sizes", "GeController\CustomerController@getSizes");
+  Route::get("get_bulk_gas", "GeController\CustomerController@getBulkGas");
+  Route::get("my_locations", "GeController\CustomerController@getLocations");
 });
