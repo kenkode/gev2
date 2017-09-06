@@ -1,6 +1,7 @@
 var previous;
 var firstQuery = true;
 var base_url = '/gev2';
+var total = 0;
 
 (function() {
   setInterval(() => {
@@ -27,7 +28,8 @@ function queryServer() {
             var status;
 
             $('#live_order').addClass('box-warning');
-            $('#nto').text(current - previous);
+            total += current - previous;
+            $('#nto').text(total);
             $('#noc').show();
             // $('table#orders_container tbody').prepend(
             //   '<a class="col-md-4 col-lg-4 col-sm-6" href=/gas_express/order/' +  + '><div class="card order_container ' + status + '"><div class="header"><small class="title">Customer Name: <strong>' +  + '</strong></small><p class="category"><small>Order No.</small> ' + element.order_id + '</p><p class="category"><small>Order Type</small> '+ element.type +'</p><p class="category"><small>Price </small> '+ element.price +'</p><p class="category"><i class="pe-7s-map-marker"></i> Location: '+ element.location +'</p></div><div class="content"><div class="footer"><hr><div class="stats"><i class="pe-7s-clock"></i> Order made on ' +  + '</div></div></div></div></a>'
@@ -43,8 +45,8 @@ function queryServer() {
 
 
           var message;
-
-          var audio = new Audio('public/assets/sounds/notif.mp3');
+          
+          var audio = new Audio('public/sounds/notif.mp3');
           audio.play();
 
           // $.notify({

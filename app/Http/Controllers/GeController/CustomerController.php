@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\GeController;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\GeController\FirebaseController;
+
 use Illuminate\Http\Request;
 use App\Http\Models\Customer;
 use App\Http\Models\Size;
@@ -15,6 +17,7 @@ use App\Http\Models\Accessory;
 use App\Http\Models\Location;
 use App\Http\Models\UserLocation;
 use App\Http\Models\DeliveryLocation;
+use App\Http\Models\Rating;
 
 use App\Http\Controllers\GeController\AfricasTalking\AfricasTalkingController;
 
@@ -64,6 +67,9 @@ class CustomerController extends Controller {
       $orderId++;
     }
 
+    $fbItems = array();
+    $fbPrice = 0;
+
     foreach($orders as $order) {
        $orderDetails = array(
           "item_id" => $order->id,
@@ -71,6 +77,36 @@ class CustomerController extends Controller {
           "type" => $order->type,
           "qty" => $order->quantity
         );
+        switch($order->type) {
+          case 0:
+            $gas = Size::join('gas', 'gas_id', 'gas.id')->where('sizes.id', $order->id)->first();
+            $name = $gas['name'];
+            $price = $gas->price;
+            $fbPrice+=($price * $order->quantity);
+            array_push($fbItems, $name);
+            break;
+          case 1:
+            $acc = Accessory::where('id', $order->id)->first();
+            $name = $acc['name'];
+            $price = $acc->price;
+            $fbPrice+=($price * $order->quantity);
+            array_push($fbItems, $name);
+            break;
+          case 2:
+            $service = Service::where('id', $order->id)->first();
+            $name = $service['name'];
+            $price = $service->price;
+            $fbPrice+=($price * $order->quantity);
+            array_push($fbItems, $name);
+            break;
+          case 3:
+            $gas = BulkGas::first();
+            $name = "Bulk Gas";
+            $price = $gas->price;
+            $fbPrice+=($price * $order->quantity);
+            array_push($fbItems, $name);
+            break;
+        }
       Order::create($orderDetails);
     }
 
@@ -95,6 +131,21 @@ class CustomerController extends Controller {
 
     // Send request to all riders
 
+    $fbLocation = Location::where('id', $location)->first();
+
+    $fbData = array(
+      'id' => $orderId,
+      'items' => $fbItems,
+      'location' => [
+        "latitude" => $fbLocation->lat,
+        "longitude" => $fbLocation->lng
+      ],
+      'price' => $fbPrice,
+      'status' => 0
+    );
+
+    $fbc = new FirebaseController();
+    $fbc->firebase->push($fbData, '/');
   }
 
   public function getHistory(Request $request) {
@@ -374,6 +425,28 @@ class CustomerController extends Controller {
       $message = "Successfully updated";
     }
       echo json_encode($message);
+  }
+
+  public function submitRating(Request $request) {
+    $order = $request->input("order");
+    $rating = $request->input("rating");
+    $feedback = $request->input("feedback");
+
+    $ratingM = Rating::where('order', $order)->first();
+
+    if($ratingM != null) {
+      Rating::where('order', $order)->update([
+        "rating" => $rating,
+        "order" => $order,
+        "feedback" => $feedback
+      ]);
+    }else {
+      Rating::create([
+        "rating" => $rating,
+        "order" => $order,
+        "feedback" => $feedback
+      ]);
+    }
   }
 
 

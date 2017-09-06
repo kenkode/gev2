@@ -5,6 +5,9 @@ namespace App\Http\Controllers\GeController;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use App\Http\Models\Ride;
+use App\Http\Models\RiderOrder;
+use App\Http\Models\Rating;
 use App\User;
 
 /*
@@ -17,62 +20,117 @@ tables - percentage(driver earning percentage, drivers per parameter) - multiple
 
 class RiderController extends Controller {
 
-  public function login(Request $request) {
-    $email = $request->input('email');
-    $password = $request->input('password');
-    $data = array();
+  public function login(Request $request, $email, $password) {
+    // $email = $request->input('email');
+    // $password = $request->input('password');
+    $user = array();
+
     if (Auth::attempt(['email' => $email, 'password' => $password])) {
       $user = Auth::user();
       $ride = Ride::where('rider', $email)->first();
 
-      $data['user'] = $user;
-      $data['ride'] = $ride;
-      $data['status'] = "Success";
+      // $data['user'] = $user;
+      $user['ride'] = $ride;
+      $user['status'] = "Success";
 
     }else {
-      $data['status'] = "Fail";
+      $user['status'] = "Fail";
     }
 
-    return json_encode($data);
+    return json_encode($user);
 
   }
 
-  public function earnings(Request $request) {
+  public function earnings(Request $request, $rider) {
       $data = array();
+      $geController = new GeController();
 
-      $percentage = Percentage::where('active', 1)->where('entity', 'RIDER')->first()['percentage'];
-      $rider = $request->input('rider');
-      $orders = RiderOrder::where('rider', $rider)->get();
-      $geController = new GeController($this->container);
+      // $percentage = Percentage::where('active', 1)->where('entity', 'RIDER')->first()['percentage'];
+      $percentage = 2.5;
+      // $rider = $request->input('rider');
+      // $orders = RiderOrder::where('rider', $rider)->orderby('desc', 'created_at');
+      $orders = [
+        array(
+          'payment' => 200,
+          'date' => "12.12.12"
+        ),
+        array(
+          'payment' => 100,
+          'date' => "08.08.08"
+        ),
+        array(
+          'payment' => 100,
+          'date' => "08.08.08"
+        ),
+        array(
+          'payment' => 250,
+          'date' => "08.08.08"
+        ),
+        array(
+          'payment' => 120,
+          'date' => "08.08.08"
+        ),
+      ];
+      // $latestOrder = $geController->getOrderDetails($orders->first()['order']);
+      $latestOrder = 1201;
+      $highest = 300;
+      $lowest = 200;
+      $total = 800;
+      $latest = 250;
+      // $orders = $orders->get();
 
-      foreach ($orders as $order) {
-        $riderOrder = $geController->getOrderDetails($order->order);
-        $totalPrice = $riderOrders['price'];
-        $riderPrice = $percentage * $totalPrice;
-        array_push($data, array('earning'=>$riderPrice, 'data'=>$totalPrice['created_at']));
-      }
+      // foreach ($orders as $order) {
+      //   $riderOrder = $geController->getOrderDetails($order->order);
+      //   $totalPrice = $riderOrders['price'];
+      //   $riderPrice = $percentage * $totalPrice;
+      //   if($highest < $riderPrice) {
+      //     $highest = $riderPrice;
+      //   }
+      //   if($lowest > $riderPrice) {
+      //     $lowest = $riderPrice;
+      //   }
+      //   $total += $riderPrice;
+      //   array_push($data, array('earnings'=>$riderPrice, 'data'=>$totalPrice['created_at']));
+      // }
 
-      return json_encode($data);
+      $results = array(
+        'payments' => $orders /*$data*/,
+        'latest' => $latest,
+        'total' => $total,
+        'highest' => $highest,
+        'lowest' => $lowest
+      );
+
+      return json_encode($results);
 
   }
 
-  public function ratings(Request $request) {
-    $rider = $request->input('rider');
-    $totalTrips = RiderOrder::where('rider', $rider)->count();
-    $totalRatedTrips = Rating::where('stars', '!=', 0);
+  public function ratings(Request $request, $rider) {
+    $riderOrder = RiderOrder::where('rider', $rider);
+    $totalTrips = $riderOrder->count();
+
+    $ratings = Rating::join("rider_orders", "rider_orders.order", "ratings.order")->where("rider", $rider);
+    $coreRating = $ratings;
+    $compliments = $coreRating->where('feedback', '!=', "")->select('feedback', 'ratings.order', 'rating')->get();
+
+    $totalRatedTrips = $ratings->where('rating', '!=', 0);
     $countRatedTrips = $totalRatedTrips->count();
-    $sumRatedTrips = $totalRatedTrips->sum();
-    $stars_5 = Rating::where('stars', 5)->count();
+    $sumRatedTrips = $totalRatedTrips->sum("rating");
+    $stars_5 = $ratings->where('rating', 5)->count();
 
-    $currentRating = $sumRatedTrips / $countRatedTrips;
+    $currentRating = 0;
 
-    $compliments = Rating::where('compliment', '!=', "")->get();
+    if($countRatedTrips > 0) {
+      $currentRating = $sumRatedTrips / $countRatedTrips;
+    }else {
+      $currentRating = 0;
+    }
 
     $data = array(
       'current' => $currentRating,
       'lifetime' => $totalTrips,
       'rated' => $countRatedTrips,
-      'star-5' => $star_5,
+      'star5' => $stars_5,
       'compliments' => $compliments
     );
 
@@ -103,6 +161,16 @@ class RiderController extends Controller {
 
   }
 
+  public function edit(Request $request, $rider) {
+    $name = $request->input('name');
+    $email = $request->input('email');
+    $phone = $request->input('phone');
+
+    
+
+
+  }
+
   public function rating(Request $request) {
     $rider = $request->input('rider');
     $star = $request->input('star');
@@ -114,6 +182,10 @@ class RiderController extends Controller {
       'compliment' => $compliment
     ]);
 
+  }
+
+  public function getToken() {
+    return json_encode(session()->token());
   }
 
 

@@ -65,22 +65,27 @@ Route::middleware('auth')->group(function() {
 });
 
 Route::prefix("rider")->group(function() {
-  Route::post("login", "GeController\RiderController@login");
-  Route::get("earnings", "GeController\RiderController@earnings");
-  Route::get("ratings", "GeController\RiderController@ratings");
+  Route::get("get_token", "GeController\RiderController@getToken");
+  Route::get("login/{email}/{password}", "GeController\RiderController@login");
+  Route::get("earnings/{rider}", "GeController\RiderController@earnings");
+  Route::get("ratings/{rider}", "GeController\RiderController@ratings");
+  Route::get("edit/{rider}", "GeController\RiderController@edit");
 
   Route::get("pick_order", "GeController\RiderController@pickOrder");
   Route::get("order_delivered", "GeController\RiderController@orderDelivered");
 });
 
 Route::prefix("customer")->group(function() {
+  Route::get("firebase", function() {
+    $fbc = new \App\Http\Controllers\GeController\FirebaseController();
+  });
   Route::get("authenticate_user", "GeController\CustomerController@authenticateUser");
   Route::get("add_user", "GeController\CustomerController@addUser");
   Route::get("update_user", "GeController\CustomerController@updateUser");
 
   Route::get("get_items", "GeController\CustomerController@getOrderItems");
   //
-  Route::get("rating", "GeController\CustomerController@rating");
+  Route::get("rating", "GeController\CustomerController@submitRating");
 
   Route::get("my_orders", "GeController\CustomerController@getHistory");
   Route::get("add_location", "GeController\CustomerController@addLocation");

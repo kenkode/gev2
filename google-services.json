@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "113484484074",
+    "firebase_url": "https://ge-driver.firebaseio.com",
+    "project_id": "ge-driver",
+    "storage_bucket": "ge-driver.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:113484484074:android:a1f39cc96581531c",
+        "android_client_info": {
+          "package_name": "podop.gasexpress_driverapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "113484484074-a2baapsi8gbb8jp78h6omrnf96hhkjnu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "podop.gasexpress_driverapp",
+            "certificate_hash": "b4712a38212fbc6b620d1c5115467fbbff25a725"
+          }
+        },
+        {
+          "client_id": "113484484074-qgsg3nuk5v2kj5l3i46sh4dk2gk6jo13.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCt2e_rba9l9LOoYy-ZGb8V-5nUSoXgc7U"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "113484484074-qgsg3nuk5v2kj5l3i46sh4dk2gk6jo13.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
