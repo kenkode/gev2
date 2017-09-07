@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Http\Models\Ride;
 use App\Http\Models\RiderOrder;
+use App\Http\Models\UserOrder;
 use App\Http\Models\Rating;
 use App\User;
 
@@ -137,10 +138,7 @@ class RiderController extends Controller {
     return json_encode($data);
   }
 
-  public function pickOrder(Request $request) {
-    $rider = $request->input('rider');
-    $order = $request->input('order');
-
+  public function setRider(Request $request, $rider, $order) {
     RiderOrder::create([
       'rider' => $rider,
       'order' => $order
@@ -150,9 +148,7 @@ class RiderController extends Controller {
 
   }
 
-  public function orderDelivered(Request $request) {
-    $order = $request->input('order');
-
+  public function orderDelivered(Request $request, $order) {
     UserOrder::where('order_id', $order)->update([
       'status' => 1
     ]);
@@ -166,7 +162,7 @@ class RiderController extends Controller {
     $email = $request->input('email');
     $phone = $request->input('phone');
 
-    
+
 
 
   }

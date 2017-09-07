@@ -71,8 +71,8 @@ Route::prefix("rider")->group(function() {
   Route::get("ratings/{rider}", "GeController\RiderController@ratings");
   Route::get("edit/{rider}", "GeController\RiderController@edit");
 
-  Route::get("pick_order", "GeController\RiderController@pickOrder");
-  Route::get("order_delivered", "GeController\RiderController@orderDelivered");
+  Route::get("set_rider/{rider}/{order}", "GeController\RiderController@setRider");
+  Route::get("delivered/{order}", "GeController\RiderController@orderDelivered");
 });
 
 Route::prefix("customer")->group(function() {
