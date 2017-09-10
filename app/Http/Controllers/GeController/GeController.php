@@ -17,11 +17,30 @@ use App\Http\Models\Item;
 use App\Http\Models\Service;
 use App\Http\Models\Stock;
 use App\Http\Models\Subsidiary;
+use App\Http\Models\Ride;
+use App\Http\Models\Rider;
+use App\Http\Models\RiderOrder;
+use App\Http\Models\Rating;
+use App\User;
+
+use Auth;
 
 class GeController extends GeBaseController {
 
   public function index() {
-    return view('dashboard', ['header'=>'Dashboard', 'description'=>'Admin Dashboard' ]);
+    $view = 'dashboard';
+    $bladeView = view($view, ['header'=>'Dashboard', 'description'=>'Admin Dashboard']);
+
+    $riders = Rider::join("users", "rider", "users.id")->join("rides", "rides.rider", "users.id")->where('subsidiary', Auth::user()->id)
+      ->select("users.name as name", "rides.name as ride", "users.email as email", "riders.id as id")
+      ->get();
+
+    if(Auth::user()->type == 2) {
+      $view = 'riders';
+      $bladeView = view($view, ['header'=>'Riders', 'description'=>Auth::user()->name . " Riders", 'riders'=>$riders]);
+    }
+
+    return $bladeView;
   }
 
   public function getOrderDetails($order = null) {
@@ -94,7 +113,18 @@ class GeController extends GeBaseController {
 
   public function subsidiary() {
     $subsidiaries = Subsidiary::join("users", "users.email", "subsidiaries.email")->get();
-    return view('subsidiary', ['header'=>'Subsidiaries', 'description'=>'Subsidiaries', 'subsidiaries'=>$subsidiaries]);
+    $data = array();
+    foreach($subsidiaries as $sub) {
+      $riders = Rider::where("subsidiary", $sub->id);
+      $totalRiders = $riders->count();
+      $deliveries = 0;
+      foreach ($riders->get() as $rider) {
+        $deliveries += RiderOrder::where("rider", $rider->id)->count();
+      }
+      array_push($data, array('riders'=>$totalRiders, 'deliveries'=>$deliveries, 'subsidiary'=>$sub));
+    }
+
+    return view('subsidiary', ['header'=>'Subsidiaries', 'description'=>'Subsidiaries', 'subsidiaries'=>$data]);
   }
 
   public function getUpdate(Request $request) {
@@ -488,12 +518,75 @@ public function addBulkGas(Request $request) {
   echo $price;
 }
 
-
 // Subsidiary
+  public function addRider() {
+    $riders = Rider::join("users", "rider", "users.id")->join("rides", "rides.rider", "users.id")->where('subsidiary', Auth::user()->id)
+      ->select("users.name as name", "rides.name as ride", "users.email as email", "riders.id as id")
+      ->get();
+    return view("add_rider", ['header'=>'Add Rider', 'description'=>'Add Rider', 'riders'=>$riders]);
+  }
 
+  public function addRiderDetails(Request $request) {
+    $riderName = $request->input('rider_name');
+    $riderEmail = $request->input('rider_email');
+    $riderPhone = $request->input('rider_phone');
+    $riderNatId = $request->input('rider_nat');
+    $rideName = $request->input('ride_name');
+    $licence = $request->input('licence');
+    $registrationNumber = $request->input('registration');
 
+    $user = new User();
+    $user->name = $riderName;
+    $user->email = $riderEmail;
+    $user->type = 4;
+    $user->password = bcrypt(123456);
+    $user->save();
 
+    Rider::create([
+      "rider" => $user->id,
+      "subsidiary" => Auth::user()->id
+    ]);
 
+    Ride::create([
+      "rider" => $user->id,
+      "name" => $rideName,
+      "registration_no" => $registrationNumber,
+      "licence" => $licence
+    ]);
+
+    return redirect()->route("home");
+
+  }
+
+  public function rider($rider) {
+    $rider = Rider::join("users", "rider", "users.id")->join("rides", "rides.rider", "users.id")->where("riders.id", $rider)
+        ->select("users.name as name", "rides.name as ride", "users.email as email", "riders.id as id")
+        ->first();
+
+    $rating = $this->ratings($rider->id);
+    return view("rider", ['rider'=>$rider, 'rating'=>$rating, 'header'=>$rider->name, 'description'=>$rider->name . " Info", 'riders'=>Rider::all()]);
+  }
+
+  public function ratings($rider) {
+    $riderOrder = RiderOrder::where('rider', $rider);
+    $totalTrips = $riderOrder->count();
+
+    $ratings = Rating::join("rider_orders", "rider_orders.order", "ratings.order")->where("rider", $rider);
+
+    $totalRatedTrips = $ratings->where('rating', '!=', 0);
+    $countRatedTrips = $totalRatedTrips->count();
+    $sumRatedTrips = $totalRatedTrips->sum("rating");
+
+    $currentRating = 0;
+
+    if($countRatedTrips > 0) {
+      $currentRating = $sumRatedTrips / $countRatedTrips;
+    }else {
+      $currentRating = 0;
+    }
+
+    return array('rating'=>$currentRating, 'deliveries'=>$totalTrips);
+  }
 
   /*
 

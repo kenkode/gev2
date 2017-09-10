@@ -69,7 +69,11 @@ desired effect
     <!-- Main content -->
     <section class="content">
 
-      @include('live')
+      @if(Auth::user()->type == 1)
+        @include('live')
+      @else
+        @include('riders-info')
+      @endif
 
       @section('content')
       @show

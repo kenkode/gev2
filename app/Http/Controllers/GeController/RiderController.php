@@ -28,6 +28,10 @@ class RiderController extends Controller {
 
     if (Auth::attempt(['email' => $email, 'password' => $password])) {
       $user = Auth::user();
+      if($user->type != 4) {
+        $user['status'] = "Fail";
+        return json_encode($user);
+      }
       $ride = Ride::where('rider', $email)->first();
 
       // $data['user'] = $user;
@@ -140,7 +144,7 @@ class RiderController extends Controller {
 
   public function setRider(Request $request, $rider, $order) {
     RiderOrder::create([
-      'rider' => $rider,
+      'rider' => Rider::join("users", "users.id", "riders.rider")->where("email", $rider)->first()['users.id'],
       'order' => $order
     ]);
 

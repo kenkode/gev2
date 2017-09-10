@@ -20,15 +20,11 @@
             </span>
       </div>
     </form> -->
-
     <ul class="sidebar-menu">
       <li class="header">NAVIGATION</li>
-      <li class="active"><a href="{{ route('home') }}"><i class="fa fa-link"></i> <span>Dashboard</span></a></li>
-      <li><a href="{{ route('subsidiary') }}"><i class="fa fa-link"></i> <span>Subsidiaries</span></a></li>
-      <li><a href="{{ route('suppliers') }}"><i class="fa fa-link"></i> <span>Suppliers</span></a></li>
-      <li><a href="{{ route('manage') }}"><i class="fa fa-link"></i> <span>Manage products</span></a></li>
-      <li><a href="{{ route('stock') }}"><i class="fa fa-link"></i> <span>Stock</span></a></li>
-      <li><a href="{{ route('users') }}"><i class="fa fa-link"></i> <span>Users</span></a></li>
+      @foreach($navigation as $navigation)
+        <li class="@if($header == $navigation['name']){{'active'}}@else{{''}}@endif"><a href="{{ route($navigation['route']) }}"><i class="fa fa-link"></i> <span>{{ $navigation['name'] }}</span></a></li>
+      @endforeach
       <!-- <li class="treeview">
         <a href="#"><i class="fa fa-link"></i> <span>Multilevel</span> <i class="fa fa-angle-left pull-right"></i></a>
         <ul class="treeview-menu">

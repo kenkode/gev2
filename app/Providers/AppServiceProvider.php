@@ -13,6 +13,10 @@ use App\Http\Models\UserOrder;
 use App\Http\Models\Size;
 use App\Http\Models\BulkGas;
 use App\Http\Models\Accessory;
+use App\Http\Models\Navigation;
+use Auth;
+
+use App\Http\Composers\UserComposer;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -84,6 +88,17 @@ class AppServiceProvider extends ServiceProvider
         $pending = UserOrder::where('status', 0)->count();
         $revenues = "";
         $costs = "";
+        $currentUser;
+        $navigation = array();
+
+        view()->composer("*", function($view) {
+          $currentUser = Auth::user();
+          $navigation = array();
+          if($currentUser != null) {
+            $navigation = Navigation::where('type', $currentUser->type)->orWhere('type', 5)->get();
+          }
+          $view->with('navigation', $navigation);
+        });
 
         $data = array(
           'orders' => $ordersData,

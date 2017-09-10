@@ -17,50 +17,59 @@ Route::get('/register', function() {
 
 Auth::routes();
 
-Route::middleware('auth')->group(function() {
+Route::middleware("auth")->group(function() {
 
   Route::get('/', 'GeController\GeController@index')->name('home');
 
-  Route::get('/get_updates', 'GeController\GeController@getUpdate');
+  Route::get('/add_rider', 'GeController\GeController@addRider')->name('add_rider');
 
-  Route::get('/orders', 'GeController\GeController@orders')->name('orders');
+  Route::post('/add_rider', 'GeController\GeController@addRiderDetails');
 
-  Route::get('/subsidiaries', 'GeController\GeController@subsidiary')->name('subsidiary');
+  Route::get('/rider/{rider}', 'GeController\GeController@rider');
 
-  Route::get('/orders/{order}', 'GeController\GeController@orderDetails');
+  Route::middleware("super")->group(function() {
 
-  Route::get('/users', 'GeController\GeController@users')->name('users');
+    Route::get('/get_updates', 'GeController\GeController@getUpdate');
 
-  Route::get('/manage', 'GeController\GeController@manage')->name('manage');
+    Route::get('/orders', 'GeController\GeController@orders')->name('orders');
 
-  Route::get('/stock', 'GeController\GeController@stock')->name('stock');
+    Route::get('/subsidiaries', 'GeController\GeController@subsidiary')->name('subsidiary');
 
-  Route::post('/update_stock', 'GeController\GeController@addStock');
+    Route::get('/orders/{order}', 'GeController\GeController@orderDetails');
 
-  Route::get('/suppliers', 'GeController\GeController@supplier')->name('suppliers');
+    Route::get('/users', 'GeController\GeController@users')->name('users');
 
-  Route::post('/add_supplier', 'GeController\GeController@addSupplier');
+    Route::get('/manage', 'GeController\GeController@manage')->name('manage');
 
-  Route::post('/edit_supplier', 'GeController\GeController@editSupplier');
+    Route::get('/stock', 'GeController\GeController@stock')->name('stock');
 
-  Route::post('/delete_supplier', 'GeController\GeController@deleteSupplier');
+    Route::post('/update_stock', 'GeController\GeController@addStock');
 
-  Route::post('/get_supplier', 'GeController\GeController@getSupplier');
+    Route::get('/suppliers', 'GeController\GeController@supplier')->name('suppliers');
 
-// Manage
+    Route::post('/add_supplier', 'GeController\GeController@addSupplier');
 
-  Route::post('/add_gas_type', 'GeController\GeController@addGasType');
+    Route::post('/edit_supplier', 'GeController\GeController@editSupplier');
 
-  Route::post('/add_gas', 'GeController\GeController@addGas');
+    Route::post('/delete_supplier', 'GeController\GeController@deleteSupplier');
 
-  Route::post('/add_product', 'GeController\GeController@addProduct');
+    Route::post('/get_supplier', 'GeController\GeController@getSupplier');
 
-  Route::post('/add_bulkgas', 'GeController\GeController@addBulkGas');
+  // Manage
 
-  Route::prefix("subsidiary")->group(function() {
-      Route::post("/add_subsidiary", "GeController\SubsidiaryController@addSubsidiary");
+    Route::post('/add_gas_type', 'GeController\GeController@addGasType');
 
-      Route::get("/add_ride", "GeController\SubsidiaryController@addRide");
+    Route::post('/add_gas', 'GeController\GeController@addGas');
+
+    Route::post('/add_product', 'GeController\GeController@addProduct');
+
+    Route::post('/add_bulkgas', 'GeController\GeController@addBulkGas');
+
+    Route::prefix("subsidiary")->group(function() {
+        Route::post("/add_subsidiary", "GeController\SubsidiaryController@addSubsidiary");
+
+        Route::get("/add_ride", "GeController\SubsidiaryController@addRide");
+    });
   });
 });
 

@@ -12,24 +12,24 @@
 @foreach($subsidiaries as $subsidiary)
   <div class="col-md-4">
       <div class="box box-widget widget-user">
-          <div class="widget-user-header bg-@if($subsidiary['status'] == 1){{ 'green' }}@else{{ 'yellow' }}@endif-active">
-              <h3 class="widget-user-username">{{ $subsidiary['name'] }}</h3>
-              <h5 class="widget-user-desc">{{ $subsidiary['location'] }}</h5>
+          <div class="widget-user-header bg-@if($subsidiary['subsidiary']['status'] == 1){{ 'green' }}@else{{ 'yellow' }}@endif-active">
+              <h3 class="widget-user-username">{{ $subsidiary['subsidiary']['name'] }}</h3>
+              <h5 class="widget-user-desc">{{ $subsidiary['subsidiary']['location'] }}</h5>
           </div>
           <div class="widget-user-image">
-              <span class="info-box-icon bg-@if($subsidiary['status'] == 1){{ 'green' }}@else{{ 'yellow' }}@endif"><i class="fa fa-building"></i></span>
+              <span class="info-box-icon bg-@if($subsidiary['subsidiary']['status'] == 1){{ 'green' }}@else{{ 'yellow' }}@endif"><i class="fa fa-building"></i></span>
           </div>
           <div class="box-body">
             <div class="row">
                 <div class="col-sm-6 border-right">
                     <div class="description-block">
-                        <h5 class="description-header">3,200</h5>
+                        <h5 class="description-header">{{ $subsidiary['riders'] }}</h5>
                         <span class="description-text">Riders</span>
                     </div>
                 </div>
                 <div class="col-sm-6 border-right">
                     <div class="description-block">
-                        <h5 class="description-header">13,000</h5>
+                        <h5 class="description-header">{{ $subsidiary['deliveries'] }}</h5>
                         <span class="description-text">Deliveries</span>
                     </div>
                 </div>
