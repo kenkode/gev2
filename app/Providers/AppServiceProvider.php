@@ -95,7 +95,7 @@ class AppServiceProvider extends ServiceProvider
           $currentUser = Auth::user();
           $navigation = array();
           if($currentUser != null) {
-            $navigation = Navigation::where('type', $currentUser->type)->orWhere('type', 5)->get();
+            $navigation = Navigation::where('type', $currentUser->type)->orWhere('type', 5)->orderby('name', 'asc')->get();
           }
           $view->with('navigation', $navigation);
         });

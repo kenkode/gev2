@@ -564,11 +564,12 @@ public function addBulkGas(Request $request) {
         ->first();
 
     $rating = $this->ratings($rider->id);
-    return view("rider", ['rider'=>$rider, 'rating'=>$rating, 'header'=>$rider->name, 'description'=>$rider->name . " Info", 'riders'=>Rider::all()]);
+    return view("rider", ['rider'=>$rider, 'rating'=>$rating, 'header'=>$rider->name, 'description'=>$rider->name . " Info", 'riders'=>Rider::where("subsidiary", Auth::user()->id)->get()]);
   }
 
   public function ratings($rider) {
     $riderOrder = RiderOrder::where('rider', $rider);
+    dd($riderOrder->get());
     $totalTrips = $riderOrder->count();
 
     $ratings = Rating::join("rider_orders", "rider_orders.order", "ratings.order")->where("rider", $rider);

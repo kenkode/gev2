@@ -3,7 +3,7 @@
   <div class="col-md-4 col-md-offset-4  col-sm-6 col-xs-12">
     <div class="box box-default">
       <div class="box-header with-border">
-        <h3 class="box-title">Total Riders : {{ count($riders) }}</h3>
+        <h3 class="box-title">Total Riders : {{ count($riders) or 0 }}</h3>
         <div class="box-tools pull-right">
           <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
           </button>

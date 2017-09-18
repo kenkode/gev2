@@ -144,7 +144,7 @@ class RiderController extends Controller {
 
   public function setRider(Request $request, $rider, $order) {
     RiderOrder::create([
-      'rider' => Rider::join("users", "users.id", "riders.rider")->where("email", $rider)->first()['users.id'],
+      'rider' => $rider,
       'order' => $order
     ]);
 
