@@ -20,11 +20,15 @@
             </span>
       </div>
     </form> -->
+
+    <?php $header = "";?>
+
     <ul class="sidebar-menu">
       <li class="header">NAVIGATION</li>
       @foreach($navigation as $navigation)
         <li class="@if($header == $navigation['name']){{'active'}}@else{{''}}@endif"><a href="{{ route($navigation['route']) }}"><i class="fa fa-link"></i> <span>{{ $navigation['name'] }}</span></a></li>
       @endforeach
+      <li class="@if($header == 'Clients'){{'active'}}@else{{''}}@endif"><a href="{{ URL::to('clients') }}"><i class="fa fa-link"></i> <span>Clients</span></a></li>
       <!-- <li class="treeview">
         <a href="#"><i class="fa fa-link"></i> <span>Multilevel</span> <i class="fa fa-angle-left pull-right"></i></a>
         <ul class="treeview-menu">

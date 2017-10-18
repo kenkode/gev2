@@ -52,6 +52,8 @@ desired effect
 
   @include('sidebar');
 
+  <?php $header = "";$description=""?>
+
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -184,6 +186,8 @@ desired effect
   $(function () {
     $("#products").DataTable();
     $("#supplier_table").DataTable();
+    $('#users').DataTable({"sDom": '<"H"lfrp>t<"F"ip>'}) ;
+    $('.users').DataTable({"sDom": '<"H"lfrp>t<"F"ip>'}) ;
       //Initialize Select2 Elements
       $(".select2").select2();
     // $('#products').DataTable({
