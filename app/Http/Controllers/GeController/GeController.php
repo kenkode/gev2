@@ -32,8 +32,8 @@ class GeController extends GeBaseController {
     $view = 'dashboard';
     $bladeView = view($view, ['header'=>'Dashboard', 'description'=>'Admin Dashboard']);
 
-    $riders = Rider::join("gas_users", "rider", "gas_users.id")->join("rides", "rides.rider", "gas_users.id")->where('subsidiary', Auth::user()->id)
-      ->select("gas_users.name as name", "rides.name as ride", "gas_users.email as email", "riders.id as id")
+    $riders = Rider::join("users", "rider", "users.id")->join("rides", "rides.rider", "users.id")->where('subsidiary', Auth::user()->id)
+      ->select("users.name as name", "rides.name as ride", "users.email as email", "riders.id as id")
       ->get();
 
     if(Auth::user()->type == 2) {

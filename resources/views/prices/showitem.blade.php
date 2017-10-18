@@ -1,5 +1,5 @@
 {{HTML::script('media/jquery-1.8.0.min.js') }}
-@extends('layouts.erp')
+@extends('template')
 <script type="text/javascript">
 $(document).ready(function() {
   
@@ -16,21 +16,10 @@ $(document).ready(function() {
 </script>
 @section('content')
 
-<br><div class="row">
-	<div class="col-lg-12">
-  <h4>Approve Client Discount Update</h4>
-
-<hr>
-</div>	
-</div>
-
-
 <div class="row">
-	<div class="col-lg-5">
+	<div class="col-lg-6">
 
-    
-		
-		 @if ($errors->has())
+    @if ( count( $errors ) > 0 )
         <div class="alert alert-danger">
             @foreach ($errors->all() as $error)
                 {{ $error }}<br>        
@@ -38,8 +27,21 @@ $(document).ready(function() {
         </div>
         @endif
 
-		 <form method="POST" action="{{{ URL::to('notificationapprovepriceupdate') }}}" accept-charset="UTF-8">
+         <div class="box">
+      <div class="box-header with-border">
+        <h3 class="box-title">Approve Client Discount Update</h3>
+        <div class="box-tools pull-right">
+          
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
 
+      <!-- /.box-header -->
+      <div class="box-body">
+
+		 <form method="POST" action="{{{ URL::to('notificationapprovepriceupdate') }}}" accept-charset="UTF-8">
+     {{ csrf_field() }}
          <input type="hidden" name="id" value="{{$id}}">
          <input type="hidden" name="key" value="{{$key}}">
          <input type="hidden" name="confirmer" value="{{$confirmer}}">
@@ -50,18 +52,18 @@ $(document).ready(function() {
     <fieldset>
         <div class="form-group">
             <label for="username">Client:</label>
-            <input class="form-control" placeholder="" type="text" name="client" id="selling_price" value="{{$clientname}}" readonly>
+            <input class="form-control" placeholder="" type="text" name="clientname" id="selling_price" value="{{$clientname}}" readonly>
         </div>
 
          <div class="form-group">
             <label for="username">Item</label>
-            <input class="form-control" placeholder="" type="text" name="item" id="item" value="{{$itemmake}}" readonly>
+            <input class="form-control" placeholder="" type="text" name="itemname" id="itemname" value="{{$itemmake}}" readonly>
         </div>
 
         
         <div class="form-group">
             <label for="username">Selling Price:</label>
-            <input class="form-control" placeholder="" type="text" name="selling_price" id="selling_price" value="{{Price::sprice($item)}}" readonly>
+            <input class="form-control" placeholder="" type="text" name="selling_price" id="selling_price" value="{{App\Http\Models\Price::sprice($item)}}" readonly>
         </div>
 
         <div class="form-group">
@@ -81,7 +83,8 @@ $(document).ready(function() {
 
     </fieldset>
 </form>
-		
+		</div>
+  </div>
 
   </div>
 

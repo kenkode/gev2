@@ -20,6 +20,7 @@
             </ul>
         </div>
       </div>
+    </div>
       <!-- /.box-header -->
       <div class="box-body">
         <div class="row">

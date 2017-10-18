@@ -7,7 +7,7 @@ function asMoney($value) {
 ?>
 
  {{ HTML::style('jquery-ui-1.11.4.custom/jquery-ui.css') }}
-{ HTML::script('jquery-ui-1.11.4.custom/jquery-ui.js') }}
+{{ HTML::script('jquery-ui-1.11.4.custom/jquery-ui.js') }}
 
 <script type="text/javascript">
 $(document).ready(function(){
@@ -55,24 +55,27 @@ if($(this).val() == "CREDIT"){
 });
 </script>
 
-@extends('layouts.erp')
+@extends('template')
 @section('content')
 
-<br><div class="row">
-  <div class="col-lg-12">
-  <h4>New Client</h4>
-
-<hr>
-</div>  
-</div>
-<font color="red"><i>All fields marked with * are mandatory</i></font>
 
 <div class="row">
-  <div class="col-lg-5">
+  <div class="col-lg-6">
+    <div class="box">
+      <div class="box-header with-border">
+        <h3 class="box-title">New Client</h3>
+        <div class="box-tools pull-right">
+          
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
+      <!-- /.box-header -->
+      <div class="box-body">
 
+    <font color="red"><i>All fields marked with * are mandatory</i></font>
     
-    
-     @if ($errors->has())
+     @if ( count( $errors ) > 0 )
         <div class="alert alert-danger">
             @foreach ($errors->all() as $error)
                 {{ $error }}<br>        
@@ -82,10 +85,11 @@ if($(this).val() == "CREDIT"){
 
      <form method="POST" action="{{{ URL::to('clients') }}}" accept-charset="UTF-8">
    
+     {{ csrf_field() }}
     <fieldset>
         <div class="form-group">
             <label for="username">Client Name <span style="color:red">*</span> :</label>
-            <input class="form-control" placeholder="" type="text" name="name" id="name" value="{{{ Input::old('name') }}}" required>
+            <input class="form-control" placeholder="" type="text" name="name" id="name" value="{{{ old('name') }}}" required>
         </div>
 
         <div class="form-group">
@@ -100,37 +104,37 @@ if($(this).val() == "CREDIT"){
 
         <div class="form-group" id="credit">
             <label for="username">Credit Period :</label>
-            <input class="form-control" placeholder="" type="text" name="credit" id="credit" value="{{{ Input::old('credit') }}}">
+            <input class="form-control" placeholder="" type="text" name="credit" id="credit" value="{{{ old('credit') }}}">
         </div>
 
          <div class="form-group">
             <label for="username">Email:</label>
-            <input class="form-control" placeholder="" type="email" name="email_office" id="email_office" value="{{{Input::old('email_office') }}}" >
+            <input class="form-control" placeholder="" type="email" name="email_office" id="email_office" value="{{{old('email_office') }}}" >
         </div>
 
         <div class="form-group">
             <label for="username">Phone:</label>
-            <input class="form-control" placeholder="" type="text" name="office_phone" id="office_phone" value="{{{ Input::old('office_phone') }}}">
+            <input class="form-control" placeholder="" type="text" name="office_phone" id="office_phone" value="{{{ old('office_phone') }}}">
         </div>
 
         <div class="form-group">
             <label for="username">Address:</label>
-            <input class="form-control" placeholder="" type="text" name="address" id="address" value="{{{ Input::old('email_personal') }}}">
+            <input class="form-control" placeholder="" type="text" name="address" id="address" value="{{{ old('email_personal') }}}">
         </div>
 
         <div class="form-group">
             <label for="username">Contact Name :</label>
-            <input class="form-control" placeholder="" type="text" name="cname" id="cname" value="{{{ Input::old('cname') }}}">
+            <input class="form-control" placeholder="" type="text" name="cname" id="cname" value="{{{ old('cname') }}}">
         </div>
         
         <div class="form-group">
             <label for="username">Contact Personal Email:</label>
-            <input class="form-control" placeholder="" type="email" name="email_personal" id="email_personal" value="{{{ Input::old('email_personal') }}}">
+            <input class="form-control" placeholder="" type="email" name="email_personal" id="email_personal" value="{{{ old('email_personal') }}}">
         </div>
 
         <div class="form-group">
             <label for="username">Personal Mobile:</label><span style="color:red">*</span>
-            <input class="form-control" placeholder="" type="text" name="mobile_phone" id="mobile_phone" value="{{{ Input::old('address') }}}" required>
+            <input class="form-control" placeholder="" type="text" name="mobile_phone" id="mobile_phone" value="{{{ old('address') }}}" required>
         </div>
 
         <!-- <div class="form-group">
@@ -214,14 +218,14 @@ if($(this).val() == "CREDIT"){
         <!-- <div class="form-group" id="percentage_discount">
         <div class="form-group">
             <label for="username">Percentage Discount(e.g. 5):</label>
-            <input class="form-control" placeholder="" type="text" name="percentage_discount" id="percentage_discount" value="{{{ Input::old('percentage_discount') }}}">
+            <input class="form-control" placeholder="" type="text" name="percentage_discount" id="percentage_discount" value="{{{ old('percentage_discount') }}}">
         </div>
         </div> -->
         <div class="form-group">
             <label for="username">Balance Brought Forward :</label>
             <div class="input-group">
                 <span class="input-group-addon">KES</span>
-                <input class="form-control" placeholder="{{ asMoney(0) }}" type="text" name="balance" id="balance" value="{{{ Input::old('balance') }}}">
+                <input class="form-control" placeholder="{{ asMoney(0) }}" type="text" name="balance" id="balance" value="{{{ old('balance') }}}">
             </div>
         </div>
         
@@ -237,5 +241,8 @@ if($(this).val() == "CREDIT"){
   </div>
 
 </div>
+</div>
+</div>
+
 
 @stop

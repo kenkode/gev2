@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="{{ asset('/public/dist/css/AdminLTE.min.css') }}">
   <link rel="stylesheet" href="{{ asset('/public/dist/css/skins/_all-skins.min.css') }}">
   <link rel="stylesheet" href="{{ asset('/public/plugins/select2/select2.min.css') }}">
+  <link rel="stylesheet" href="{{ asset('/public/datepicker/css/bootstrap-datepicker.css') }}">
 
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -22,6 +23,41 @@
   <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
   <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
   <![endif]-->
+ <style type="text/css">
+.slimScrollBar {
+background: none repeat scroll 0 0 #3c8dbc !important;
+border-radius: 0;
+display: none;
+height: 702.936px;
+position: absolute;
+right: 1px;
+top: 145px;
+width: 10px!important;
+z-index: 99;
+opacity:0.7!important;
+}
+ </style>
+
+ <style type="text/css">
+
+   .right-inner-addon {
+    position: relative;
+   }
+   .right-inner-addon input {
+    padding-right: 30px;    
+   }
+   .right-inner-addon i {
+    position: absolute;
+    right: 0px;
+    padding: 10px 12px;
+    pointer-events: none;
+   }
+
+   .ui-datepicker {
+    padding: 0.2em 0.2em 0;
+    width: 550px;
+   }
+   </style>
 </head>
 <!--
 BODY TAG OPTIONS:
@@ -43,7 +79,7 @@ desired effect
 |               | sidebar-mini                            |
 |---------------------------------------------------------|
 -->
-<body class="hold-transition skin-blue fixed sidebar-mini">
+<body class="hold-transition skin-blue fixed sidebar-mini page-sidebar-fixed">
 <div class="wrapper">
 
   @include('header');
@@ -52,7 +88,6 @@ desired effect
 
   @include('sidebar');
 
-  <?php $header = "";$description=""?>
 
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
@@ -173,7 +208,7 @@ desired effect
 <!-- FastClick -->
 <script src="{{ asset('public/plugins/fastclick/fastclick.js') }}"></script>
 <!-- AdminLTE App -->
-<script src="{{ asset('public/dist/js/app.min.js') }}"></script>
+<!-- <script src="{{ asset('public/dist/js/app.min.js') }}"></script> -->
 
 <script src="{{ asset('public/plugins/select2/select2.full.min.js') }}"></script>
 
@@ -181,6 +216,8 @@ desired effect
 <script src="{{ asset('public/dist/js/demo.js') }}"></script>
 <script src="{{ asset('public/js/jquery.js') }}"></script>
 <script src="{{ asset('public/js/socket.js') }}"></script>
+<script src="{{ asset('public/datepicker/js/bootstrap-datepicker.js') }}"></script>
+
 
 <script>
   $(function () {
@@ -198,8 +235,69 @@ desired effect
     //   "info": true,
     //   "autoWidth": false
     // });
+
   });
+
 </script>
+
+<script type="text/javascript">
+
+$(function(){
+$('.datepicker').datepicker({
+    format: 'dd-M-yyyy',
+    startDate: '-60y',
+    endDate: '+0d',
+    autoclose: true
+});
+});
+
+</script>
+
+<script type="text/javascript">
+$(function(){
+$('.datepicker1').datepicker({
+    format: 'yyyy-mm-dd',
+    startDate: '-60y',
+    endDate: '-18y',
+    autoclose: true
+});
+});
+</script>
+
+<script type="text/javascript">
+$(function(){
+$('.datepicker2').datepicker({
+    format: "mm-yyyy",
+    startView: "months", 
+    minViewMode: "months",
+    autoclose: true
+});
+});
+</script>
+
+<script type="text/javascript">
+$(function(){
+$('.datepicker23').datepicker({
+    format: "M-yyyy",
+    startView: "months", 
+    minViewMode: "months",
+    autoclose: true
+});
+});
+</script>
+
+
+
+<script type="text/javascript">
+$(function(){
+$('.datepicker21').datepicker({
+    format: "yyyy-mm-dd",
+   
+    autoclose: true
+});
+});
+</script>
+
 
 <!-- Optionally, you can add Slimscroll and FastClick plugins.
      Both of these plugins are recommended to enhance the

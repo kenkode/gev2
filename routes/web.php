@@ -19,7 +19,7 @@ use App\Http\Models\Price;
 use App\Http\Models\TaxOrder;
 use App\Http\Models\Account;
 use App\Http\Models\Accounts;
-
+use Illuminate\Support\Facades\Input;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -274,9 +274,10 @@ Route::get('clients/show/{id}', 'ClientsController@show');
  */
 Route::get('client/balances', function(){
   $clients = Client::where('type', 'Customer')->get();
-
+  $header='Clients';
+  $description='View Clients` Balance';
   //return date('Y-m-d', strtotime('-3 months'));
-  return View::make('clients.balances', compact('clients'));
+  return view('clients.balances', compact('clients','header','description'));
 });
 
 Route::get('client/balances/report', 'ErpReportsController@clientBalancesReport');
@@ -285,7 +286,9 @@ Route::get('client/balances/report', 'ErpReportsController@clientBalancesReport'
  * Select client statement period
  */
 Route::get('client/selectPeriod/{id}', function($id){
-  return View::make('clients.selectPeriod', compact('id'));
+    $header='Clients';
+    $description='Select Period';
+  return view('clients.selectPeriod', compact('id','header','description'));
 });
 
 /**

@@ -1,6 +1,20 @@
 <?php
 
-class ItemsController extends \BaseController {
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use App\Http\Models\Audit;
+use App\Http\Models\Item;
+use App\Http\Models\Notification;
+use Illuminate\Http\Request;
+use Redirect;
+use Entrust;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Auth;
+use DB;
+
+class ItemsController extends Controller {
 
 	/**
 	 * Display a listing of items
@@ -10,13 +24,15 @@ class ItemsController extends \BaseController {
 	public function index()
 	{
 		$items = Item::all();
+		$header='Items';
+		$description='Current Items';
 
 		if (! Entrust::can('view_item') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
         Audit::logaudit('Items', 'viewed items', 'viewed items in the system');
-		return View::make('items.index', compact('items'));
+		return view('items.index', compact('items','header','description'));
 	    }
 	}
 
@@ -27,11 +43,13 @@ class ItemsController extends \BaseController {
 	 */
 	public function create()
 	{
+		$header='Items';
+		$description='Create Item';
 		if (! Entrust::can('create_item') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
-		return View::make('items.create');
+		return view('items.create',compact('header','description'));
 	    }
 	}
 
@@ -77,12 +95,15 @@ class ItemsController extends \BaseController {
 	{
 		$item = Item::findOrFail($id);
 
+		$header='Items';
+		$description='View Item';
+
 		if (! Entrust::can('view_item') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
         Audit::logaudit('Items', 'viewed item details', 'viewed item details for item '.$item->item_make.' in the system');
-		return View::make('items.show', compact('item'));
+		return view('items.show', compact('item','header','description'));
 	}
 	}
 
@@ -95,13 +116,15 @@ class ItemsController extends \BaseController {
 	public function edit($id)
 	{
 		$item = Item::find($id);
+		$header='Items';
+		$description='Current Items';
 
 		if (! Entrust::can('update_item') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
 
-		return View::make('items.edit', compact('item'));
+		return view('items.edit', compact('item','header','description'));
 	}
 	}
 
@@ -133,8 +156,8 @@ class ItemsController extends \BaseController {
 		$sku= Input::get('sku');
 		$tag_id = Input::get('tag');
 		$reorder_level = Input::get('reorder');
-        $receiver_id = Confide::user()->id;
-		$username = Confide::user()->username;
+        $receiver_id = Auth::user()->id;
+		$username = Auth::user()->name;
 
 		if($tag_id == ""){
 		$tag_id = "null";
@@ -161,7 +184,7 @@ class ItemsController extends \BaseController {
 		->join('assigned_roles', 'roles.id', '=', 'assigned_roles.role_id')
 		->join('users', 'assigned_roles.user_id', '=', 'users.id')
 		->join('permission_role', 'roles.id', '=', 'permission_role.role_id') 
-		->select("users.id","email","username")
+		->select("users.id","email","users.name")
 		->where("permission_id",103)->get();
 
 		$key = md5(uniqid());
@@ -192,8 +215,8 @@ class ItemsController extends \BaseController {
 		$item->sku= Input::get('sku');
 		$item->tag_id = Input::get('tag');
 		$item->reorder_level = Input::get('reorder');
-        $item->confirmed_id = Confide::user()->id;
-        $item->receiver_id = Confide::user()->id;
+        $item->confirmed_id = Auth::user()->id;
+        $item->receiver_id = Auth::user()->id;
 		$item->update();
 
         Audit::logaudit('Items', 'updated an item', 'updated item '.Input::get('item_make').' in the system');
@@ -239,12 +262,14 @@ class ItemsController extends \BaseController {
 	{
 
     $item = Item::findOrFail($id);
+    $header='Items';
+	$description='Current Items';
     if($item->confirmation_code != $key){
     	$notification = Notification::where('confirmation_code',$key)->where('user_id',$confirmer)->first();
 		$notification->is_read = 1;
 		$notification->update();
 
-		return View::make('items.showitem', compact('name','size','description','pprice','sprice','sku','tagid','reorderlevel','receiver','confirmer','key','id'));
+		return view('items.showitem', compact('name','size','description','pprice','sprice','sku','tagid','reorderlevel','receiver','confirmer','key','id','header','description'));
 	}else{
 		$notification = Notification::where('confirmation_code',$key)->where('user_id',$confirmer)->first();
 		$notification->is_read = 1;
@@ -272,13 +297,13 @@ class ItemsController extends \BaseController {
         $item->confirmation_code = Input::get('key');
 		$item->update();
 
-		$user = DB::table("users")->where('id',$receiver)->first();
+		$user = DB::table("users")->where('id',Input::get('receiver'))->first();
 
 		$notification = Notification::where('confirmation_code',Input::get('key'))->first();
 		$notification->is_read = 1;
 		$notification->update();
 
-        Audit::logaudit('Items', 'approved an item', 'approved update for item '.Input::get('name').' updated by user '.$user->username.' in the system');
+        Audit::logaudit('Items', 'approved an item', 'approved update for item '.Input::get('name').' updated by user '.$user->name.' in the system');
 
 		return Redirect::to('notifications/index')->withFlashMessage("Item update for ".Input::get('name')." successfully approved!");
 	
@@ -296,7 +321,7 @@ class ItemsController extends \BaseController {
 
 		if (! Entrust::can('delete_item') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
 
         $item = Item::find($id);

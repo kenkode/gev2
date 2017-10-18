@@ -1,6 +1,19 @@
 <?php
 
-class SalestargetController extends \BaseController {
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use App\Http\Models\SalesTarget;
+use App\Http\Models\Audit;
+use Illuminate\Http\Request;
+use Redirect;
+use Entrust;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
+use DB;
+
+class SalestargetController extends Controller {
 
 	/**
 	 * Display a listing of branches
@@ -10,14 +23,16 @@ class SalestargetController extends \BaseController {
 	public function index()
 	{
 		$salestargets = SalesTarget::all();
+		$header='Sales Target';
+		$description='View Sales Target';
 
         if (! Entrust::can('view_sale_target') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
 
         Audit::logaudit('Sales Target', 'viewed sales targets', 'viewed sales targets in the system');
-		return View::make('salestargets.index', compact('salestargets'));
+		return view('salestargets.index', compact('salestargets','header','description'));
 	}
 	}
 
@@ -28,11 +43,13 @@ class SalestargetController extends \BaseController {
 	 */
 	public function create()
 	{
+		$header='Sales Target';
+		$description='Create Sales Target';
 		if (! Entrust::can('create_sale_target') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
-		return View::make('salestargets.create');
+		return view('salestargets.create',compact('header','description'));
 	}
 	}
 
@@ -74,14 +91,16 @@ class SalestargetController extends \BaseController {
 	public function show($id)
 	{
 		$salestarget = SalesTarget::findOrFail($id);
+		$header='Sale Target';
+		$description='View Sale Target';
 
         if (! Entrust::can('view_sale_target') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
 
         Audit::logaudit('Sales Target', 'viewed sales targets', 'viewed sales targets in the system');	
-		return View::make('salestargets.show', compact('salestarget'));
+		return view('salestargets.show', compact('salestarget','header','description'));
 	}
 	}
 
@@ -93,13 +112,15 @@ class SalestargetController extends \BaseController {
 	 */
 	public function edit($id)
 	{
+		$header='Sales Target';
+		$description='Update Sales Target';
 		$salestarget = SalesTarget::find($id);
 
         if (! Entrust::can('update_sale_target') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
-		return View::make('salestargets.edit', compact('salestarget'));
+		return view('salestargets.edit', compact('salestarget','header','description'));
 	}
 	}
 
@@ -141,7 +162,7 @@ class SalestargetController extends \BaseController {
 
         if (! Entrust::can('delete_sale_target') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
 
         $sales = SalesTarget::find($id);

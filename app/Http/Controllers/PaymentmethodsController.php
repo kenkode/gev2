@@ -1,6 +1,19 @@
 <?php
+namespace App\Http\Controllers;
 
-class PaymentmethodsController extends \BaseController {
+use App\Http\Controllers\Controller;
+use App\Http\Models\Paymentmethod;
+use App\Http\Models\Audit;
+use App\Http\Models\Account;
+use Illuminate\Http\Request;
+use Redirect;
+use Entrust;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
+use DB;
+
+class PaymentmethodsController extends Controller {
 
 	/**
 	 * Display a listing of paymentmethods
@@ -10,13 +23,15 @@ class PaymentmethodsController extends \BaseController {
 	public function index()
 	{
 		$paymentmethods = Paymentmethod::all();
+		$header='Payment methods';
+		$description='View Payment Methods';
 
 		if (! Entrust::can('view_payment_methods') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
         Audit::logaudit('Payment Methods', 'viewed payment methods', 'viewed payment methods in the system');
-		return View::make('paymentmethods.index', compact('paymentmethods'));
+		return view('paymentmethods.index', compact('paymentmethods','header','description'));
 	}
 	}
 
@@ -28,12 +43,14 @@ class PaymentmethodsController extends \BaseController {
 	public function create()
 	{
 		$accounts = Account::all();
+		$header='Payment method';
+		$description='Create Payment Method';
 
 		if (! Entrust::can('create_payment_methods') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
-		return View::make('paymentmethods.create',compact('accounts'));
+		return view('paymentmethods.create',compact('accounts','header','description'));
 	}
 	}
 
@@ -71,13 +88,15 @@ class PaymentmethodsController extends \BaseController {
 	public function show($id)
 	{
 		$paymentmethod = Paymentmethod::findOrFail($id);
+		$header='Payment method';
+		$description='View Payment Method';
 
         if (! Entrust::can('view_payment_methods') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
         Audit::logaudit('Payment Methods', 'viewed a payment method details', 'viewed a payment method details for '.$paymentmethod->name.' in the system');
-		return View::make('paymentmethods.show', compact('paymentmethod'));
+		return view('paymentmethods.show', compact('paymentmethod','header','description'));
 	}
 	}
 
@@ -91,12 +110,14 @@ class PaymentmethodsController extends \BaseController {
 	{
 		$paymentmethod = Paymentmethod::find($id);
         $accounts = Account::all();
+        $header='Payment method';
+		$description='Update Payment Method';
 
         if (! Entrust::can('update_payment_methods') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
-		return View::make('paymentmethods.edit', compact('paymentmethod','accounts'));
+		return view('paymentmethods.edit', compact('paymentmethod','accounts','header','description'));
 	}
 	}
 
@@ -138,7 +159,7 @@ class PaymentmethodsController extends \BaseController {
 
         if (! Entrust::can('delete_payment_methods') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
         $paymentmethod = Paymentmethod::find($id);
          Paymentmethod::destroy($id);

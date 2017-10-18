@@ -1,6 +1,20 @@
 <?php
 
-class TaxController extends \BaseController {
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use App\Http\Models\Tax;
+use App\Http\Models\Audit;
+use App\Http\Models\Account;
+use Illuminate\Http\Request;
+use Redirect;
+use Entrust;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
+use DB;
+
+class TaxController extends Controller {
 
 	/**
 	 * Display a listing of branches
@@ -10,13 +24,15 @@ class TaxController extends \BaseController {
 	public function index()
 	{
 		$taxes = Tax::all();
+		$header='Tax Rates';
+		$description='View Tax Rates';
 
         if (! Entrust::can('view_tax') ) // Checks the current user
         {
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
         Audit::logaudit('Taxes', 'viewed taxes', 'viewed taxes in the system');
-		return View::make('taxes.index', compact('taxes'));
+		return view('taxes.index', compact('taxes','header','description'));
 	}
 	}
 
@@ -27,11 +43,13 @@ class TaxController extends \BaseController {
 	 */
 	public function create()
 	{
+		$header='Tax Rates';
+		$description='Create Tax Rate';
 		if (! Entrust::can('create_tax') ) // Checks the current user
         {
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
-		return View::make('taxes.create');
+		return view('taxes.create',compact('header','description'));
 	}
 	}
 
@@ -71,13 +89,15 @@ class TaxController extends \BaseController {
 	public function show($id)
 	{
 		$tax = Tax::findOrFail($id);
+		$header='Tax Rates';
+		$description='View Tax Rates';
 
         if (! Entrust::can('view_tax') ) // Checks the current user
         {
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
         Audit::logaudit('Taxes', 'viewed tax details', 'viewed tax details for '.$tax->name.' rate '.$tax->rate.' in the system');
-		return View::make('taxes.show', compact('tax'));
+		return view('taxes.show', compact('tax','header','description'));
 	}
 	}
 
@@ -90,12 +110,14 @@ class TaxController extends \BaseController {
 	public function edit($id)
 	{
 		$tax = Tax::find($id);
+		$header='Tax Rates';
+		$description='Update Tax Rate';
 
         if (! Entrust::can('update_tax') ) // Checks the current user
         {
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
-		return View::make('taxes.edit', compact('tax'));
+		return view('taxes.edit', compact('tax','header','description'));
 	}
 	}
 

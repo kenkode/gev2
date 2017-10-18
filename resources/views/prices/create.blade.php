@@ -1,5 +1,5 @@
 {{HTML::script('media/jquery-1.8.0.min.js') }}
-@extends('layouts.erp')
+@extends('template')
 <script type="text/javascript">
 $(document).ready(function() {
   
@@ -16,21 +16,12 @@ $(document).ready(function() {
 </script>
 @section('content')
 
-<br><div class="row">
-	<div class="col-lg-12">
-  <h4>New Pricing</h4>
-
-<hr>
-</div>	
-</div>
-<font color="red"><i>All fields marked with * are mandatory</i></font>
-
 <div class="row">
-	<div class="col-lg-5">
+	<div class="col-lg-6">
 
     
 		
-		 @if ($errors->has())
+		 @if ( count( $errors ) > 0 )
         <div class="alert alert-danger">
             @foreach ($errors->all() as $error)
                 {{ $error }}<br>        
@@ -38,12 +29,27 @@ $(document).ready(function() {
         </div>
         @endif
 
+         <div class="box">
+      <div class="box-header with-border">
+        <h3 class="box-title">New Pricing</h3>
+        <div class="box-tools pull-right">
+          
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
+
+      <!-- /.box-header -->
+      <div class="box-body">
+
+        <font color="red"><i>All fields marked with * are mandatory</i></font>
+
 		 <form method="POST" action="{{{ URL::to('prices') }}}" accept-charset="UTF-8">
-   
+   {{ csrf_field() }}
     <fieldset>
          <div class="form-group">
             <label for="username">Client Name <span style="color:red">*</span> :</label>
-            <select name="client" id="client" class="form-control" required>                
+            <select name="client" id="client" class="form-control select2" required>                
                 <option>       ......................... select Client........................</option>
                 @foreach($clients as $client)
                 @if($client->type == 'Customer')                    
@@ -55,7 +61,7 @@ $(document).ready(function() {
 
          <div class="form-group ">
             <label>Item</label><span style="color:red">*</span> :
-            <select name="item" id="item" class="form-control" required>                       
+            <select name="item" id="item" class="form-control select2" required>                       
             <option>       ......................... select item........................</option>
                 @foreach($items as $item)
                 
@@ -73,7 +79,7 @@ $(document).ready(function() {
 
         <div class="form-group">
             <label for="username">Discount:</label>
-            <input class="form-control" placeholder="" type="text" name="discount" id="discount" value="{{{ Input::old('discount') }}}">
+            <input class="form-control" placeholder="" type="text" name="discount" id="discount" value="{{{ old('discount') }}}">
         </div>
 
         <!-- <div class="form-group">
@@ -88,7 +94,9 @@ $(document).ready(function() {
 
     </fieldset>
 </form>
-		
+	</div>
+
+   </div>	
 
   </div>
 

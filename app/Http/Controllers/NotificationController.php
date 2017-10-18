@@ -1,6 +1,15 @@
 <?php
+namespace App\Http\Controllers;
 
-class NotificationController extends \BaseController {
+use App\Http\Controllers\Controller;
+use App\Http\Models\Notification;
+use App\Http\Models\Audit;
+use Redirect;
+use Entrust;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
+
+class NotificationController extends Controller {
 
 	/**
 	 * Display a listing of audits
@@ -9,11 +18,13 @@ class NotificationController extends \BaseController {
 	 */
 	public function index()
 	{
-		$notifications = Notification::where("user_id",Confide::user()->id)->orderBy('id','DESC')->get();
+		$header='Notification';
+		$description='My Notifications';
+		$notifications = Notification::where("user_id",Auth::user()->id)->orderBy('id','DESC')->get();
 
 		Audit::logaudit('Notification', 'viewed notifications', 'viewed notifications in the system');
 
-		return View::make('notifications.index', compact('notifications'));
+		return view('notifications.index', compact('notifications','header','description'));
 	}
 
 	/**
@@ -33,7 +44,7 @@ class NotificationController extends \BaseController {
 
 	public function markallasread()
 	{
-		$notifications = Notification::where('user_id',Confide::user()->id)->get();
+		$notifications = Notification::where('user_id',Auth::user()->id)->get();
 		foreach ($notifications as $notification) {
 		$notification->is_read = 1;
 		$notification->update();

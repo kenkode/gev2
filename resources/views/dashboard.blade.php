@@ -3,6 +3,11 @@
 @section('content')
 <div class="row">
   <div class="col-md-12">
+
+   @if (Session::get('notice'))
+            <div class="alert alert-info">{{ Session::get('notice') }}</div>
+        @endif
+
     <div class="box">
       <div class="box-header with-border">
         <h3 class="box-title">Latest Orders</h3>

@@ -1,6 +1,11 @@
 <?php
 
-class Erporder extends \Eloquent {
+namespace App\Http\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+
+class Erporder extends Model {
 
 	// Add your validation rules here
 	public static $rules = [
@@ -14,27 +19,27 @@ class Erporder extends \Eloquent {
 
 	public function paymentmethod(){
 
-		return $this->belongsTo('Paymentmethod');
+		return $this->belongsTo('App\Http\Models\Paymentmethod');
 	}
 
 	public function client(){
 
-		return $this->belongsTo('Client');
+		return $this->belongsTo('App\Http\Models\Client');
 	}
 
 	public function erporderitems(){
 
-		return $this->hasMany('Erporderitem');
+		return $this->hasMany('App\Http\Models\Erporderitem');
 	}
 
 	public function payments(){
 
-		return $this->hasMany('Payment');
+		return $this->hasMany('App\Http\Models\Payment');
 	}
 
 	public function tax(){
 
-		return $this->belongsTo('TaxOrder');
+		return $this->belongsTo('App\Http\Models\TaxOrder');
 	}
 	public static function getTotalPayments($order){
 		$payments = 0;

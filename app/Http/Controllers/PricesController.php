@@ -1,6 +1,22 @@
 <?php
 
-class PricesController extends \BaseController {
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use App\Http\Models\Price;
+use App\Http\Models\Client;
+use App\Http\Models\Audit;
+use App\Http\Models\Item;
+use App\Http\Models\Notification;
+use Illuminate\Http\Request;
+use Redirect;
+use Entrust;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
+use DB;
+
+class PricesController extends Controller {
 
 	/**
 	 * Display a listing of clients
@@ -10,13 +26,15 @@ class PricesController extends \BaseController {
 	public function index()
 	{
 		$prices = Price::all();
+		$header='Pricing';
+		$description='Current Pricing';
 
 		if (! Entrust::can('view_pricing') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
         Audit::logaudit('Prices', 'viewed clients` discount prices', 'viewed clients` discount prices in the system');
-		return View::make('prices.index', compact('prices'));
+		return view('prices.index', compact('prices','header','description'));
 	}
 	}
 
@@ -28,12 +46,14 @@ class PricesController extends \BaseController {
 	public function create()
 	{
 		$items = Item::all();
+		$header='Pricing';
+		$description='Create Pricing';
 		$clients = Client::all();
 		if (! Entrust::can('create_pricing') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
-		return View::make('prices.create', compact('items','clients'));
+		return view('prices.create', compact('items','clients','header','description'));
 	}
 	}
 
@@ -76,16 +96,18 @@ class PricesController extends \BaseController {
 	public function show($id)
 	{
 		$price = Price::findOrFail($id);
+		$header='Pricing';
+		$description='View Pricing';
         
         if (! Entrust::can('view_pricing') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
 
-        $client = Client::find(Input::get('client'));
-		$i = Item::find(Input::get('item'));	
+        $client = Client::find($price->client_id);
+		$i = Item::find($price->Item_id);	
         Audit::logaudit('Prices', 'viewed a client discount price details', 'viewed client discount price details for '.$client->name.' item '.$i->item_make.' amount '.$price->Discount.' in the system');
-		return View::make('prices.show', compact('price'));
+		return view('prices.show', compact('price','header','description'));
 	}
 	}
 
@@ -100,12 +122,14 @@ class PricesController extends \BaseController {
 		$price = Price::find($id);
 		$items = Item::all();
 		$clients = Client::all();
+		$header='Pricing';
+		$description='Update Pricing';
 
         if (! Entrust::can('update_pricing') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
-		return View::make('prices.edit', compact('price','items','clients'));
+		return view('prices.edit', compact('price','items','clients','header','description'));
 	}
 	}
 
@@ -135,24 +159,24 @@ class PricesController extends \BaseController {
 
 		$client = Client::find($client_id);
 		$item = Item::find($item_id);
-		$username = Confide::user()->username;
+		$username = Auth::user()->username;
 
 		$users = DB::table('roles')
 		->join('assigned_roles', 'roles.id', '=', 'assigned_roles.role_id')
 		->join('users', 'assigned_roles.user_id', '=', 'users.id')
 		->join('permission_role', 'roles.id', '=', 'permission_role.role_id') 
-		->select("users.id","email","username")
+		->select("users.id","email","users.name")
 		->where("permission_id",104)->get();
 
 		$key = md5(uniqid());
 
 		foreach ($users as $user) {
 
-		Notification::notifyUser($user->id,"Approval to pricing for item".$item->item_make." is required","price","notificationshowprice/".$client->id."/".$item->id."/".$discount."/".Confide::user()->id."/".$user->id."/".$key."/".$id,$key);
+		Notification::notifyUser($user->id,"Approval to pricing for item".$item->item_make." is required","price","notificationshowprice/".$client->id."/".$item->id."/".$discount."/".Auth::user()->id."/".$user->id."/".$key."/".$id,$key);
 
 		/*$email = $user->email;
 
-		$send_mail = Mail::send('emails.pricing', array('name' => $user->username, 'username' => $username,'client' => $client,'item' => $item,'discount' => $discount,'receiver'=>Confide::user()->id,'confirmer' => $user->id,'key'=>$key,'id' => $id), function($message) use($email)
+		$send_mail = Mail::send('emails.pricing', array('name' => $user->username, 'username' => $username,'client' => $client,'item' => $item,'discount' => $discount,'receiver'=>Auth::user()->id,'confirmer' => $user->id,'key'=>$key,'id' => $id), function($message) use($email)
         {   
 		    $message->from('info@lixnet.net', 'Gas Express');
 		    $message->to($email, 'Gas Express')->subject('Pricing Update!');
@@ -173,8 +197,8 @@ class PricesController extends \BaseController {
 		$price->client_id = Input::get('client');		
 		$price->item_id = Input::get('item');
 		$price->Discount = Input::get('discount');
-		$price->confirmed_id = Confide::user()->id;
-        $Price->receiver_id = Confide::user()->id;	
+		$price->confirmed_id = Auth::user()->id;
+        $Price->receiver_id = Auth::user()->id;	
 		$price->update();
 
 		$client = Client::find(Input::get('client'));
@@ -222,6 +246,8 @@ class PricesController extends \BaseController {
 	{
 
     $price = Price::findOrFail($id);
+    $header='Pricing';
+    $description='Update Pricing';
     if($price->confirmation_code != $key){
     	$notification = Notification::where('confirmation_code',$key)->where('user_id',$confirmer)->first();
 		$notification->is_read = 1;
@@ -232,7 +258,7 @@ class PricesController extends \BaseController {
 		$i = Item::find($item);
 		$itemmake = $i->item_make;
 
-		return View::make('prices.showitem', compact('client','item','discount','receiver','confirmer','key','id','clientname','itemmake'));
+		return view('prices.showitem', compact('client','item','discount','receiver','confirmer','key','id','clientname','itemmake','header','description'));
 	}else{
 		$notification = Notification::where('confirmation_code',$key)->where('user_id',$confirmer)->first();
 		$notification->is_read = 1;
@@ -259,12 +285,13 @@ class PricesController extends \BaseController {
 
 		$i = Item::find(Input::get('item'));
         $client = Client::find(Input::get('client'));
+        $user = DB::table("users")->where('id',Input::get('receiver'))->first();
 
-        $notification = Notification::where('confirmation_code',$key)->first();
+        $notification = Notification::where('confirmation_code',Input::get('key'))->first();
 		$notification->is_read = 1;
 		$notification->update();
 
-		Audit::logaudit('Prices', 'approved client discount price updated', 'approved client discount price updated for client '.$client->name.' item '.$i->item_make.' updated by user '.$user->username.' in the system');
+		Audit::logaudit('Prices', 'approved client discount price updated', 'approved client discount price updated for client '.$client->name.' item '.$i->item_make.' updated by user '.$user->name.' in the system');
 
 		return Redirect::to('notifications/index')->withFlashMessage("Price update for ".$i->item_make." successfully approved!");
 	
@@ -281,7 +308,7 @@ class PricesController extends \BaseController {
 
         if (! Entrust::can('delete_pricing') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
 
         $price = Price::find($id);

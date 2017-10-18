@@ -1,6 +1,11 @@
 <?php
 
-class TaxOrder extends \Eloquent {
+namespace App\Http\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+
+class TaxOrder extends Model {
 /*
 	use \Traits\Encryptable;
     
@@ -17,11 +22,11 @@ class TaxOrder extends \Eloquent {
 	protected $fillable = [];
 
 	public function tax(){
-		return $this->belongsTo('Tax');
+		return $this->belongsTo('App\Http\Models\Tax');
 	}
 
 	public function erporders(){
-		return $this->hasMany('Erporder');
+		return $this->hasMany('App\Http\Models\Erporder');
 	}
 
 	public static function getAmount($id,$orderno){

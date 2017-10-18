@@ -1,22 +1,13 @@
-@extends('layouts.erp')
+@extends('template')
 
 @section('content')
-
-<br><div class="row">
-  <div class="col-lg-12">
-  <h4>Update Target</h4>
-
-<hr>
-</div>  
-</div>
-
 
 <div class="row">
   <div class="col-lg-5">
 
     
     
-     @if ($errors->has())
+     @if ( count( $errors ) > 0 )
         <div class="alert alert-danger">
             @foreach ($errors->all() as $error)
                 {{ $error }}<br>        
@@ -24,8 +15,21 @@
         </div>
         @endif
 
+         <div class="box">
+      <div class="box-header with-border">
+        <h3 class="box-title">Update Target</h3>
+        <div class="box-tools pull-right">
+          
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
+
+      <!-- /.box-header -->
+      <div class="box-body">
+<font color="red"><i>All fields marked with * are mandatory</i></font>
      <form method="POST" action="{{{ URL::to('salestargets/update/'.$salestarget->id) }}}" accept-charset="UTF-8">
-   
+   {{ csrf_field() }}
     <fieldset>
         
         <div class="form-group">
@@ -54,7 +58,8 @@
     </fieldset>
 </form>
     
-
+</div>
+</div>
   </div>
 
 </div>

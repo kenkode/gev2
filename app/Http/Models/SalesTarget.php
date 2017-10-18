@@ -1,6 +1,11 @@
 <?php
 
-class SalesTarget extends \Eloquent {
+namespace App\Http\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+
+class SalesTarget extends Model {
 
 	
 	// Add your validation rules here

@@ -1,8 +1,11 @@
 <?php
 
-class Notification extends \Eloquent {
+namespace App\Http\Models;
 
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
+class Notification extends Model {
 
 	// Add your validation rules here
 	public static $rules = [

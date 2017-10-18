@@ -5,24 +5,13 @@ function asMoney($value) {
 }
 
 ?>
-@extends('layouts.erp')
+@extends('template')
 @section('content')
 
-<br><div class="row">
-	<div class="col-lg-12">
-  <h4>Customer/Supplier</h4>
-
-<hr>
-</div>
-</div>
-	
-</div>
-<br>
-<p>
 
 
 <div class="row">
-	<div class="col-lg-5">
+	<div class="col-lg-6">
 
     @if (Session::has('flash_message'))
 
@@ -38,16 +27,20 @@ function asMoney($value) {
      </div>
     @endif
 
-    
-      
+    <div class="box">
+      <div class="box-header with-border">
+      <h4 class="box-title">Customer/Supplier</h4>
+      <div class="box-tools pull-right">
+          
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+     </div> 
         
+<div class="box-body">
 
+    <table style="border: #000 !important"  class="table table-condensed table-bordered table-responsive table-hover">
 
-    <table  class="table table-condensed table-bordered table-responsive table-hover">
-
-     <tr>
-      <td colspan="2"><font color="green">Customer/Supplier Details</font></td>
-    </tr>
     <tr>
        <td>Client Code</td><td>{{$client->code}}</td>
      </tr>
@@ -87,11 +80,9 @@ function asMoney($value) {
 
 
     </table>
+  </div>
  </div>
-
-
-  
-
+</div>
 </div>
 
 @stop

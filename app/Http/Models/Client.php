@@ -4,6 +4,7 @@ namespace App\Http\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use DB;
 
 class Client extends Model {
 
@@ -11,7 +12,7 @@ class Client extends Model {
 	public static $rules = [
 		 'name' => 'required',
 		 'email_office' => 'email|unique:clients,email',
-		 'email_personal' => 'email|unique:clients,contact_person_email',
+		 'email_personal' => 'unique:clients,contact_person_email',
 		 'type' => 'required',
 		 'mobile_phone' => 'unique:clients,contact_person_phone',
 		 'office_phone' => 'unique:clients,phone',
@@ -23,7 +24,7 @@ class Client extends Model {
         return array(
          'name' => 'required',
 		 'email_office' => 'email|unique:clients,email,' . $id,
-		 'email_personal' => 'email|unique:clients,contact_person_email,' . $id,
+		 'email_personal' => 'unique:clients,contact_person_email,' . $id,
 		 'type' => 'required',
 		 'mobile_phone' => 'unique:clients,contact_person_phone,' . $id,
 		 'office_phone' => 'unique:clients,phone,' . $id
@@ -34,7 +35,7 @@ class Client extends Model {
     	'name.required'=>'Please insert client name!',
         'email_office.email'=>'That please insert a vaild email address!',
         'email_office.unique'=>'That office email already exists!',
-        'email_personal.email'=>'That please insert a vaild email address!',
+        //'email_personal.email'=>'That please insert a vaild email address!',
         'email_personal.unique'=>'That office email already exists!',
         'mobile_phone.unique'=>'That mobile number already exists!',
         'office_phone.unique'=>'That office mobile already exists!',
@@ -78,6 +79,7 @@ class Client extends Model {
                      ->where('clients.id',$id)
                      ->where('erporders.type','=','sales')
                      ->where('erporders.status','!=','cancelled')   
+                     ->groupBy('clients.balance')
                      ->selectRaw('SUM(price * quantity)-COALESCE(SUM(discount_amount),0)- COALESCE(SUM(erporderitems.client_discount),0) + COALESCE(clients.balance,0)  as total')
                      ->pluck('total');
           }
@@ -124,6 +126,7 @@ class Client extends Model {
                  ->where('erporders.type','=','sales')
                  ->where('erporders.status','!=','cancelled') 
                  ->where('erporders.date',$today)   
+                 ->groupBy('clients.balance')
                  ->selectRaw('SUM(price * quantity)-COALESCE(SUM(discount_amount),0)- COALESCE(SUM(erporderitems.client_discount),0) + COALESCE(clients.balance,0)  as total')
                  ->pluck('total');
       }
@@ -165,6 +168,7 @@ public static function due30($id){
                  ->where('erporders.type','=','sales')
                  ->where('erporders.status','!=','cancelled')  
                  ->whereBetween('erporders.date', array($from, $to)) 
+                 ->groupBy('clients.balance')
                  ->selectRaw('SUM(price * quantity)-COALESCE(SUM(discount_amount),0)- COALESCE(SUM(erporderitems.client_discount),0) + COALESCE(clients.balance,0)  as total')
                  ->pluck('total');
       }
@@ -206,6 +210,7 @@ public static function due30($id){
                  ->where('erporders.type','=','sales')
                  ->where('erporders.status','!=','cancelled')  
                  ->whereBetween('erporders.date', array($from, $to)) 
+                 ->groupBy('clients.balance')
                  ->selectRaw('SUM(price * quantity)-COALESCE(SUM(discount_amount),0)- COALESCE(SUM(erporderitems.client_discount),0) + COALESCE(clients.balance,0)  as total')
                  ->pluck('total');
       }
@@ -247,6 +252,7 @@ public static function due30($id){
                  ->where('clients.id',$id)
                  ->where('erporders.type','=','sales')
                  ->where('erporders.status','!=','cancelled') 
+                 ->groupBy('clients.balance')
                  ->whereBetween('erporders.date', array($from, $to))   
                  ->selectRaw('SUM(price * quantity)-COALESCE(SUM(discount_amount),0)- COALESCE(SUM(erporderitems.client_discount),0) + COALESCE(clients.balance,0)  as total')
                  ->pluck('total');
@@ -289,6 +295,7 @@ public static function due30($id){
                  ->where('erporders.type','=','sales')
                  ->where('erporders.status','!=','cancelled') 
                  ->where('erporders.date','<',$date)   
+                 ->groupBy('clients.balance')
                  ->selectRaw('SUM(price * quantity)-COALESCE(SUM(discount_amount),0)- COALESCE(SUM(erporderitems.client_discount),0) + COALESCE(clients.balance,0)  as total')
                  ->pluck('total');
       }
@@ -327,6 +334,7 @@ public static function total($id){
            ->join('erporderitems','erporders.id','=','erporderitems.erporder_id')
            ->join('clients','erporders.client_id','=','clients.id')           
            ->where('clients.id',$id) ->selectRaw('SUM(price * quantity)-COALESCE(SUM(discount_amount),0)- COALESCE(SUM(erporderitems.client_discount),0)  as total')
+           ->groupBy('clients.balance')
            ->pluck('total');
            }
             else{
@@ -367,6 +375,7 @@ public static function total($id){
                           ->where('erporders.client_id', $id)
                           ->where('erporders.type','=','sales')
                           ->where('erporders.status','!=','cancelled') 
+                          ->groupBy('clients.balance')
                           ->whereBetween('erporders.date', array($from, $to))
                           ->selectRaw('COALESCE(SUM((erporderitems.price * erporderitems.quantity) - erporderitems.client_discount),0) as clientTotal')
                           ->pluck('clientTotal');

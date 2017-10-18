@@ -1,6 +1,18 @@
 <?php
+namespace App\Http\Controllers;
 
-class LocationsController extends \BaseController {
+use App\Http\Controllers\Controller;
+use App\Http\Models\Store;
+use App\Http\Models\Audit;
+use Illuminate\Http\Request;
+use Redirect;
+use Entrust;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
+use DB;
+
+class LocationsController extends Controller {
 
 	/**
 	 * Display a listing of locations
@@ -9,15 +21,17 @@ class LocationsController extends \BaseController {
 	 */
 	public function index()
 	{
-		$locations = Location::all();
+		$locations = Store::all();
+		$header='Stores';
+		$description='View Stores';
 
         if (! Entrust::can('view_store') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
 
         Audit::logaudit('Stores', 'viewed stores', 'viewed stores in the system');
-		return View::make('locations.index', compact('locations'));
+		return view('locations.index', compact('locations','header','description'));
 	}
 	}
 
@@ -28,11 +42,13 @@ class LocationsController extends \BaseController {
 	 */
 	public function create()
 	{
+		$header='Stores';
+		$description='Create Store';
 		if (! Entrust::can('create_store') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
-		return View::make('locations.create');
+		return view('locations.create',compact('header','description'));
 	}
 	}
 
@@ -43,14 +59,14 @@ class LocationsController extends \BaseController {
 	 */
 	public function store()
 	{
-		$validator = Validator::make($data = Input::all(), Location::$rules);
+		$validator = Validator::make($data = Input::all(), Store::$rules);
 
 		if ($validator->fails())
 		{
 			return Redirect::back()->withErrors($validator)->withInput();
 		}
 
-		$location = new Location;
+		$location = new Store;
 
 		$location->name = Input::get('name');
 		$location->description = Input::get('description');
@@ -69,14 +85,16 @@ class LocationsController extends \BaseController {
 	 */
 	public function show($id)
 	{
-		$location = Location::findOrFail($id);
+		$location = Store::findOrFail($id);
+		$header='Stores';
+		$description='View Store';
 
         if (! Entrust::can('view_store') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
         Audit::logaudit('Stores', 'viewed store details', 'viewed store details for store '.$location->name.' in the system');
-		return View::make('locations.show', compact('location'));
+		return view('locations.show', compact('location','header','description'));
 	}
 	}
 
@@ -88,13 +106,15 @@ class LocationsController extends \BaseController {
 	 */
 	public function edit($id)
 	{
-		$location = Location::find($id);
+		$location = Store::find($id);
+		$header='Stores';
+		$description='Update Store';
 
         if (! Entrust::can('update_store') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
-		return View::make('locations.edit', compact('location'));
+		return view('locations.edit', compact('location','header','description'));
 	}
 	}
 
@@ -106,9 +126,9 @@ class LocationsController extends \BaseController {
 	 */
 	public function update($id)
 	{
-		$location = Location::findOrFail($id);
+		$location = Store::findOrFail($id);
 
-		$validator = Validator::make($data = Input::all(), Location::$rules);
+		$validator = Validator::make($data = Input::all(), Store::$rules);
 
 		if ($validator->fails())
 		{
@@ -137,11 +157,11 @@ class LocationsController extends \BaseController {
 
         if (! Entrust::can('delete_store') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
 
-        $location = Location::find($id);
-        Location::destroy($id);
+        $location = Store::find($id);
+        Store::destroy($id);
 
         Audit::logaudit('Stores', 'deleted a store', 'deleted store '.$location->name.' from the system');
 		return Redirect::route('locations.index')->withFlashMessage('Store has been successfully removed!');

@@ -1,6 +1,26 @@
 <?php
 
-class ErpReportsController extends \BaseController {
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use App\Http\Models\Client;
+use App\Http\Models\Payment;
+use App\Http\Models\Erporder;
+use App\Http\Models\Audit;
+use App\Http\Models\Item;
+use App\Http\Models\Organization;
+use App\Http\Models\Notification;
+use Illuminate\Http\Request;
+use Redirect;
+use Entrust;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Auth;
+use DB;
+use Barryvdh\DomPDF\Facade as PDF;
+use Session;
+
+class ErpReportsController extends Controller {
 
 
     public function clients(){

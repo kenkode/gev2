@@ -1,6 +1,11 @@
 <?php
 
-class Price extends \Eloquent {
+namespace App\Http\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+
+class Price extends Model {
 
 	// Add your validation rules here
 	public static $rules = [
@@ -19,22 +24,22 @@ class Price extends \Eloquent {
 
 	public function erporders(){
 
-		return $this->hasMany('Erporder');
+		return $this->hasMany('App\Http\Models\Erporder');
 	}
 
 	public function payments(){
 
-		return $this->hasMany('Payment');
+		return $this->hasMany('App\Http\Models\Payment');
 	}
 
   public function client(){
 
-    return $this->belongsTo('Client');
+    return $this->belongsTo('App\Http\Models\Client');
   }
 
   public function item(){
 
-    return $this->belongsTo('Item');
+    return $this->belongsTo('App\Http\Models\Item');
   }
 
   public static function sprice($id){

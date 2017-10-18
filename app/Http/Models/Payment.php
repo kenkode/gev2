@@ -1,6 +1,11 @@
 <?php
 
-class Payment extends \Eloquent {
+namespace App\Http\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+
+class Payment extends Model {
 
 	// Add your validation rules here
 	public static $rules = [

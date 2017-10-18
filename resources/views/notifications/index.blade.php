@@ -1,14 +1,8 @@
-@extends('layouts.system')
+@extends('template')
 @section('content')
 <br/><br/>
 
 <div class="row">
-	<div class="col-lg-1">
-
-
-
-</div>	
-
 <div class="col-lg-12">
 
 	 @if (Session::has('flash_message'))
@@ -29,17 +23,20 @@
             <div class="alert alert-info">{{ Session::get('notice') }}</div>
         @endif
 
-<p>Notification Panel</p>
-<hr>
 
-<br>
-</div>	
-
-
-<div class="col-lg-12 ">
-<div class="panel-heading">
+<div class="box">
+      <div class="box-header with-border">
+        <h3 class="box-title">Notification Panel</h3>
+        <div class="box-tools pull-right">
+          
           <a class="btn btn-success btn-sm" href="{{ URL::to('notifications/markallasread')}}">Mark All As Read</a>
-        </div>
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
+      <!-- /.box-header -->
+      <div class="box-body">
+          
 	
 <table id="users" class="table table-condensed table-bordered table-responsive table-hover">
 
@@ -138,8 +135,8 @@
 </table>
 
 </div>	
-
-
+</div>
+</div>
 
 </div>
 

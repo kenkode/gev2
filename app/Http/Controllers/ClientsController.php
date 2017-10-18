@@ -6,6 +6,9 @@ use App\Http\Models\Client;
 use App\Http\Models\Audit;
 use App\Http\Models\Item;
 use Illuminate\Http\Request;
+use Redirect;
+use Entrust;
+use Illuminate\Support\Facades\Validator;
 
 class ClientsController extends Controller {
 
@@ -17,16 +20,18 @@ class ClientsController extends Controller {
 	public function index()
 	{
 		$clients = Client::all();
+		$header='Clients';
+		$description='Current Clients';
 
-		/*if (! Entrust::can('view_client') ) // Checks the current user
+		if (! Entrust::can('view_client') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
-        }else{*/
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        }else{
 
         Audit::logaudit('Clients', 'viewed clients', 'viewed clients in the system');
 
-		return view('clients.index', compact('clients'));
-	//}
+		return view('clients.index', compact('clients','header','description'));
+	}
 	}
 
 	/**
@@ -36,12 +41,14 @@ class ClientsController extends Controller {
 	 */
 	public function create()
 	{
+		$header='Clients';
+		$description='Create Client';
 		$items = Item::all();
 		if (! Entrust::can('create_client') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
-		return view('clients.create', compact('items'));
+		return view('clients.create', compact('items','header','description'));
 	}
 	}
 
@@ -52,7 +59,7 @@ class ClientsController extends Controller {
 	 */
 	public function store(Request $request)
 	{
-		$validator = Validator::make($data = Request::all(), Client::$rules, Client::$messages);
+		$validator = Validator::make($data = $request->all(), Client::$rules, Client::$messages);
 
 		if ($validator->fails())
 		{
@@ -75,7 +82,11 @@ class ClientsController extends Controller {
 		$client->address = $request->address;
 		$client->type = $request->type;
 		$client->category = $request->category;
-		$client->balance = $request->balance;
+		if($request->balance == ''){
+		$client->balance = 0.00;
+	    }else{
+	    $client->balance = $request->balance;	
+	    }
 		/*$client->percentage_discount = Input::get('percentage_discount');*/
 		$client->save();
 
@@ -93,15 +104,17 @@ class ClientsController extends Controller {
 	public function show($id)
 	{
 		$client = Client::findOrFail($id);
+		$header='Clients';
+		$description='View Client';
 
 		if (! Entrust::can('view_client') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
 
         Audit::logaudit('Clients', 'viewed a client details', 'viewed client details for client '.$client->name.' in the system');
 
-		return view('clients.show', compact('client'));
+		return view('clients.show', compact('client','header','description'));
 	}
 	}
 
@@ -114,13 +127,15 @@ class ClientsController extends Controller {
 	public function edit($id)
 	{
 		$client = Client::find($id);
+		$header='Clients';
+		$description='Update Client';
 
 		if (! Entrust::can('update_client') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
 
-		return view('clients.edit', compact('client'));
+		return view('clients.edit', compact('client','header','description'));
 	}
 	}
 
@@ -130,11 +145,11 @@ class ClientsController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update($id)
+	public function update(Request $request,$id)
 	{
 		$client = Client::findOrFail($id);
 
-		$validator = Validator::make($data = Request::all(), Client::rolesUpdate($client->id), Client::$messages);
+		$validator = Validator::make($data = $request->all(), Client::rolesUpdate($client->id), Client::$messages);
 
 		if ($validator->fails())
 		{
@@ -178,7 +193,7 @@ class ClientsController extends Controller {
 
         if (! Entrust::can('delete_client') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
         $client = Client::find($id);
         Client::destroy($id);

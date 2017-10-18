@@ -153,7 +153,7 @@ th,td{
 				<tr class="head">
 					<th style="border:none"></th>
 					<th style="border:none"></th>
-					<th class="data">KES {{Client::due($erporder->client->id)}}</th>
+					<th class="data">KES {{App\Http\Models\Client::due($erporder->client->id)}}</th>
 					<th class="data"></th>
 				</tr>
 				<tr>

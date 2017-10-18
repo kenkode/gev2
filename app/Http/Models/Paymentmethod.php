@@ -1,6 +1,11 @@
 <?php
 
-class Paymentmethod extends \Eloquent {
+namespace App\Http\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+
+class Paymentmethod extends Model {
 
 	// Add your validation rules here
 	public static $rules = [
@@ -18,13 +23,13 @@ class Paymentmethod extends \Eloquent {
 
 
 	public function account(){
-		return $this->belongsTo('Account');
+		return $this->belongsTo('App\Http\Models\Account');
 	}
 
 
 	public function erporders(){
 
-		return $this->hasMany('Erporder');
+		return $this->hasMany('App\Http\Models\Erporder');
 	}
 
 }

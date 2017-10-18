@@ -6,16 +6,8 @@ function asMoney($value) {
 }
 
 ?>
-@extends('layouts.erp')
+@extends('template')
 @section('content')
-
-<br><div class="row">
-	<div class="col-lg-12">
-  <h4>Targets</h4>
-
-<hr>
-</div>	
-</div>
 
 
 <div class="row">
@@ -34,13 +26,27 @@ function asMoney($value) {
       {{ Session::get('delete_message') }}
      </div>
     @endif
-    
-    <div class="panel panel-default">
-      <div class="panel-heading">
-          <a class="btn btn-info btn-sm" href="{{ URL::to('salestargets/create')}}">new target</a>
-        </div>
-        <div class="panel-body">
 
+    @if ( count( $errors ) > 0 )
+        <div class="alert alert-danger">
+            @foreach ($errors->all() as $error)
+                {{ $error }}<br>        
+            @endforeach
+        </div>
+        @endif
+
+         <div class="box">
+      <div class="box-header with-border">
+        <h3 class="box-title">Targets</h3>
+        <div class="box-tools pull-right">
+          <a class="btn btn-info btn-sm" href="{{ URL::to('salestargets/create')}}">new target</a>
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
+
+      <!-- /.box-header -->
+      <div class="box-body">
 
     <table id="users" class="table table-condensed table-bordered table-responsive table-hover">
 
@@ -95,7 +101,8 @@ function asMoney($value) {
 
     </table>
   </div>
-
+</div>
+</div>
 
   </div>
 
