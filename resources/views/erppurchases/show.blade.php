@@ -6,7 +6,7 @@ function asMoney($value) {
 
 ?>
 
-@extends('layouts.erp')
+@extends('template')
 
 {{ HTML::script('media/js/jquery.js') }}
 
@@ -36,14 +36,9 @@ $(document).ready(function(){
 
 @section('content')
 
-<br><div class="row">
-	<div class="col-lg-12">
-  <h4><font color='green'>Purchase Order : {{$order->order_number}} &nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Client: {{$order->client->name}}  &nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp; Date: {{$order->date}} &nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp; Status: {{$order->status}} </font> </h4>
-
-<hr>
-</div>	
-</div>
-
+@if (Session::get('notice'))
+            <div class="alert alert-info">{{ Session::get('notice') }}</div>
+        @endif
 <!-- MODAL WINDOW TO SEND MAIL -->
 <div id="myModal" class="modal fade">
     <div class="modal-dialog">
@@ -54,6 +49,7 @@ $(document).ready(function(){
             </div>
             <div class="modal-body">
                 <form role="form" action="{{URL::to('purchaseorders/mail')}}" method="POST">
+                    {{ csrf_field() }}
                     <!-- HIDDEN FIELDS -->
                     <input type="hidden" name="order_id" value="{{$order->id}}">
 
@@ -88,7 +84,32 @@ $(document).ready(function(){
 <!-- ========================================================================= -->
 
 <div class="row">
+<div class="col-lg-12">
+    <div class="box">
+      <div class="box-header with-border">
+        <h4><font color='green'>Purchase Order : {{$order->order_number}} &nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Client: {{$order->client->name}}  &nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp; Date: {{$order->date}} &nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp; Status: {{$order->status}} </font> </h4>
+        
+        <div class="box-tools pull-right">
+          
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
+
+      <!-- /.box-header -->
+      
     <!-- ALERT MESSAGE BOX {SUCCESS OR FAILURE OF SENDING EMAIL} -->
+    
+    
+		
+		 @if ( count( $errors ) > 0 )
+        <div class="alert alert-danger">
+            @foreach ($errors->all() as $error)
+                {{ $error }}<br>        
+            @endforeach
+        </div>
+        @endif
+   <div class="box-body">
     <?php
         $success = Session::get('success');
         $fail = Session::get('fail');
@@ -133,23 +154,7 @@ $(document).ready(function(){
     <a href="{{URL::to('authorizepurchaseorder/'.$order->id)}}" class="btn btn-danger"> Authorize Purchase Order</a> 
     @endif
     @endif
-    
-    </div>
-</div>
-
-<div class="row">
-	<div class="col-lg-12">
-
-    <hr>
-		
-		 @if ($errors->has())
-        <div class="alert alert-danger">
-            @foreach ($errors->all() as $error)
-                {{ $error }}<br>        
-            @endforeach
-        </div>
-        @endif
-
+    <br><br>
     <table class="table table-condensed table-bordered table-hover" >
 
     <thead>
@@ -206,6 +211,13 @@ $(document).ready(function(){
 
 </div>
 
+ </div>
+
+</div>
+
+ </div>
+
+</div>
 
 
 

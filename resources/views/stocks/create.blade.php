@@ -1,6 +1,12 @@
 
+<?php
+use Illuminate\Support\Facades\Input;
+use App\Http\Models\Stock;
+?>
+
 {{HTML::script('media/jquery-1.8.0.min.js') }}
-@extends('layouts.erp')
+@extends('template')
+@section('content')
 
 <script type="text/javascript">
 $(document).ready(function() {
@@ -39,11 +45,11 @@ $(document).ready(function() {
             $('#item').append("<option value=''>==================================</option>");
             var i=0;
             for (var j = 0; j < data.hasstock.length; j++) {
-            $('#item').append("<option value='" + data.hasstock[j].id +"'>" + data.hasstock[j].erporder + "</option>");
+            $('#item').append("<option value='" + data.hasstock[j].eid +"'>" + data.hasstock[j].erporder + "</option>");
             };
             
             for (var i = 0; i < data.nostock.length; i++) {
-            $('#item').append("<option value='" + data.nostock[i].id +"'>" + data.nostock[i].erporder + "</option>");
+            $('#item').append("<option value='" + data.nostock[i].eid +"'>" + data.nostock[i].erporder + "</option>");
             };
     },
     error: function(xhr, status, error) {
@@ -116,25 +122,10 @@ if($(this).val()){
 </script>
 
 
-
-
-@section('content')
-
-<br><div class="row">
-    <div class="col-lg-12">
-  <h3>Receive Stock</h3>
-
-<hr>
-</div>  
-</div>
-
-
 <div class="row">
-    <div class="col-lg-5">
+    <div class="col-lg-6">
 
-    
-        
-         @if ($errors->has())
+    @if ( count( $errors ) > 0 )
         <div class="alert alert-danger">
             @foreach ($errors->all() as $error)
                 {{ $error }}<br>        
@@ -142,9 +133,21 @@ if($(this).val()){
         </div>
         @endif
 
+         <div class="box">
+      <div class="box-header with-border">
+        <h3 class="box-title">Receive Stock</h3>
+        <div class="box-tools pull-right">
+          
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
+
+      <!-- /.box-header -->
+      <div class="box-body">
          <form method="POST" action="{{{ URL::to('stocks') }}}" accept-charset="UTF-8">
         <font color="red"><i>All fields marked with * are mandatory</i></font>
-
+        {{ csrf_field() }}
          <div class="form-group">
                         <label for="username">Date<span style="color:red">*</span> :</label>
                         <div class="right-inner-addon ">
@@ -157,7 +160,7 @@ if($(this).val()){
     <fieldset>
         <div class="form-group">
             <label for="username">Supplier <span style="color:red">*</span> :</label>
-            <select required name="client" class="form-control" id="client" required>
+            <select required name="client" class="form-control select2" id="client" required>
             <option> select Supplier ... </option>
                 @foreach($clients as $client)
                 @if($client->type == 'Supplier')
@@ -170,7 +173,7 @@ if($(this).val()){
 
      <div class="form-group">
                         <label>Select Purchase Order <font style="color:red">*</font></label>
-                        <select required name="item" id="item" class="form-control">
+                        <select required name="item" id="item" class="form-control select2">
                             <option value="">---Please Select Stock---</option>
                             <option value="">==================================</option>
                             <!-- @foreach($items as $item)
@@ -200,7 +203,7 @@ if($(this).val()){
 
         <div class="form-group">
             <label for="username">Store <span style="color:red">*</span> :</label>
-            <select name="location" class="form-control" required>
+            <select name="location" class="form-control select2" required>
             <option> select store ... </option>
                 @foreach($locations as $location)
                 <option value="{{$location->id}}">{{$location->name}}</option>
@@ -220,7 +223,9 @@ if($(this).val()){
 
     </fieldset>
 </form>
-        
+  </div>
+
+</div>        
 
   </div>
 

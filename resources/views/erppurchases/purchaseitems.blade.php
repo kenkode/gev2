@@ -1,12 +1,12 @@
 <?php
-
+use Illuminate\Support\Facades\Input;
 function asMoney($value) {
   return number_format($value, 2);
 }
 
 ?>
 
-@extends('layouts.erp')
+@extends('template')
 
 {{ HTML::script('media/js/jquery.js') }}
 
@@ -20,9 +20,8 @@ $(document).ready(function(){
             total = $("#payable").val()*$("#rate").val()/100;
             $('#tax_amount').val(total);
         });
-        
+        }
     });
-}
    });
 </script>
 
@@ -44,24 +43,30 @@ $(document).ready(function() {
 
 @section('content')
 
-<br><div class="row">
+<div class="row">
     <div class="col-lg-12">
-  <h4><font color='green'>Purchase Order : {{Session::get('erporder')['order_number']}} &nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Client: {{Session::get('erporder')['client']['name']}}  &nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp; Date: {{Session::get('erporder')['date']}} </font></h4>
 
-<hr>
-</div>  
-</div>
+    <div class="box">
+      <div class="box-header with-border">
+        <h4><font color='green'>Purchase Order : {{Session::get('erporder')['order_number']}} &nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Client: {{Session::get('erporder')['client']['name']}}  &nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp; Date: {{Session::get('erporder')['date']}} </font></h4>
+        <div class="box-tools pull-right">
+          
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
 
-
-<br><div class="row">
+      <!-- /.box-header -->
+      <div class="box-body">
     
   <form class="form-inline" method="post" action="{{URL::to('purchaseitems/create')}}">
+    {{ csrf_field() }}
     <font color="red"><i>All fields marked with * are mandatory</i></font>
       <div class="col-lg-12">
 
         <div class="form-group ">
             <label>Item</label><span style="color:red">*</span> :
-            <select name="item" id="item" class="form-control" required>
+            <select name="item" id="item" class="form-control select2" required>
             <option></option>
             <option> ..... select sale item....</option>
                 @foreach($items as $item)
@@ -95,15 +100,13 @@ $(document).ready(function() {
 
 
 
-</div>
-
 
 <div class="row">
     <div class="col-lg-12">
 
     <hr>
         
-         @if ($errors->has())
+        @if ( count( $errors ) > 0 )
         <div class="alert alert-danger">
             @foreach ($errors->all() as $error)
                 {{ $error }}<br>        
@@ -206,5 +209,8 @@ $(document).ready(function() {
     <a href="{{URL::to('erppurchase/commit')}}" class="btn btn-primary pull-right">Place Order</a>
     </div>
 </div>
-
+</div>
+</div>
+</div>
+</div>
 @stop

@@ -1,6 +1,6 @@
 
 {{HTML::script('media/jquery-1.8.0.min.js') }}
-@extends('layouts.erp')
+@extends('template')
 
 <script type="text/javascript">
 $(document).ready(function() {
@@ -71,21 +71,13 @@ if($(this).val()){
 
 @section('content')
 
-<br><div class="row">
-    <div class="col-lg-12">
-  <h3>Confirm Stock</h3>
-
-<hr>
-</div>  
-</div>
-
 
 <div class="row">
-    <div class="col-lg-5">
+    <div class="col-lg-6">
 
     
         
-         @if ($errors->has())
+       @if ( count( $errors ) > 0 )
         <div class="alert alert-danger">
             @foreach ($errors->all() as $error)
                 {{ $error }}<br>        
@@ -93,7 +85,25 @@ if($(this).val()){
         </div>
         @endif
 
+        <div class="row">
+    <div class="col-lg-12">
+
+    
+    <div class="box">
+      <div class="box-header with-border">
+        <h3 class="box-title">Confirm Stock</h3>
+        <div class="box-tools pull-right">
+          
+           <a class="btn btn-info btn-sm" href="{{ URL::to('stocks/create')}}">Receive Stock </a>
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
+      <!-- /.box-header -->
+      <div class="box-body">
+
          <form method="POST" action="{{{ URL::to('notificationconfirmstock') }}}" accept-charset="UTF-8">
+            {{ csrf_field() }}
         <font color="red"><i>All fields marked with * are mandatory</i></font>
 
          <input type="hidden" name="id" value="{{$stock->id}}">
@@ -139,7 +149,8 @@ if($(this).val()){
     </fieldset>
 </form>
         
-
+</div>
+</div>
   </div>
 
 </div>

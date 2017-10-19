@@ -1,6 +1,12 @@
 <?php
+namespace App\Http\Models;
 
-class Stock extends \Eloquent {
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+use DB;
+use Entrust;
+
+class Stock extends Model {
 
 	// Add your validation rules here
 	public static $rules = [
@@ -12,11 +18,11 @@ class Stock extends \Eloquent {
 
 
 	public function location(){
-		return $this->belongsTo('Location');
+		return $this->belongsTo('App\Http\Models\Store');
 	}
 
 	public function item(){
-		return $this->belongsTo('Item');
+		return $this->belongsTo('App\Http\Models\Item');
 	}
 
 
@@ -201,23 +207,23 @@ class Stock extends \Eloquent {
 		$stock->date = $date;
 		$stock->item_id = $erporder_id;
 		$stock->itm_id=$item;
-		$stock->location()->associate($location);
+		$stock->location_id = $location;
 		$stock->quantity_in = $quantity;
-		$stock->receiver_id = Confide::user()->id;
+		$stock->receiver_id = Auth::User()->id;
 		$stock->is_confirmed = 0;
 		$stock->save();
 
 		
-		$supplier = $client->name;
-        $loc = $location->name;
+		$supplier = Client::find($client)->name;
+        $loc = Store::find($location)->name;
         $id = $stock->id;
-		$username = Confide::user()->username;
+		$username = Auth::user()->name;
 
 		$users = DB::table('roles')
 		->join('assigned_roles', 'roles.id', '=', 'assigned_roles.role_id')
 		->join('users', 'assigned_roles.user_id', '=', 'users.id')
 		->join('permission_role', 'roles.id', '=', 'permission_role.role_id') 
-		->select("users.id","email","username")
+		->select("users.id","email","users.name")
 		->where("permission_id",30)->get();
 
 		$key = md5(uniqid());
@@ -242,10 +248,10 @@ class Stock extends \Eloquent {
 		$stock->date = $date;
 		$stock->item_id = $erporder_id;
 		$stock->itm_id=$item;
-		$stock->location()->associate($location);
+		$stock->location_id = $location;
 		$stock->quantity_in = $quantity;
-		$stock->confirmed_id = Confide::user()->id;
-		$stock->receiver_id = Confide::user()->id;
+		$stock->confirmed_id = Auth::User()->id;
+		$stock->receiver_id = Auth::User()->id;
 		$stock->is_confirmed = 1;
 		$stock->save();
 
@@ -265,7 +271,7 @@ class Stock extends \Eloquent {
 		$stock->date = $date;
 		//$stock->item_id=$item;
 		$stock->itm_id=$itemid;
-		$stock->location()->associate($location);
+		$stock->location_id = $location;
 		$stock->quantity_out = $quantity;
 		$stock->save();
 

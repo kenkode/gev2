@@ -1,6 +1,12 @@
 <?php
 
-class ItemTracker extends Eloquent{
+namespace App\Http\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+use DB;
+
+class ItemTracker extends Model{
 	protected $table = 'item_tracker';
 
 	public static function getItem($id){

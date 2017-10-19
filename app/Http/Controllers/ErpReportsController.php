@@ -143,7 +143,7 @@ public function kenya($id){
 
         $organization = Organization::find(1);
 
-        //return View::make('erpreports.paymentsReport', compact('payments','erporders', 'erporderitems', 'organization','from','to'));
+        //return view('erpreports.paymentsReport', compact('payments','erporders', 'erporderitems', 'organization','from','to'));
 
         $pdf = PDF::loadView('erpreports.paymentsReport', compact('payments','erporders', 'erporderitems', 'organization','from','to'))->setPaper('a4', 'landscape');
 
@@ -584,7 +584,7 @@ public function kenya($id){
 
 
         $pdf = PDF::loadView('erpreports.salesSummaryReport', compact('sales','accounts','discount_amount','total_sales_todate','discount_amount_todate','total_payment','clients_customer','target','organization','percentage_discount','from','to','sales_target','discount_amount_target','from_target','to_target'))->setPaper('a4', 'landscape');
-        //return View::make('erpreports.salesSummaryReport', compact('sales','accounts','discount_amount','total_sales_todate','discount_amount_todate','total_payment','clients_customer','target','organization','percentage_discount','from','to','sales_target','discount_amount_target','from_target','to_target'));
+        //return view('erpreports.salesSummaryReport', compact('sales','accounts','discount_amount','total_sales_todate','discount_amount_todate','total_payment','clients_customer','target','organization','percentage_discount','from','to','sales_target','discount_amount_target','from_target','to_target'));
 
         Audit::logaudit('Sales Order', 'viewed sales summary report', 'viewed sales summary report in the system');
         return $pdf->stream('Summary Report.pdf');
@@ -823,9 +823,9 @@ public function kenya($id){
     public function submitpurchaseorder($id){
 
         $erporder = Erporder::find($id);
-        $erporder->prepared_by = Confide::user()->id;
+        $erporder->prepared_by = Auth::User()->id;
         $erporder->update();
-        $username = Confide::user()->username;
+        $username = Auth::User()->username;
 
         $orders = DB::table('erporders')
                 ->join('erporderitems', 'erporders.id', '=', 'erporderitems.erporder_id')
@@ -855,7 +855,7 @@ public function kenya($id){
         ->join('users', 'assigned_roles.user_id', '=', 'users.id')
         ->join('permission_role', 'roles.id', '=', 'permission_role.role_id') 
         ->where("permission_id",32)
-        ->select("users.id","email","username")
+        ->select("users.id","email","users.name")
         ->get();
 
         $key = md5(uniqid());
@@ -885,9 +885,9 @@ public function kenya($id){
     public function authorizepurchaseorder($id){
 
         $erporder = Erporder::find($id);
-        $erporder->authorized_by = Confide::user()->id;
+        $erporder->authorized_by = Auth::User()->id;
         $erporder->update();
-        $username = Confide::user()->username;
+        $username = Auth::User()->username;
 
         $orders = DB::table('erporders')
                 ->join('erporderitems', 'erporders.id', '=', 'erporderitems.erporder_id')
@@ -917,7 +917,7 @@ public function kenya($id){
         ->join('users', 'assigned_roles.user_id', '=', 'users.id')
         ->join('permission_role', 'roles.id', '=', 'permission_role.role_id') 
         ->where("permission_id",49)
-        ->select("users.id","email","username")
+        ->select("users.id","email","users.name")
         ->get();
 
         $key = md5(uniqid());
@@ -947,11 +947,11 @@ public function kenya($id){
 
         $erporder = Erporder::find($id);
         if($erporder->prepared_by == null || $erporder->prepared_by == ""){
-           $erporder->prepared_by = Confide::user()->id; 
+           $erporder->prepared_by = Auth::User()->id; 
         }
-        $erporder->reviewed_by = Confide::user()->id;
+        $erporder->reviewed_by = Auth::User()->id;
         $erporder->update();
-        $username = Confide::user()->username;
+        $username = Auth::User()->username;
 
         $orders = DB::table('erporders')
                 ->join('erporderitems', 'erporders.id', '=', 'erporderitems.erporder_id')
@@ -980,7 +980,7 @@ public function kenya($id){
         ->join('assigned_roles', 'roles.id', '=', 'assigned_roles.role_id')
         ->join('users', 'assigned_roles.user_id', '=', 'users.id')
         ->join('permission_role', 'roles.id', '=', 'permission_role.role_id') 
-        ->select("users.id","email","username")
+        ->select("users.id","email","users.name")
         ->where("permission_id",31)->get();
 
         $key = md5(uniqid());
@@ -1128,7 +1128,7 @@ public function kenya($id){
         Audit::logaudit('Sales Report', 'viewed sales comparison report', 'viewed sales comparison report in the system');
         
         return $pdf->stream('Customer Sales Comparison Report');
-        //return View::make('erpreports.clientSalesComparison', compact('month', 'compareTo', 'summary'));
+        //return view('erpreports.clientSalesComparison', compact('month', 'compareTo', 'summary'));
 
     }
 
@@ -1243,7 +1243,7 @@ public function kenya($id){
         $pdf = PDF::loadView('clients.balance_reports', compact('clients', 'total_payment', 'total_monthly', 'due'))->setPaper('a4', 'landscape');
         return $pdf->stream('Client Balances List.pdf');
 
-        //return View::make('clients.balance_reports', compact('clients'));
+        //return view('clients.balance_reports', compact('clients'));
     }
 
 
@@ -1259,7 +1259,7 @@ public function kenya($id){
                         ->where('category', 'ASSET')
                         ->get();
 
-        return View::make('erpreports.recOptions', compact('bankAccounts','bookAccounts'));
+        return view('erpreports.recOptions', compact('bankAccounts','bookAccounts'));
     }
 
     public function showRecReport(){
@@ -1430,61 +1430,61 @@ public function kenya($id){
     public function selectSalesPeriod()
     {
         $sales = Erporder::all();
-        return View::make('erpreports.selectSalesPeriod',compact('sales'));
+        return view('erpreports.selectSalesPeriod',compact('sales'));
     }
 
     public function selectSalesComparisonPeriod(){
         $sales = Erporder::all();
-        return View::make('erpreports.selectSalesComparisonPeriod', compact('sales'));
+        return view('erpreports.selectSalesComparisonPeriod', compact('sales'));
     }
 
     public function getSelectSummaryMonth(){
         $sales = Erporder::all();
-        return View::make('erpreports.selectSummaryMonth', compact('sales'));
+        return view('erpreports.selectSummaryMonth', compact('sales'));
     }
 
     public function selectPurchasesPeriod()
     {
         $purchases = Erporder::all();
-        return View::make('erpreports.selectPurchasesPeriod',compact('purchases'));
+        return view('erpreports.selectPurchasesPeriod',compact('purchases'));
     }
 
 
     public function selectClientsPeriod()
     {
        $clients = Client::all();
-        return View::make('erpreports.selectClientsPeriod',compact('clients'));
+        return view('erpreports.selectClientsPeriod',compact('clients'));
     }
 
      public function selectItemsPeriod()
     {
        $items = Item::all();
-        return View::make('erpreports.selectItemsPeriod',compact('items'));
+        return view('erpreports.selectItemsPeriod',compact('items'));
     }
 
     public function selectExpensesPeriod()
     {
        $expenses = Expense::all();
-        return View::make('erpreports.selectExpensesPeriod',compact('expenses'));
+        return view('erpreports.selectExpensesPeriod',compact('expenses'));
     }
 
      public function selectPaymentsPeriod()
     {
        $payments = Payment::all();
-        return View::make('erpreports.selectPaymentsPeriod',compact('payments'));
+        return view('erpreports.selectPaymentsPeriod',compact('payments'));
     }
 
     public function selectStockPeriod()
     {
        $stocks = Item::all();
-        return View::make('erpreports.selectStocksPeriod',compact('stocks'));
+        return view('erpreports.selectStocksPeriod',compact('stocks'));
     }
 
     public function selectVehiclesPeriod()
     {
        $assigndrivers = Assigndriver::all();
 
-        return View::make('erpreports.selectVehiclesPeriod',compact('assigndrivers'));
+        return view('erpreports.selectVehiclesPeriod',compact('assigndrivers'));
     }
 
 

@@ -1,6 +1,11 @@
 <?php
 
-class Erporderitem extends \Eloquent {
+namespace App\Http\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+
+class Erporderitem extends Model {
 
 	// Add your validation rules here
 	public static $rules = [
@@ -13,11 +18,11 @@ class Erporderitem extends \Eloquent {
 
 	public function erporder(){
 
-		return $this->belongsTo('Erporder');
+		return $this->belongsTo('App\Http\Models\Erporder');
 	}
 
 	public function item(){
-		return $this->belongsTo('Item');
+		return $this->belongsTo('App\Http\Models\Item');
 	}
 
 	public static function getInvoice($id){

@@ -35,7 +35,7 @@
         @endif
 
      <form method="POST" action="{{{ URL::to('payments/update/'.$payment->id) }}}" accept-charset="UTF-8">
-   
+   {{ csrf_field() }}
     <font color="red"><i>All fields marked with * are mandatory</i></font>
     <fieldset>
         

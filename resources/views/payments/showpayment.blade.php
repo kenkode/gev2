@@ -2,12 +2,12 @@
 function asMoney($value) {
   return number_format($value, 2);
 }
-
+use Illuminate\Support\Facades\Input;
 ?>
 
 {{HTML::script('media/jquery-1.8.0.min.js') }}
 
-@extends('layouts.erp')
+@extends('template')
 
 <script type="text/javascript">
 $(document).ready(function() {
@@ -92,29 +92,34 @@ if($(this).val()){
 
 @section('content')
 
-<br><div class="row">
-  <div class="col-lg-12">
-  <h4>Receivable Payments Details</h4>
-<hr>
-</div>  
-</div>
-
 
 <div class="row">
-  <div class="col-lg-5">
+  <div class="col-lg-6">
 
     
     
-     @if ($errors->has())
+     @if ( count( $errors ) > 0 )
         <div class="alert alert-danger">
             @foreach ($errors->all() as $error)
                 {{ $error }}<br>        
             @endforeach
         </div>
         @endif
+        <div class="box">
+      <div class="box-header with-border">
+        <h3 class="box-title">Receivable Payments Details</h3>
+        <div class="box-tools pull-right">
+          
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
+
+      <!-- /.box-header -->
+      <div class="box-body">
 
      <form method="POST" action="{{{ URL::to('payment/approvepayment') }}}" accept-charset="UTF-8">
-   
+    {{ csrf_field() }}
     <font color="red"><i>All fields marked with * are mandatory</i></font>
     <fieldset>
       
@@ -165,7 +170,7 @@ if($(this).val()){
         </div>       
 
         
-            <input class="form-control" placeholder="" type="hidden" readonly="readonly" name="received_by" id="received_by" value="{{{ Confide::user()->username}}}">
+            <input class="form-control" placeholder="" type="hidden" readonly="readonly" name="received_by" id="received_by" value="{{{ Auth::user()->username}}}">
         
          <div class="form-group">
                         <label for="username">Date</label>
@@ -185,7 +190,9 @@ if($(this).val()){
 
     </fieldset>
 </form>
-    
+    </div>
+
+</div>
 
   </div>
 

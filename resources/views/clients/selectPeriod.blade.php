@@ -40,7 +40,7 @@
               <label for="username"> Date <span style="color:red">*</span></label>
               <div class="right-inner-addon ">
                 <i class="glyphicon glyphicon-calendar"></i>
-                <input required class="form-control datepicker21" readonly="readonly" placeholder="" type="text" name="date" id="date_today" value="{{{ old('to') }}}" required>
+                <input required class="form-control datepicker21" readonly="readonly" placeholder="" type="text" name="date" id="date_today" value="{{date('Y-m-d')}}" required>
               </div>
             </div>
 

@@ -2,12 +2,12 @@
 function asMoney($value) {
   return number_format($value, 2);
 }
-
+use Illuminate\Support\Facades\Input;
 ?>
 
 {{HTML::script('media/jquery-1.8.0.min.js') }}
 
-@extends('layouts.erp')
+@extends('template')
 
 <script type="text/javascript">
 $(document).ready(function() {
@@ -83,7 +83,7 @@ if($(this).val()){
             $('#invoice').empty(); 
             $('#invoice').append("<option>----------------Select Invoice--------------------</option>");
             for (var i = 0; i < data.length; i++) {
-            $('#invoice').append("<option value='" + data[i].id +"'>" + data[i].erporder + (data[i].total -data[i].discount) + ")" + "</option>");
+            $('#invoice').append("<option value='" + data[i].eid +"'>" + data[i].erporder + (data[i].total -data[i].discount) + ")" + "</option>");
             };
         });
     });
@@ -92,20 +92,11 @@ if($(this).val()){
 
 @section('content')
 
-<br><div class="row">
-  <div class="col-lg-12">
-  <h4>Receivable Payments Details</h4>
-<hr>
-</div>  
-</div>
-
 
 <div class="row">
-  <div class="col-lg-5">
+  <div class="col-lg-6">
 
-    
-    
-     @if ($errors->has())
+   @if ( count( $errors ) > 0 )
         <div class="alert alert-danger">
             @foreach ($errors->all() as $error)
                 {{ $error }}<br>        
@@ -113,15 +104,28 @@ if($(this).val()){
         </div>
         @endif
 
+         <div class="box">
+      <div class="box-header with-border">
+        <h3 class="box-title">Receivable Payments Details</h3>
+        <div class="box-tools pull-right">
+          
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
+
+      <!-- /.box-header -->
+      <div class="box-body">
+
      <form method="POST" action="{{{ URL::to('payments') }}}" accept-charset="UTF-8">
-   
+   {{ csrf_field() }}
     <font color="red"><i>All fields marked with * are mandatory</i></font>
     <fieldset>
       
         
             <div class="form-group">
             <label for="username">Client Name</label><span style="color:red">*</span> :
-           <select name="order" id="order" class="form-control" required>
+           <select name="order" id="order" class="form-control select2" required>
                            <option></option>
                            <option>..................................Select Client....................................</option>
                            @foreach($clients as $client)
@@ -136,7 +140,7 @@ if($(this).val()){
 
           <div class="form-group">
                         <label for="username">Select Invoice <span style="color:red">*</span> :</label>
-                        <select required="" name="invoice" id="invoice" class="form-control">
+                        <select required="" name="invoice" id="invoice" class="form-control select2">
                             <option></option>
                         </select>
                 
@@ -175,7 +179,7 @@ if($(this).val()){
 
         <div class="form-group">
             <label for="username">Payment Method</label><span style="color:red">*</span> :
-           <select name="paymentmethod" class="form-control" required>
+           <select name="paymentmethod" class="form-control select2" required>
                           <option></option>
                            <option>......................Select Payment Method......................</option>
                            @foreach($paymentmethods as $paymentmethod)
@@ -192,7 +196,7 @@ if($(this).val()){
 
         <div class="form-group">
             <label for="username">Account</label><span style="color:red">*</span> :
-           <select name="account" class="form-control" required>
+           <select name="account" class="form-control select2" required>
                           <option></option>>
                            <option>...............................Select Account...........................</option>
                            @foreach($accounts as $account)
@@ -202,7 +206,7 @@ if($(this).val()){
         </div>       
 
         
-            <input class="form-control" placeholder="" type="hidden" readonly="readonly" name="received_by" id="received_by" value="{{{ Confide::user()->username}}}">
+            <input class="form-control" placeholder="" type="hidden" readonly="readonly" name="received_by" id="received_by" value="{{{ Auth::User()->username}}}">
         
          <div class="form-group">
                         <label for="username">Date</label>
@@ -222,7 +226,9 @@ if($(this).val()){
 
     </fieldset>
 </form>
-    
+  </div>
+
+</div>    
 
   </div>
 

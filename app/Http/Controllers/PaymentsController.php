@@ -1,6 +1,26 @@
 <?php
 
-class PaymentsController extends \BaseController {
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use App\Http\Models\Audit;
+use App\Http\Models\Payment;
+use App\Http\Models\Erporder;
+use App\Http\Models\Erporderitem;
+use App\Http\Models\Paymentmethod;
+use App\Http\Models\Account;
+use App\Http\Models\Client;
+use App\Http\Models\Item;
+use App\Http\Models\Notification;
+use Illuminate\Http\Request;
+use Redirect;
+use Entrust;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Auth;
+use DB;
+
+class PaymentsController extends Controller {
 
 	/**
 	 * Display a listing of payments
@@ -21,14 +41,15 @@ class PaymentsController extends \BaseController {
 		          */
 
 		$erporders = Erporder::all();
-		
+		$header='Payments';
+        $description='View Payments';
 		$erporderitems = Erporderitem::all();		
 		$paymentmethods = Paymentmethod::all();
 		$payments = Payment::where("is_approved",1)->orderBy("id","DESC")->get();
 
 		Audit::logaudit('Payments', 'viewed payments', 'viewed payments in the system');
 
-		return View::make('payments.index', compact('erporderitems','erporders','paymentmethods','payments'));
+		return view('payments.index', compact('erporderitems','erporders','paymentmethods','payments','header','description'));
 	}
 
 	/**
@@ -42,12 +63,16 @@ class PaymentsController extends \BaseController {
 		$accounts = Account::all();
 		$erporderitems = Erporderitem::all();
 		$paymentmethods = Paymentmethod::all();
+
+        $header='Payments';
+        $description='Create Payment';
+
 		$clients = DB::table('clients')
 		         ->join('erporders','clients.id','=','erporders.client_id')
 		         ->select( DB::raw('DISTINCT(name),clients.id,clients.type') )
 		         ->get();
 		
-		return View::make('payments.create',compact('erporders','clients','erporderitems','paymentmethods','accounts'));
+		return view('payments.create',compact('erporders','clients','erporderitems','paymentmethods','accounts','header','description'));
 	}
 
 	public function payable()
@@ -56,12 +81,16 @@ class PaymentsController extends \BaseController {
 		$accounts = Account::all();
 		$erporderitems = Erporderitem::all();
 		$paymentmethods = Paymentmethod::all();
+        
+        $header='Payments';
+        $description='Create Payment';
+
 		$clients = DB::table('clients')
 		         ->join('erporders','clients.id','=','erporders.client_id')
 		         ->select( DB::raw('DISTINCT(name),clients.id,clients.type') )
 		         ->get();
 		
-		return View::make('payments.payable',compact('erporders','clients','erporderitems','paymentmethods','accounts'));
+		return view('payments.payable',compact('erporders','clients','erporderitems','paymentmethods','accounts','header','description'));
 	}
 
 	/**
@@ -99,9 +128,9 @@ class PaymentsController extends \BaseController {
 		$payment->amount_paid = Input::get('amountdue');
 		$payment->paymentmethod_id = Input::get('paymentmethod');
 		$payment->account_id = Input::get('account');
-		$payment->prepared_by = Confide::user()->id;
+		$payment->prepared_by = Auth::User()->id;
 		$payment->payment_date = date("Y-m-d",strtotime(Input::get('pay_date')));
-		$prepared_by = Confide::user()->id;
+		$prepared_by = Auth::User()->id;
 
 		$payment->save();
 
@@ -155,7 +184,7 @@ class PaymentsController extends \BaseController {
 		->join('assigned_roles', 'roles.id', '=', 'assigned_roles.role_id')
 		->join('users', 'assigned_roles.user_id', '=', 'users.id')
 		->join('permission_role', 'roles.id', '=', 'permission_role.role_id') 
-		->select("users.id","email","username")
+		->select("users.id","email","users.name")
 		->where("permission_id",29)->get();
 
 		$key = md5(uniqid());
@@ -176,7 +205,7 @@ class PaymentsController extends \BaseController {
         }else{
 
         $p = Payment::find($id);
-        $p->confirmed_id = Confide::user()->id;
+        $p->confirmed_id = Auth::User()->id;
         $p->is_approved = 1;
         $p->update();
 
@@ -245,7 +274,10 @@ class PaymentsController extends \BaseController {
 		$erporderitem = Erporderitem::findOrFail($id);
 		$erporder = Erporder::findOrFail($id);
 
-		return View::make('payments.show', compact('payment','erporderitem','erporder'));
+		$header='Payments';
+        $description='View Payment';
+
+		return view('payments.show', compact('payment','erporderitem','erporder','header','description'));
 	}
 
 	/**
@@ -265,8 +297,10 @@ class PaymentsController extends \BaseController {
                              ->first();
 		//$erporders = Erporder::all();
 		$erporderitems = Erporderitem::all();
+		$header='Payments';
+        $description='Update Payments';
 
-		return View::make('payments.edit', compact('payment','erporder','erporderitems'));
+		return view('payments.edit', compact('payment','erporder','erporderitems','header','description'));
 	}
 
 	/**
@@ -334,10 +368,12 @@ class PaymentsController extends \BaseController {
 							->get();
 
 							//return $payments;
+	    $header='Payments';
+        $description='View Payments';
 
 	    Audit::logaudit('Payments', 'viewed daily payments', 'viewed daily payments in the system');
 
-		return View::make('payments.dailyPayments', compact('payments'));
+		return view('payments.dailyPayments', compact('payments','header','description'));
 	}
 
 }

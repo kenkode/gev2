@@ -1,12 +1,15 @@
 <?php
 
+use App\Http\Models\Stock;
+use App\Http\Models\ItemTracker;
+
 function asMoney($value) {
   return number_format($value, 2);
 }
 
 ?>
 
-@extends('layouts.erp')
+@extends('template')
 
 {{ HTML::script('media/js/jquery.js') }}
 
@@ -57,43 +60,47 @@ $(document).ready(function(){
             <div class="alert alert-danger">{{ Session::get('warning') }}</div>
         @endif
 
-
-<br><div class="row">
-    <div class="col-lg-12">
-  <h4><font color='green'>Sales Order : {{$order->order_number}} &emsp;| &emsp;&emsp;Client: {{$order->client->name}}  &emsp; |&emsp; Date: {{$order->date}} &emsp; |&emsp; Status: {{$order->status}} </font> </h4>
-
-<hr>
-</div>  
-</div>
  
 <div class="row">
     <div class="col-lg-12">
 
+    <div class="box">
+      <div class="box-header with-border">
+        <h3 class="box-title">View Sales Order</h3><br><br>
+        <h4><font color='green'>Sales Order : {{$order->order_number}} &emsp;| &emsp;&emsp;Client: {{$order->client->name}}  &emsp; |&emsp; Date: {{$order->date}} &emsp; |&emsp; Status: {{$order->status}} </font> </h4>
+        <div class="box-tools pull-right">
+          
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
+
+      <!-- /.box-header -->
+      <div class="box-body">
+      @if($order->status != "cancelled")
         <form target="_blank" class="form-inline" action="{{URL::to('erpReports/receipt/'.$order->id)}}" method="POST">
-            
-          @if($order->status != "cancelled")
+         {{ csrf_field() }}
+          <font color="red"><i>All fields marked with * are mandatory</i></font>
             <div class="form-group">
-                <select name="driver" id="driver" class="form-control input-sm" style="width: 250px;" required>
+                <select name="driver" id="driver" class="form-control input-sm select2" style="width: 250px;" required>
                     <option value="">Please select a driver</option>
                     @if(count($driver) > 0)
                     @foreach($driver as $driver)
                         <option>{{ $driver->surname }} {{ $driver->first_name }}</option>
                     @endforeach
                     @endif
-            @endif
                 </select> &emsp;
             </div>
             <div class="form-group">
 
-                @if($order->status != "cancelled")
+                
                 @if($order->payment_type === "credit")
                     <button type="submit" class="btn btn-primary input-sm"><i class="fa fa-file fa-fw"></i> Delivery Note/Invoice</button>
                 @else
                     <button type="submit" class="btn btn-primary input-sm"><i class="fa fa-file fa-fw"></i> Delivery Note/Invoice</button>
                 @endif
-                @endif
-                @if($order->is_pending == null && $order->status != "cancelled")
-                 <a href="{{URL::to('approve/cancel/'.$order->id)}}" class="btn btn-danger">Cancel Sale Order </a>
+                @if($order->is_pending == null)
+                 <a href="{{URL::to('approve/cancel/'.$order->id)}}" onclick="return (confirm('Are you sure you want to cancel this order?'))" class="btn btn-danger">Cancel Sale Order </a>
                  @endif
                  @if(Entrust::can('approve_cancel_sale_order') && $order->is_pending != null)
                  <a href="{{URL::to('approve/cancel/'.$order->id)}}" class="btn btn-danger">Approve Cancel Sale Order </a>
@@ -101,12 +108,9 @@ $(document).ready(function(){
           
             </div>
         </form>
-    </div>
-</div>
+         @endif
 
-<div class="row">
-    <div class="col-lg-12">
-        @if ($errors->has())
+        @if ( count( $errors ) > 0 )
         <div class="alert alert-danger">
             @foreach ($errors->all() as $error)
                 {{ $error }}<br>        
@@ -114,6 +118,7 @@ $(document).ready(function(){
         </div>
         @endif
 
+         
     <table class="table table-condensed table-bordered table-hover" >
 
     <thead>
@@ -176,7 +181,8 @@ $(document).ready(function(){
   </div>
 
 </div>
-
+</div>
+</div>
 <br><br><br>
 
 <div id="leaseModal" class="modal fade">
@@ -188,6 +194,7 @@ $(document).ready(function(){
             </div>
             <div class="modal-body">
                 <form class="" role="form" action="{{{ URL::to('stock/lease') }}}" method="POST">
+                    {{ csrf_field() }}
                     <div class="form-group">
                         <font style="color:red">* NB::Items out of stock will not be displayed!</font>
                     </div>
@@ -253,17 +260,26 @@ $(document).ready(function(){
         </div>
         @endif
 
-        <div class="panel panel-default">
-            @if($order->status != "cancelled")
-            @if (Entrust::can('lease_item') ) 
-            <div class="panel-heading">
-                <a class="btn btn-info btn-sm" href="#leaseModal" data-toggle="modal">Lease Item </a> &emsp;
-            </div>
-            @else
-            <h4>Lease Items</h4>
-            @endif
-            @endif
-            <div class="panel-body">
+      <div class="box">
+      <div class="box-header with-border">
+        @if($order->status != "cancelled")
+        @if (Entrust::can('lease_item') ) 
+        <a class="btn btn-info btn-sm" href="#leaseModal" data-toggle="modal">Lease Item </a>
+        @else
+        <h3 class="box-title">Leased Items</h3>
+        @endif
+        @else
+        <h3 class="box-title">Leased Items</h3>
+        @endif
+        <div class="box-tools pull-right">
+        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+        </button>
+      </div>
+    </div>
+
+      <!-- /.box-header -->
+      <div class="box-body">
+
                 <table id="users" class="table table-condensed table-bordered table-responsive table-hover">
                     <thead>
                         <th>#</th>
@@ -279,6 +295,7 @@ $(document).ready(function(){
                                 $item_name = ItemTracker::getItem($leased->item_id);
                                 $client_name = ItemTracker::getClient($leased->client_id);
                                 $items_remaining = $leased->items_leased - $leased->items_returned;
+                                
                             ?>
                             @if($items_remaining > 0)
                             <tr>
@@ -301,6 +318,7 @@ $(document).ready(function(){
                                         </div>
                                         <div class="modal-body">
                                             <form role="form" action="{{{ URL::to('stock/return') }}}" method="POST">
+                                                {{ csrf_field() }}
                                                 <input type="hidden" name="client_id" value="{{$order->client->id}}">
                                                 <input type="hidden" name="erporder_id" value="{{$id}}">
                                                 <input type="hidden" name="track_id" value="{{$leased->id}}">

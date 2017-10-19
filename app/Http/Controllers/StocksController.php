@@ -1,6 +1,24 @@
 <?php
 
-class StocksController extends \BaseController {
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use App\Http\Models\Audit;
+use App\Http\Models\Item;
+use App\Http\Models\Stock;
+use App\Http\Models\Store;
+use App\Http\Models\Client;
+use App\Http\Models\Erporderitem;
+use App\Http\Models\Notification;
+use Illuminate\Http\Request;
+use Redirect;
+use Entrust;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Auth;
+use DB;
+
+class StocksController extends Controller {
 
 	/**
 	 * Display a listing of stocks
@@ -13,16 +31,19 @@ class StocksController extends \BaseController {
 
 		$items = Item::all();
 
+		$header='Stocks';
+		$description='View Stocks';
+
 		$stock_in = DB::table('stocks')
          ->join('items', 'stocks.item_id', '=', 'items.id')
          ->get();
 
         if (! Entrust::can('view_stock') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
         Audit::logaudit('Stocks', 'viewed stocks', 'viewed stocks in the system');
-		return View::make('stocks.index', compact('stocks', 'items','stock_in'));
+		return view('stocks.index', compact('stocks', 'items','stock_in','header','description'));
 	}
 	}
 
@@ -34,8 +55,12 @@ class StocksController extends \BaseController {
 	public function create()
 	{
 		$items = Item::all();
-		$locations = Location::all();
+		$locations = Store::all();
 		$clients = Client::all();
+
+        $header='Stocks';
+		$description='Receive Stock';
+
 		$erporders = DB::table('erporders')
 		                 ->join('clients','erporders.client_id','=','clients.id')
 		                 ->select( DB::raw('erporders.client_id, erporders.order_number'))
@@ -43,17 +68,21 @@ class StocksController extends \BaseController {
 
         if (! Entrust::can('receive_stock') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
-		return View::make('stocks.create', compact('items', 'locations','clients','erporders'));
+		return view('stocks.create', compact('items', 'locations','clients','erporders','header','description'));
 	}
 	}
 
 	public function confirmstock()
 	{
 		$items = Item::all();
-		$locations = Location::all();
+		$locations = Store::all();
 		$clients = Client::all();
+
+        $header='Stocks';
+		$description='Confirm Stock';
+
 		$erporders = DB::table('erporders')
 		                 ->join('clients','erporders.client_id','=','clients.id')
 		                 ->select( DB::raw('erporders.client_id, erporders.order_number'))
@@ -61,9 +90,9 @@ class StocksController extends \BaseController {
 
         if (! Entrust::can('receive_stock') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
-		return View::make('stocks.create', compact('items', 'locations','clients','erporders'));
+		return view('stocks.create', compact('items', 'locations','clients','erporders','header','description'));
 	}
 	}
 
@@ -81,7 +110,11 @@ class StocksController extends \BaseController {
 			return Redirect::back()->withErrors($validator)->withInput();
 		}
 
+		
+
 		$id = explode(" : ",Input::get('item'));
+
+
 
         $order = Erporderitem::join('erporders','erporderitems.erporder_id','=','erporders.id')
                    ->join('stocks','erporders.id','=','stocks.item_id')
@@ -126,13 +159,13 @@ class StocksController extends \BaseController {
 		$erporderitem = Erporderitem::where('erporder_id',$erporder_id)->first();
 		$item = Item::findOrFail($id[1]);
 		$client = Client::findOrFail(Input::get('client'));
-		$location = Location::find($location_id);
+		//$location = Location::find($location_id);
 		$quantity = Input::get('lease_qty');
 		/*$date = Input::get('date');*/
 
 		
 
-		Stock::addStock($client,$id[1], $erporder_id, $location, $quantity, $date);
+		Stock::addStock(Input::get('client'),$id[1], $erporder_id, $location_id, $quantity, $date);
 
 		if (! Entrust::can('confirm_stock') ) // Checks the current user
         {
@@ -161,9 +194,9 @@ class StocksController extends \BaseController {
 
         if (! Entrust::can('view_stock') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
-		return View::make('stocks.show', compact('stock'));
+		return view('stocks.show', compact('stock'));
 	}
     }
 
@@ -177,7 +210,7 @@ class StocksController extends \BaseController {
 	{
 		$stock = Stock::find($id);
 
-		return View::make('stocks.edit', compact('stock'));
+		return view('stocks.edit', compact('stock'));
 	}
 
 	/**

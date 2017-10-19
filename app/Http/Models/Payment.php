@@ -22,12 +22,12 @@ class Payment extends Model {
 
 	public function erporder(){
 
-		return $this->belongsTo('Erporder');
+		return $this->belongsTo('App\Http\Models\Erporder');
 	}
 
 	public function client(){
 
-		return $this->belongsTo('Client');
+		return $this->belongsTo('App\Http\Models\Client');
 	}
 
 }

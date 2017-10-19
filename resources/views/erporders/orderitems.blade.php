@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Input;
+
 function asMoney($value) {
   return number_format($value, 2);
 }
@@ -7,7 +9,7 @@ function asMoney($value) {
 ?>
 
 
-@extends('layouts.erp')
+@extends('template')
 
 {{ HTML::script('media/js/jquery.js') }}
 
@@ -61,23 +63,31 @@ $(document).ready(function() {
 
 <br><div class="row">
     <div class="col-lg-12">
-  <h4><font color='green'>Sales Order : {{Session::get('erporder')['order_number']}} &nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Client: {{Session::get('erporder')['client']['name']}}  &nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp; Date: {{Session::get('erporder')['date']}} </font></h4>
 
-<hr>
-</div>  
-</div>
+<div class="box">
+      <div class="box-header with-border">
+        <h4><font color='green'>Sales Order : {{Session::get('erporder')['order_number']}} &nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Client: {{Session::get('erporder')['client']['name']}}  &nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp; Date: {{Session::get('erporder')['date']}} </font></h4>
 
+        <div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
 
-<br><div class="row">
+      <!-- /.box-header -->
+      
+<div class="box-body">
+
     
   <form class="form-inline" method="post" action="{{URL::to('orderitems/create')}}">
+    {{ csrf_field() }}
       <font color="red"><i>All fields marked with * are mandatory</i></font><br>
       <div class="col-lg-12">
 
 
         <div class="form-group ">
             <label>Item</label><span style="color:red">*</span> :
-            <select name="item" id="item" class="form-control" required>
+            <select name="item" id="item" class="form-control select2" required>
             
             <option> </option>
             <option> ..... select sale item....</option>
@@ -109,7 +119,7 @@ $(document).ready(function() {
 
         <div class="form-group">
             <label>Store</label><span style="color:red">*</span> :                   
-            <select name="location" class="form-control" required>
+            <select name="location" class="form-control select2" required>
                 <option> </option>
                 <option> ..... select item store....</option>  
                 @foreach($locations as $location)
@@ -139,7 +149,7 @@ $(document).ready(function() {
 
     <hr>
         
-         @if ($errors->has())
+        @if ( count( $errors ) > 0 )
         <div class="alert alert-danger">
             @foreach ($errors->all() as $error)
                 {{ $error }}<br>        
@@ -228,7 +238,7 @@ $(document).ready(function() {
 
 <br>
 <form method="post" action="{{URL::to('erporder/commit')}}">
-    
+   {{ csrf_field() }} 
 <table border="0" align="right" style="width:400px">
 <!-- <tr style="height:50px"><td>Order Discount:</td><td colspan="2"> <input type="text" name="discount" id="discount" onkeypress="grandTotal()" onkeyup="grandTotal()" onblur="grandTotal()" value="0" class="form-control"></td></tr> -->
 <tr style="height:50px"><td><strong>Payable Amount</strong></td><td colspan="2"> <input type="text" readonly="readonly" name="payable" id="payable" value="{{$total-Input::get('discount')}}" class="form-control"></td></tr>
@@ -277,6 +287,8 @@ $(document).ready(function(){
 
  </form>
 
+ </div>
+ </div>
  </div>
 
 <script type="text/javascript">

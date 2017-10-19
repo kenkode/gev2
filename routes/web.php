@@ -12,6 +12,7 @@ use App\Http\Models\Payment;
 use App\Http\Models\Tax;
 use App\Http\Models\ItemTracker;
 use App\Http\Models\Stock;
+use App\Http\Models\Store;
 use App\Http\Models\Notification;
 use App\Http\Models\Driver;
 use App\Http\Models\Vehicle;
@@ -19,6 +20,7 @@ use App\Http\Models\Price;
 use App\Http\Models\TaxOrder;
 use App\Http\Models\Account;
 use App\Http\Models\Accounts;
+use App\Http\Models\Paymentmethod;
 use Illuminate\Support\Facades\Input;
 /*
 |--------------------------------------------------------------------------
@@ -138,30 +140,30 @@ Route::get('/dashboard', function()
 
              
           //$employees = Employee::all();
-           //return View::make('dashboard', compact('employees'));
+           //return view('dashboard', compact('employees'));
 
-return View::make('erpmgmt');
+return view('erpmgmt');
 
         }
        
 
       
         } else {
-            return View::make('login', compact('account', 'organization'));
+            return view('login', compact('account', 'organization'));
         }
 });
 //
 
 Route::get('fpassword', function(){
 
-  return View::make(Config::get('confide::forgot_password_form'));
+  return view(Config::get('confide::forgot_password_form'));
 
 });
 
 Route::get('mail', function(){
   $mail = Mailsender::find(1);  
   Audit::logaudit('Mail Configuration', 'viewed mail configuration', 'viewed mail configuration in the system');
-  return View::make('system.mail', compact('mail'));
+  return view('system.mail', compact('mail'));
 
 });
 
@@ -212,7 +214,7 @@ Route::get('roles/delete/{id}', 'RolesController@destroy');
 
 Route::get('import', function(){
 
-    return View::make('import');
+    return view('import');
 });
 
 
@@ -223,7 +225,7 @@ Route::get('system', function(){
 
     $organization = Organization::find(1);
 
-    return View::make('system.index', compact('organization'));
+    return view('system.index', compact('organization'));
 });
 
 });
@@ -235,7 +237,7 @@ Route::get('license', function(){
 
     $organization = Organization::find(1);
 
-    return View::make('system.license', compact('organization'));
+    return view('system.license', compact('organization'));
 });
 
 
@@ -480,7 +482,7 @@ Route::get('backups', function(){
    
     //$backups = Backup::getRestorationFiles('../app/storage/backup/');
 
-    return View::make('backup');
+    return view('backup');
 
 });
 
@@ -498,7 +500,7 @@ Route::get('backups/create', function(){
    //Backup::export();
     //$backups = Backup::getRestorationFiles('../app/storage/backup/');
 
-    //return View::make('backup');
+    //return view('backup');
 
 });
 
@@ -714,12 +716,12 @@ Route::get('employees/delete/{id}', 'EmployeesController@destroy');
 
 Route::get('payrollReports', function(){
 
-    return View::make('employees.payrollreports');
+    return view('employees.payrollreports');
 });
 
 Route::get('statutoryReports', function(){
 
-    return View::make('employees.statutoryreports');
+    return view('employees.statutoryreports');
 });
 
 Route::get('email/payslip', 'payslipEmailController@index');
@@ -753,9 +755,9 @@ Route::post('payrollReports/nhifReturns', 'ReportsController@nhifReturns');
 Route::get('erpReports', function(){
 if (! Entrust::can('view_erp_reports') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
-    return View::make('erpreports.erpReports');
+    return view('erpreports.erpReports');
   }
 });
 
@@ -835,7 +837,7 @@ Route::get('salestargets/edit/{id}', 'SalestargetController@edit');
 
 Route::get('erpmgmt', function(){
 
-  return View::make('erpmgmt');
+  return view('erpmgmt');
 
 });
 
@@ -848,7 +850,7 @@ Route::get('financialreports', function(){
 
     
 
-    return View::make('pdf.financials.reports');
+    return view('pdf.financials.reports');
 });
 
 
@@ -968,6 +970,8 @@ Route::get('assigndrivers/show/{id}', 'AssigndriversController@show');
 
 Route::get('salesorders', function(){
 
+  $header='Sales Order';
+  $description='View Sales Orders';
   $orders = Erporder::whereNull("is_pending")
             ->where(function($query)
             {
@@ -975,18 +979,18 @@ Route::get('salesorders', function(){
                       ->orWhere('is_cancelled',1);
             })->orderBy("id","DESC")->get();
   $items = Item::all();
-  $locations = Location::all();
+  $locations = Store::all();
    
 
 
   if (! Entrust::can('view_sale_order') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
 
   Audit::logaudit('Sales Orders', 'viewed sales orders', 'viewed sales orders in the system');
 
-  return View::make('erporders.index', compact('items', 'locations', 'orders','erporders'));
+  return view('erporders.index', compact('items', 'locations', 'orders','erporders','header','description'));
 }
 });
 
@@ -996,15 +1000,17 @@ Route::get('purchaseorders', function(){
 
   $purchases = Erporder::orderBy("id","DESC")->get();
   $items = Item::all();
-  $locations = Location::all();
+  $locations = Store::all();
+  $header='Purchase Order';
+  $description='View Purchase Order';
 
 if (! Entrust::can('view_purchase_order') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
  Audit::logaudit('Purchase Order', 'viewed purchase orders', 'viewed purchase orders in the system');
 
-  return View::make('erppurchases.index', compact('items', 'locations', 'purchases'));
+  return view('erppurchases.index', compact('items', 'locations', 'purchases','header','description'));
 }
 });
 
@@ -1014,16 +1020,16 @@ Route::get('quotationorders', function(){
 
   $quotations = Erporder::all();
   $items = Item::all();
-  $locations = Location::all();
+  $locations = Store::all();
   $items = Item::all();
   $locations = Location::all();
 
   if (! Entrust::can('view_quotation') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
 
-  return View::make('erpquotations.index', compact('items', 'locations', 'quotations'));
+  return view('erpquotations.index', compact('items', 'locations', 'quotations'));
 }
 });
 
@@ -1033,15 +1039,16 @@ Route::get('salesorders/create', function(){
   $count = DB::table('erporders')->count();
   $order_number = date("Y/m/d/").str_pad($count+1, 4, "0", STR_PAD_LEFT);
   $items = Item::all();
-  $locations = Location::all();
-
+  $locations = Store::all();
+  $header='Sales Order';
+  $description='Create Sales Orders';
   $clients = Client::all();
 
   if (! Entrust::can('create_sale_order') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
-  return View::make('erporders.create', compact('items', 'locations', 'order_number', 'clients'));
+  return view('erporders.create', compact('items', 'locations', 'order_number', 'clients','header','description'));
 }
 });
 
@@ -1051,16 +1058,17 @@ Route::get('purchaseorders/create', function(){
   $count = DB::table('erporders')->count();
   $order_number = date("Y/m/d/").str_pad($count+1, 4, "0", STR_PAD_LEFT);
   $items = Item::all();
-  $locations = Location::all();
+  $locations = Store::all();
   $erporders = Erporder::all();
-
+  $header='Purchase Order';
+  $description='Create Purchase Order';
   $clients = Client::all();
 
 if (! Entrust::can('create_purchase_order') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
-  return View::make('erppurchases.create', compact('items', 'locations', 'order_number', 'clients', 'erporders'));
+  return view('erppurchases.create', compact('items', 'locations', 'order_number', 'clients', 'erporders','header','description'));
 }
 });
 
@@ -1070,21 +1078,24 @@ Route::get('quotationorders/create', function(){
   $count = DB::table('erporders')->count();
   $order_number = date("Y/m/d/").str_pad($count+1, 4, "0", STR_PAD_LEFT);;
   $items = Item::all();
-  $locations = Location::all();
+  $locations = Store::all();
 
   $clients = Client::all();
 
 if (! Entrust::can('create_quotation') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
-  return View::make('erpquotations.create', compact('items', 'locations', 'order_number', 'clients'));
+  return view('erpquotations.create', compact('items', 'locations', 'order_number', 'clients'));
 }
 });
 
 Route::post('erporders/create', function(){
 
   $data = Input::all();
+
+  $header='Sales Order';
+  $description='Create ERP Order';
 
   $client = Client::findOrFail(array_get($data, 'client'));
 
@@ -1123,10 +1134,10 @@ Route::post('erporders/create', function(){
   */
 
   $items = Item::all();
-  $locations = Location::all();
+  $locations = Store::all();
   $taxes = Tax::all();
 
-  return View::make('erporders.orderitems', compact('erporder', 'items', 'locations', 'taxes','orderitems'));
+  return view('erporders.orderitems', compact('erporder', 'items', 'locations', 'taxes','orderitems','header','description'));
 
 });
 
@@ -1136,6 +1147,9 @@ Route::post('erppurchases/create', function(){
 
   $data = Input::all();
   $client = Client::findOrFail(array_get($data, 'client'));
+
+  $header='Purchase Order';
+  $description='Create Purchase Order';
 
 /*
   $erporder = array(
@@ -1170,10 +1184,10 @@ Route::post('erppurchases/create', function(){
   */
 
   $items = Item::all();
-  $locations = Location::all();
+  $locations = Store::all();
   $taxes = Tax::all();
 
-  return View::make('erppurchases.purchaseitems', compact('items', 'locations','taxes','orderitems'));
+  return view('erppurchases.purchaseitems', compact('items', 'locations','taxes','orderitems','header','description'));
 
 });
 
@@ -1221,10 +1235,10 @@ Route::post('erpquotations/create', function(){
   */
 
   $items = Item::all();
-  $locations = Location::all();
+  $locations = Store::all();
   $taxes = Tax::all();
 
-  return View::make('erpquotations.quotationitems', compact('items', 'locations','taxes','orderitems'));
+  return view('erpquotations.quotationitems', compact('items', 'locations','taxes','orderitems'));
 
 });
 
@@ -1237,6 +1251,8 @@ Route::post('erpquotations/create', function(){
 Route::post('orderitems/create', function(){
 
   $data = Input::all();
+  $header='Sales Order';
+  $description='Create ERP Order';
 
   $item = Item::findOrFail(array_get($data, 'item'));
 
@@ -1263,10 +1279,10 @@ Route::post('orderitems/create', function(){
   $orderitems = Session::get('orderitems');
 
    $items = Item::all();
-  $locations = Location::all();
+  $locations = Store::all();
   $taxes = Tax::all();
 
-  return View::make('erporders.orderitems', compact('items', 'locations', 'taxes','orderitems'));
+  return view('erporders.orderitems', compact('items', 'locations', 'taxes','orderitems','header','description'));
 
 });
 
@@ -1304,10 +1320,12 @@ Route::post('purchaseitems/create', function(){
   $orderitems = Session::get('purchaseitems');
 
    $items = Item::all();
-  $locations = Location::all();
+  $locations = Store::all();
   $taxes = Tax::all();
+  $header='Purchase Order';
+  $description='Create Purchase Order';
 
-  return View::make('erppurchases.purchaseitems', compact('items', 'locations', 'taxes','orderitems'));
+  return view('erppurchases.purchaseitems', compact('items', 'locations', 'taxes','orderitems','header','description'));
 
 });
 
@@ -1343,10 +1361,10 @@ Route::post('quotationitems/create', function(){
 
   $orderitems = Session::get('quotationitems');
   $items = Item::all();
-  $locations = Location::all();
+  $locations = Store::all();
   $taxes = Tax::all();
 
-  return View::make('erpquotations.quotationitems', compact('items', 'locations', 'taxes','orderitems'));
+  return view('erpquotations.quotationitems', compact('items', 'locations', 'taxes','orderitems'));
 
 });
 
@@ -1362,14 +1380,14 @@ Route::get('stock/tracking', function(){
   $stocks = Stock::all();
   $items = Item::all();
   $clients = Client::all();
-  $location = Location::all();
+  $location = Store::all();
   $leased = ItemTracker::all();
 
   if (! Entrust::can('track_stock') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
-  return View::make('stocks/track', compact('stocks', 'items', 'clients', 'location', 'leased'));
+  return view('stocks/track', compact('stocks', 'items', 'clients', 'location', 'leased'));
 }
 });
 
@@ -1398,6 +1416,8 @@ Route::get('confirmstock/{id}/{name}/{confirmer}/{key}', function($id,$name,$con
 
 Route::get('notificationshowstock/{id}/{client}/{erporder_id}/{confirmer}/{key}', function($id,$client,$erporder_id,$confirmer,$key){
   $stock = Stock::find($id);
+  $header='Stocks';
+  $description='Confirm Stock';
   if($stock->confirmation_code != $key){
   $notification = Notification::where('confirmation_code',$key)->where('user_id',$confirmer)->first();
   $notification->is_read = 1;
@@ -1407,7 +1427,7 @@ Route::get('notificationshowstock/{id}/{client}/{erporder_id}/{confirmer}/{key}'
 
   $erporder = Erporder::find($erporder_id);
 
-  return View::make('stocks.showstock', compact('stock','client','item','erporder_id','confirmer','key','erporder'));
+  return view('stocks.showstock', compact('stock','client','item','erporder_id','confirmer','key','erporder','header','description'));
 }else{
   $item = Item::find($stock->itm_id);
   return Redirect::to('notifications/index')->withDeleteMessage("Stock for item ".$item->item_make." already received!");
@@ -1423,7 +1443,7 @@ Route::get('notificationshowexpense/{name}/{type}/{amount}/{date}/{account}/{rec
 
   $acc = Account::find($account);
 
-  return View::make('expenses.showexpense', compact('name','type','amount','date','account','receiver','confirmer','key','acc'));
+  return view('expenses.showexpense', compact('name','type','amount','date','account','receiver','confirmer','key','acc'));
 }else{
   return Redirect::to('notifications/index')->withDeleteMessage("Expense for item ".$name." already approved!");
 }
@@ -1446,7 +1466,12 @@ Route::post('notificationconfirmstock', function(){
     $notification->is_read = 1;
     $notification->update();
 
-  Audit::logaudit('Stocks', 'approve stocks', 'approved stock for item '.$item->item_make.' quantity received '.$quantity.' from supplier '.$client->name.' received by user '.$user->username.' in the system');
+    $erporder = Erporder::find(Input::get("erporder_id"));
+
+    $item = Item::find($stock->itm_id);
+    $client = Client::find($erporder->client_id);
+
+  Audit::logaudit('Stocks', 'approve stocks', 'approved stock for item '.$item->item_make.' quantity received '.Input::get("quantity").' from supplier '.$client->name.' received by user '.$user->name.' in the system');
 
   return Redirect::to('notifications/index')->withFlashMessage("Stock for item ".Input::get('item')." confirmed as received!");
 });
@@ -1500,7 +1525,7 @@ Route::post('stock/lease', function(){
   $item = Item::findOrfail($item_id);
   $client = Client::find($client_id);
   $timestamp = date("Y-m-d H:i:s");
-  $location = Location::findorfail($location_id);
+  $location = Store::findorfail($location_id);
 
   if($quantity > Stock::getStockAmountNew($item)){
     return Redirect::back()->with('warning', "Quantity Exceeds Total Stocks!");
@@ -1525,7 +1550,7 @@ Route::post('stock/lease', function(){
     ->select('stocks.item_id')
     ->first();
 
-    Stock::removeStock($track->id,$item_id, $location, $quantity, $timestamp);
+    Stock::removeStock($track->id,$item_id, $location_id, $quantity, $timestamp);
     Audit::logaudit('Lease Item', 'leased item', 'leased item '.$item->item_make.' to customer '.$client->name.' in the system');
     return Redirect::back()->with('message', 'Item(s) successfully leased.');
   }
@@ -1544,10 +1569,10 @@ Route::post('stock/return', function(){
 
   
   $timestamp = date("Y-m-d");
-  $location = Location::findorfail(ItemTracker::where('id', $id)->pluck('location_id'));
+  $location = Store::findorfail(ItemTracker::where('id', $id)->pluck('location_id'));
   
   $returned = ItemTracker::findOrfail($id);
-  $returned->increment('items_returned', $qty);
+  $returned->items_returned = $returned->items_returned + $qty;
   $returned->status = "$qty Item(s) returned";
   $returned->date_returned = date("Y-m-d");
   $returned->update();
@@ -1555,15 +1580,15 @@ Route::post('stock/return', function(){
   $item = Item::findOrfail($returned->item_id);
   $client = Client::find($client_id);
 
-  $stock = DB::table('stocks')
+  /*$stock = DB::table('stocks')
     ->join("erporderitems","erporderitems.erporder_id","=","stocks.item_id")
     ->join("items","erporderitems.item_id","=","items.id")
-    ->whereIn('items.id', array($item_id))
+    ->whereIn('items.id', $returned->item_id)
     ->where('stocks.is_confirmed', '=', 1)
     ->select('stocks.item_id')
-    ->first();
+    ->first();*/
 
-  Stock::addStock($client_id, $returned->item_id, $erporder_id, $location, $qty, $timestamp);
+  Stock::addStock($client_id, $returned->item_id, $erporder_id, $returned->location_id, $qty, $timestamp);
 
   Audit::logaudit('Return Item', 'returned item', 'returned item '.$item->item_make.' leased to customer '.$client->name.' in the system');
   return Redirect::back()->with('message', 'Item(s) successfully returned.');
@@ -1616,7 +1641,7 @@ Route::post('erporder/commit', function(){
     
     $location_id = $item['location'];
 
-     $location = Location::find($location_id);    
+     $location = Store::find($location_id);    
     
     $date = date('Y-m-d', strtotime(array_get($erporder, 'date')));
 
@@ -1816,7 +1841,7 @@ $order = Erporder::findorfail($id);
 
 if (! Entrust::can('cancel_sale_order') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
 
   $order->status = 'cancelled';
@@ -1830,10 +1855,12 @@ if (! Entrust::can('cancel_sale_order') ) // Checks the current user
 Route::get('approve/cancel/{id}', function($id){
 
 $order = Erporder::findorfail($id);
+$header='Sales Order';
+$description='Cancel Sale Order';
 
 if (! Entrust::can('cancel_sale_order') ) // Checks the current user
   {
-  return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+  return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
   }else{
   if (! Entrust::can('approve_cancel_sale_order') ){
 
@@ -1842,7 +1869,7 @@ if (! Entrust::can('cancel_sale_order') ) // Checks the current user
         ->join('users', 'assigned_roles.user_id', '=', 'users.id')
         ->join('permission_role', 'roles.id', '=', 'permission_role.role_id') 
         ->where("permission_id",140)
-        ->select("users.id","email","username")
+        ->select("users.id","email","users.name")
         ->get();
 
         $key = md5(uniqid());
@@ -1904,6 +1931,9 @@ $notification = Notification::where('confirmation_code',$key)->where('user_id',$
     $notification->is_read = 1;
     $notification->update();
 
+    $header='Payments';
+    $description='Approve Payment';
+
     $payment = Payment::find($id);
     $erporder = Erporder::find($payment->erporder_id);
     $account = Account::find($payment->account_id);
@@ -1911,7 +1941,7 @@ $notification = Notification::where('confirmation_code',$key)->where('user_id',$
 
     if($payment->confirmation_code != $key){
 
-    return View::make('payments.showpayment', compact('id','key','user','preparedby','payment','erporder','account','paymentmethod'));
+    return view('payments.showpayment', compact('id','key','user','preparedby','payment','erporder','account','paymentmethod','header','description'));
   }else{
     return Redirect::to('notifications/index')->withDeleteMessage('Item has already been approved!');
   }
@@ -1942,7 +1972,7 @@ Route::get('erporders/delivered/{id}', function($id){
 
   if (! Entrust::can('approve_delivered_sale_order') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
   $order->status = 'delivered';
   $order->update();
@@ -1960,7 +1990,7 @@ Route::get('erppurchases/cancel/{id}', function($id){
 
   if (! Entrust::can('cancel_purchase_order') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
   $order->status = 'cancelled';
   $order->update();
@@ -1979,7 +2009,7 @@ Route::get('erppurchases/delivered/{id}', function($id){
 
   if (! Entrust::can('approve_delivered_purchase_order') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
   $order->status = 'delivered';
   $order->update();
@@ -2012,9 +2042,10 @@ Route::get('erporders/show/{id}', function($id){
   $order = Erporder::findorfail($id);
   $client = Client::where("id",$order->client_id)->first();
   $items = Item::all();
-  $location = Location::all();
+  $location = Store::all();
   $leased = ItemTracker::where("client_id",$order->client_id)->get();
-
+  $header='Sales Order';
+  $description='View Sale Order';
   $orders = DB::table('erporders')
                 ->join('erporderitems', 'erporders.id', '=', 'erporderitems.erporder_id')
                 ->join('items', 'erporderitems.item_id', '=', 'items.id')
@@ -2030,11 +2061,11 @@ Route::get('erporders/show/{id}', function($id){
 
   if (! Entrust::can('view_sale_order') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
   Audit::logaudit('Sales Order', 'viewed a sales order', 'viewed a sale order for customer '.$client->name.' order number '.$order->order_number.' in the system');
 
-  return View::make('erporders.show', compact('order', 'driver', 'orders','id','client','items','location','leased'));
+  return view('erporders.show', compact('order', 'driver', 'orders','id','client','items','location','leased','header','description'));
   }
 });
 
@@ -2044,15 +2075,17 @@ Route::get('erppurchases/show/{id}', function($id){
 
   $order = Erporder::findorfail($id);
   $client = Client::find($order->client_id);
+  $header='Purchase Order';
+  $description='View Purchase Order';
 
   if (! Entrust::can('view_purchase_order') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
 
   Audit::logaudit('Purchase Order', 'viewed a purchase order', 'viewed a purchase order for supplier '.$client->name.' order number '.$order->order_number.' in the system');
 
-  return View::make('erppurchases.show', compact('order'));
+  return view('erppurchases.show', compact('order','header','description'));
 }  
 });
 
@@ -2078,8 +2111,10 @@ Route::get('erporders/notifyshow/{key}/{user}/{id}', function($key,$user,$id){
     $order = Erporder::findorfail($id);
   $client = Client::where("id",$order->client_id)->first();
   $items = Item::all();
-  $location = Location::all();
+  $location = Store::all();
   $leased = ItemTracker::where("client_id",$order->client_id)->get();
+  $header='Sales Order';
+  $description='Cancel Sale Order';
 
   $orders = DB::table('erporders')
                 ->join('erporderitems', 'erporders.id', '=', 'erporderitems.erporder_id')
@@ -2094,7 +2129,7 @@ Route::get('erporders/notifyshow/{key}/{user}/{id}', function($key,$user,$id){
   $driver = Driver::all();
     //return $driver;
 
-  return View::make('erporders.showApprove', compact('order', 'driver', 'orders','id','client','items','location','leased','key','user'));
+  return view('erporders.showApprove', compact('order', 'driver', 'orders','id','client','items','location','leased','key','user','header','description'));
   
 });
 
@@ -2107,7 +2142,7 @@ Route::get('erppurchases/payment/{id}', function($id){
 
   $account = Accounts::all();
 
-  return View::make('erppurchases.payment', compact('payments', 'purchase', 'account'));
+  return view('erppurchases.payment', compact('payments', 'purchase', 'account'));
   
 });
 
@@ -2121,12 +2156,12 @@ Route::get('erpquotations/show/{id}', function($id){
 
   if (! Entrust::can('view_quotation') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
 
   Audit::logaudit('Quotation', 'viewed quotation', 'viewed quotation for customer '.$client->name.' order number '.$order->order_number.' in the system');
 
-  return View::make('erpquotations.show', compact('order'));
+  return view('erpquotations.show', compact('order'));
 }
   
 });
@@ -2149,10 +2184,10 @@ Route::get('quotationitems/remove/{count}', function($count){
 
   $orderitems = Session::get('quotationitems');
   $items = Item::all();
-  $locations = Location::all();
+  $locations = Store::all();
   $taxes = Tax::all();
 
-  return View::make('erpquotations.quotationitems', compact('items', 'locations', 'taxes','orderitems'));
+  return view('erpquotations.quotationitems', compact('items', 'locations', 'taxes','orderitems'));
   //return Session::get('quotationitems')[$count];
 });
 
@@ -2163,7 +2198,7 @@ Route::get('quotationitems/remove/{count}', function($count){
 Route::get('quotationitems/edit/{count}', function($count){
   $editItem = Session::get('quotationitems')[$count];
 
-  return View::make('erpquotations.sessionedit', compact('editItem', 'count'));
+  return view('erpquotations.sessionedit', compact('editItem', 'count'));
 });
 
 
@@ -2179,10 +2214,10 @@ Route::post('erpquotations/sessionedit/{count}', function($sesItemID){
 
   $orderitems = Session::get('quotationitems');
   $items = Item::all();
-  $locations = Location::all();
+  $locations = Store::all();
   $taxes = Tax::all();
 
-  return View::make('erpquotations.quotationitems', compact('items', 'locations', 'taxes','orderitems'));
+  return view('erpquotations.quotationitems', compact('items', 'locations', 'taxes','orderitems'));
 });
 
 
@@ -2200,10 +2235,12 @@ Route::get('orderitems/remove/{count}', function($count){
   $orderitems = Session::get('orderitems');
   //dd($orderitems);
   $items = Item::all();
-  $locations = Location::all();
+  $locations = Store::all();
   $taxes = Tax::all();
+  $header='Sales Order';
+  $description='Create ERP Order';
 
-  return View::make('erporders.orderitems', compact('items', 'locations', 'taxes','orderitems'));
+  return view('erporders.orderitems', compact('items', 'locations', 'taxes','orderitems','header','description'));
 });
 
 
@@ -2212,8 +2249,10 @@ Route::get('orderitems/remove/{count}', function($count){
  */
 Route::get('orderitems/edit/{count}', function($count){
   $editItem = Session::get('orderitems')[$count];
+  $header='Sales Order';
+  $description='Create ERP Order';
 
-  return View::make('erporders.edit', compact('editItem', 'count'));
+  return view('erporders.edit', compact('editItem', 'count','header','description'));
 });
 
 Route::post('orderitems/edit/{count}', function($sesItemID){
@@ -2229,10 +2268,12 @@ Route::post('orderitems/edit/{count}', function($sesItemID){
 
   $orderitems = Session::get('orderitems');
   $items = Item::all();
-  $locations = Location::all();
+  $locations = Store::all();
   $taxes = Tax::all();
+  $header='Sales Order';
+  $description='Create ERP Order';
 
-  return View::make('erporders.orderitems', compact('items', 'locations', 'taxes','orderitems'));
+  return view('erporders.orderitems', compact('items', 'locations', 'taxes','orderitems','header','description'));
   
 });
 
@@ -2250,10 +2291,12 @@ Route::get('purchaseitems/remove/{count}', function($count){
 
   $orderitems = Session::get('purchaseitems');
   $items = Item::all();
-  $locations = Location::all();
+  $locations = Store::all();
   $taxes = Tax::all();
+  $header='Purchase Order';
+  $description='Create Purchase Order';
 
-  return View::make('erppurchases.purchaseitems', compact('items', 'locations', 'taxes','orderitems'));
+  return view('erppurchases.purchaseitems', compact('items', 'locations', 'taxes','orderitems','header','description'));
 });
 
 
@@ -2262,8 +2305,9 @@ Route::get('purchaseitems/remove/{count}', function($count){
  */
 Route::get('purchaseitems/edit/{count}', function($count){
   $editItem = Session::get('purchaseitems')[$count];
-
-  return View::make('erppurchases.edit', compact('editItem', 'count'));
+  $header='Purchase Order';
+  $description='Create Purchase Order';
+  return view('erppurchases.edit', compact('editItem', 'count','header','description'));
 });
 
 Route::post('erppurchases/edit/{count}', function($sesItemID){
@@ -2279,10 +2323,12 @@ Route::post('erppurchases/edit/{count}', function($sesItemID){
 
   $orderitems = Session::get('purchaseitems');
   $items = Item::all();
-  $locations = Location::all();
+  $locations = Store::all();
   $taxes = Tax::all();
+  $header='Purchase Order';
+  $description='Create Purchase Order';
 
-  return View::make('erppurchases.purchaseitems', compact('items', 'locations', 'taxes','orderitems'));
+  return view('erppurchases.purchaseitems', compact('items', 'locations', 'taxes','orderitems','header','description'));
   
 });
 
@@ -2359,7 +2405,7 @@ Route::get('erpquotations/edit/{id}', function($id){
   $tax_orders = TaxOrder::where('order_number', $order->order_number)->orderBy('tax_id', 'ASC')->get();
 
   //return $tax_orders;
-  return View::make('erpquotations.editquotation', compact('order', 'items', 'taxes', 'tax_orders'));
+  return view('erpquotations.editquotation', compact('order', 'items', 'taxes', 'tax_orders'));
 
 });
 
@@ -2436,7 +2482,7 @@ Route::post('erpquotations/edit/{id}', function($id){
 
     $order->status = 'EDITED';
     $order->update();
-    return View::make('erpquotations.show', compact('order'));
+    return view('erpquotations.show', compact('order'));
 });
 
 
@@ -2533,8 +2579,8 @@ Route::get('api/salesdropdown', function(){
                              ->groupBy('erporders.id')
                              ->havingRaw('balance > 0 or balance is null')
                              ->where('erporders.status','new')
-                             ->select(DB::raw('CONCAT(erporders.id," : ",items.id) AS id'), DB::raw('CONCAT(order_number," : ",item_make," (Actual amount: ") AS erporder'), DB::raw('(SELECT (sum(price * quantity) - sum(amount_paid)) FROM payments t WHERE t.erporder_id=erporders.id and t.client_id='.$id.') AS balance'), DB::raw('(SELECT sum(discount) FROM prices p WHERE p.item_id=erporderitems.item_id and p.client_id='.$id.') AS discount'), DB::raw('sum(price * quantity) AS total'))
-                   ->get('erporder', 'id', 'discount','total');
+                             ->select(DB::raw('CONCAT(erporders.id," : ",items.id) AS eid'), DB::raw('CONCAT(order_number," : ",item_make," (Actual amount: ") AS erporder'), DB::raw('(SELECT (sum(price * quantity) - sum(amount_paid)) FROM payments t WHERE t.erporder_id=erporders.id and t.client_id='.$id.') AS balance'), DB::raw('(SELECT sum(discount) FROM prices p WHERE p.item_id=erporderitems.item_id and p.client_id='.$id.') AS discount'), DB::raw('sum(price * quantity) AS total'))
+                   ->get('erporder', 'eid', 'discount','total');
 
 
 
@@ -2552,7 +2598,7 @@ Route::get('api/getpurchaseorders', function(){
                    ->where('erporders.status','new')
                    ->whereNotNull('authorized_by')
                    ->select('erporders.id',  DB::raw('CONCAT(order_number," : ",item_make ," (Remaining qty: ", quantity,")") AS erporder'))
-                   ->lists('erporder', 'id');
+                   ->pluck('erporder', 'id');
 
 
       $nostockerps =  Erporderitem::join('items','erporderitems.item_id','=','items.id')
@@ -2560,12 +2606,12 @@ Route::get('api/getpurchaseorders', function(){
                    ->where('client_id',$id)
                    ->where('erporders.status','new')
                    ->whereNotNull('authorized_by')
-                   ->select(DB::raw('CONCAT(erporders.id," : ",items.id) AS id'),  DB::raw('CONCAT(order_number," : ",item_make ," (Remaining qty: ", quantity,")") AS erporder'))
+                   ->select(DB::raw('CONCAT(erporders.id," : ",items.id) AS eid'),  DB::raw('CONCAT(order_number," : ",item_make ," (Remaining qty: ", quantity,")") AS erporder'))
                    ->whereNotExists(function($query)
                      {  $query->select(DB::raw(1))
                       ->from('stocks')
                       ->whereRaw('stocks.itm_id = items.id and stocks.item_id = erporders.id');
-                     })->get('erporder', 'id');
+                     })->get('erporder', 'eid');
 
       $data["nostock"] = $nostockerps;
 
@@ -2579,13 +2625,13 @@ Route::get('api/getpurchaseorders', function(){
                    ->where('erporders.status','new')
                    ->whereNotNull('authorized_by')
                    ->havingRaw('balance > 0')
-                   ->select(DB::raw('CONCAT(erporders.id," : ",items.id) AS id'), DB::raw('(SELECT quantity-sum(quantity_in) FROM stocks t WHERE t.itm_id=erporderitems.item_id and t.item_id=erporders.id) AS balance'),DB::raw('(SELECT CONCAT(order_number," : ",item_make ," (Remaining qty: ", quantity-sum(quantity_in),")") as erporder FROM stocks t WHERE t.itm_id=erporderitems.item_id and t.item_id=erporders.id) AS erporder'))
+                   ->select(DB::raw('CONCAT(erporders.id," : ",items.id) AS eid'), DB::raw('(SELECT quantity-sum(quantity_in) FROM stocks t WHERE t.itm_id=erporderitems.item_id and t.item_id=erporders.id) AS balance'),DB::raw('(SELECT CONCAT(order_number," : ",item_make ," (Remaining qty: ", quantity-sum(quantity_in),")") as erporder FROM stocks t WHERE t.itm_id=erporderitems.item_id and t.item_id=erporders.id) AS erporder'))
                    ->groupBy('erporders.id','items.id')
                    ->whereIn( DB::raw('(erporders.id, items.id)'), function($query)
                       {
                           $query->select('item_id','itm_id')
                                 ->from('stocks');
-                      })->get('erporder', 'id');
+                      })->get('erporder', 'eid');
       $data["hasstock"] = $hasstockerps;
     
 
@@ -2611,7 +2657,7 @@ Route::get('api/totalsales', function(){
                   ->where('erporders.id',$id[0])
                   ->where('item_id',$id[1])
                   ->sum('discount');
-    //dd($price);
+   // dd(Input::get('option'));
     return ($price->total ) - $payment - $discount;
 });
 

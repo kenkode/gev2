@@ -1,12 +1,16 @@
 <?php
 
+use App\Http\Models\Stock;
+use App\Http\Models\ItemTracker;
+
+
 function asMoney($value) {
   return number_format($value, 2);
 }
 
 ?>
 
-@extends('layouts.erp')
+@extends('template')
 
 {{ HTML::script('media/js/jquery.js') }}
 
@@ -53,34 +57,33 @@ $(document).ready(function(){
             <div class="alert alert-info">{{ Session::get('notice') }}</div>
         @endif
 
-
-<br><div class="row">
-    <div class="col-lg-12">
-  <h4><font color='green'>Sales Order : {{$order->order_number}} &emsp;| &emsp;&emsp;Client: {{$order->client->name}}  &emsp; |&emsp; Date: {{$order->date}} &emsp; |&emsp; Status: {{$order->status}} </font> </h4>
-
-<hr>
-</div>  
-</div>
  
-<div class="row">
-    <div class="col-lg-12">
-        
-                 @if(Entrust::can('approve_cancel_sale_order') && $order->is_pending != null)
-                 <a href="{{URL::to('notification/approve/cancel/'.$order->id.'/'.$key.'/'.$user)}}" class="btn btn-success">Approve Cancel Sale Order </a>
-                 @endif
-          
-    </div>
-</div>
 
 <div class="row">
     <div class="col-lg-12">
-        @if ($errors->has())
+        @if ( count( $errors ) > 0 )
         <div class="alert alert-danger">
             @foreach ($errors->all() as $error)
                 {{ $error }}<br>        
             @endforeach
         </div>
         @endif
+
+        <div class="box">
+      <div class="box-header with-border">
+        @if(Entrust::can('approve_cancel_sale_order') && $order->is_pending != null)
+                 <a href="{{URL::to('notification/approve/cancel/'.$order->id.'/'.$key.'/'.$user)}}" class="btn btn-success">Approve Cancel Sale Order </a>
+                 @endif<br><br>
+         <h4><font color='green'>Sales Order : {{$order->order_number}} &emsp;| &emsp;&emsp;Client: {{$order->client->name}}  &emsp; |&emsp; Date: {{$order->date}} &emsp; |&emsp; Status: {{$order->status}} </font> </h4>
+        <div class="box-tools pull-right">
+          
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
+
+      <!-- /.box-header -->
+      <div class="box-body">
 
     <table class="table table-condensed table-bordered table-hover" >
 
@@ -230,7 +233,7 @@ $(document).ready(function(){
                         <th>Item</th>
                         <th>Quantity</th>
                         <th>Status</th>
-                        <th>Action</th>
+                        <!-- <th>Action</th> -->
                     </thead>
                     <tbody>
                         <?php $count=1; ?>
@@ -246,9 +249,9 @@ $(document).ready(function(){
                                 <td>{{ $item_name }}</td>
                                 <td>{{ $items_remaining }}</td>
                                 <td>{{ $leased->status }}</td>
-                                <td>
+                                <!-- <td>
                                     <a href="#modalReturnItem{{$count}}" role="button" class="btn btn-info btn-sm" data-toggle="modal">Return Item(s)</a>
-                                </td>
+                                </td> -->
                             </tr>
  
                             <!-- MODAL RETURN ITEM -->
@@ -297,6 +300,7 @@ $(document).ready(function(){
     </div>
 </div>
 
-
+</div>
+</div>
 
 @stop

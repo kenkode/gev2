@@ -4,15 +4,9 @@
   }
 ?>
 
-@extends('layouts.erp')
+@extends('template')
 @section('content')
 
-<div class="row">
-  <div class="col-lg-12">
-    <h4><font color="green">Payments</font></h4>
-    <hr>
-  </div>
-</div>
 
 @if (Session::has('flash_message'))
 
@@ -40,6 +34,18 @@
   <div class="col-lg-12">
     <!-- TAB LINKS -->
 
+    <div class="box">
+      <div class="box-header with-border">
+        <h3 class="box-title">Payments</h3>
+        <div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
+      <!-- /.box-header -->
+      <div class="box-body">
+          
+
     <ul class="nav nav-tabs">
       <li class="active"><a data-toggle="tab" href="#registeredAssets">Receivable </a></li>
       <li><a data-toggle="tab" href="#soldDisposedAssets">Payable </a></li>
@@ -54,6 +60,7 @@
 
           <thead>
             <div class="col-lg-12">
+              <br>
     <a href="{{ URL::to('payments/create') }}" class="btn btn-info btn-sm"><i class="fa fa-plus fa-fw"></i> New Receivable Payment</a>&emsp;
     <!-- <a href="" class="btn btn-warning btn-sm"> Run Depreciation</a>&emsp; -->
     <a target="_blank" href="{{ URL::to('daily_payments/today') }}" class="btn btn-info btn-sm"> Daily Receivable Payment</a>&emsp;
@@ -110,6 +117,7 @@
         <table class="table table-condensed table-bordered table-responsive table-hover users">
           <thead>
             <div class="col-lg-12">
+               <br>
     <a href="{{ URL::to('payments/payable/create') }}" class="btn btn-info btn-sm"><i class="fa fa-plus fa-fw"></i> New Payable Payment</a>&emsp;
     <!-- <a href="" class="btn btn-warning btn-sm"> Run Depreciation</a>&emsp; -->
     <a href="{{ URL::to('daily_payments/today') }}" class="btn btn-info btn-sm"> Daily Payable Payment</a>&emsp;
@@ -161,6 +169,8 @@
 
   </div><!-- ./End of body section -->
 
+</div>
+</div>
 </div>
 
 @stop
