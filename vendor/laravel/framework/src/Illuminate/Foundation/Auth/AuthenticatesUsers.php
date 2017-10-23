@@ -65,8 +65,10 @@ trait AuthenticatesUsers
 
         $this->validate($request, [
         $this->username() => 'required|exists:users,' . $this->username() . ',confirmed,1',
-        'password' => 'required',
-    ]);
+        'password' => 'required|string',
+    ],[
+        $this->username() . '.exists' => 'That email address doesn`t exist or your account has been disabled.']);
+        
     }
 
     /**
