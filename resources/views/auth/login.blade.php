@@ -72,6 +72,9 @@
         <!-- /.col -->
         <div class="col-xs-12">
           <button type="submit" class="btn btn-primary btn-block btn-flat">Sign In</button>
+          <a href="{{ url('/password/reset') }}">
+                                    <small>Forgot Your Password?</small>
+                                </a>
         </div>
       </div>
     </form>
