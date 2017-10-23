@@ -4,7 +4,7 @@
 	}
 ?>
 
-@extends('layouts.accounting')
+@extends('accounting')
 @section('content')
 
 <style>
@@ -49,6 +49,7 @@
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<form action="{{ URL::to('petty_cash/addMoney') }}" method="POST">
+				{{ csrf_field() }}
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 						<span aria-hidden="true">&times;</span>
@@ -105,6 +106,7 @@
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<form action="{{ URL::to('petty_cash/addContribution') }}" method="POST">
+				{{ csrf_field() }}
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 						<span aria-hidden="true">&times;</span>
@@ -167,6 +169,7 @@
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<form action="{{ URL::to('petty_cash/newTransaction') }}" method="POST">
+				{{ csrf_field() }}
 				<input type="hidden" name="credit_ac" value="{{ $petty_account->id }}">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -217,13 +220,6 @@
 <!-- ./END -->
 
 
-<div class="row">
-	<div class="col-lg-12">
-		<h4><font color="green">Petty Cash</font></h4>
-		<hr>
-	</div>
-</div>
-
 <!-- ERROR MESSAGE -->
 @if(Session::has('error'))
 <div class="alert alert-danger fade in">
@@ -241,11 +237,22 @@
    {{ Session::forget('success') }}
 </div>
 @endif
-
+<div class="box">
+      <div class="box-header with-border">
+        <h3 class="box-title">Petty Cash</h3>
+        <div class="box-tools pull-right">
+          
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
+      <!-- /.box-header -->
+      <div class="box-body">
 
 <div class="row">
 	<!-- HEADER INFO -->
 	<div class="col-lg-12">
+		
 		<div class="top-header">
 			<div class="head text-left"> 
 				<div class="left">
@@ -280,7 +287,7 @@
 		<ul class="nav nav-tabs">
 			<li class="active"><a data-toggle="tab" href="#reconcile">Account Transactions</a></li>
 		</ul>
-
+       <br>
 		<div class="tab-content">
 			<div id="reconcile" class="tab-pane fade in active">
 				<table class="table table-condensed table-bordered table-responsive table-hover users">
@@ -339,5 +346,6 @@
 </div>
 @endif
 
-
+</div>
+</div>
 @stop

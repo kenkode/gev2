@@ -1,16 +1,19 @@
 <?php
 
+namespace App\Http\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
 use Illuminate\Auth\UserTrait;
 use Illuminate\Auth\UserInterface;
 use Illuminate\Auth\Reminders\RemindableTrait;
 use Illuminate\Auth\Reminders\RemindableInterface;
-use Zizaco\Confide\ConfideUser;
-use Zizaco\Confide\ConfideUserInterface;
-use Zizaco\Entrust\HasRole;
+use Illuminate\Support\Facades\Auth;
+use Zizaco\Entrust\Traits\EntrustUserTrait;
 
-class User extends Eloquent implements ConfideUserInterface {
+class User extends Model {
 
-	use ConfideUser, HasRole;
+	use EntrustUserTrait;
 
 	
 

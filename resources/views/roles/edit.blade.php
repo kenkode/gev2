@@ -1,16 +1,23 @@
-@extends('layouts.system')
+@extends('system')
 @section('content')
 
-
+<div class="box">
+      <div class="box-header with-border">
+        <h3 class="box-title">Update Role</h3>
+        <div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
+      <!-- /.box-header -->
+      <div class="box-body">
 
 <div class="row">
 
-  <div class="col-lg-5">
-
-    <br/>
+  <div class="col-lg-6">
 
       <form method="POST" action="{{{ URL::to('roles/update/'.$role->id) }}}" accept-charset="UTF-8">
-        
+      {{ csrf_field() }}  
    
     <fieldset>
         <div class="form-group">
@@ -117,7 +124,8 @@
   </div>
 </div>
 
-
+</div>
+</div>
 
 
 

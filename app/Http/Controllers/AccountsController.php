@@ -1,6 +1,20 @@
 <?php
 
-class AccountsController extends \BaseController {
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use App\Http\Models\Audit;
+use App\Http\Models\Account;
+use App\Http\Models\Notification;
+use Illuminate\Http\Request;
+use Redirect;
+use Entrust;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Auth;
+use DB;
+
+class AccountsController extends Controller {
 
 	/**
 	 * Display a listing of accounts
@@ -13,10 +27,12 @@ class AccountsController extends \BaseController {
 		if ( Entrust::can('view_account') ) // Checks the current user
         {
 		$accounts = DB::table('accounts')->orderBy('code', 'asc')->get();
+		$header='Accounts';
+		$description='View Chart of Accounts';
 
 		Audit::logaudit('Accounts', 'viewed accounts', 'viewed chart of accounts in the system');
 
-		return View::make('accounts.index', compact('accounts'));
+		return view('accounts.index', compact('accounts','header','description'));
 		
 	    }else{
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
@@ -34,7 +50,9 @@ class AccountsController extends \BaseController {
         {
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
-		return View::make('accounts.create');
+        $header='Accounts';
+		$description='Create Account';
+		return view('accounts.create',compact('header','description'));
 	}
 	}
 
@@ -100,7 +118,7 @@ class AccountsController extends \BaseController {
         }else{
 		$account = Account::findOrFail($id);
         Audit::logaudit('Accounts', 'viewed account details', 'viewed account details for account '.$account->name.' '.$account->code.' in the system');
-		return View::make('accounts.show', compact('account'));
+		return view('accounts.show', compact('account'));
 	}
 	}
 
@@ -113,13 +131,14 @@ class AccountsController extends \BaseController {
 	public function edit($id)
 	{
 		$account = Account::find($id);
-
+        $header='Accounts';
+		$description='Update Account';
 
      if (! Entrust::can('update_account') ) // Checks the current user
         {
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
-		return View::make('accounts.edit', compact('account'));
+		return view('accounts.edit', compact('account','header','description'));
 			}
 	}
 
@@ -141,50 +160,29 @@ class AccountsController extends \BaseController {
 		}
 
 		$code = Input::get('code');
-		$original_code = DB::table('accounts')->where('id', '=', $account->id)->pluck('code');
+		$original_code = DB::table('accounts')->where('id', '!=', $account->id)->where('code', $code)->count();
 
-		if($code != $original_code) {
+		if($original_code > 0) {
 
-			$code_exists = DB::table('accounts')->where('code', '=', $code)->count();
-
-		if($code_exists >= 1){
-
-			return Redirect::back()->withErrors(array('error'=>'The GL code already exists'))->withInput();
-		}
-
-
-		else {
-
-
-		
+			return Redirect::back()->withErrors(array('error'=>'The Account code already exists'))->withInput();
+		}else {
 
 		$account->category = Input::get('category');
 		$account->name = Input::get('name');
 		$account->code = Input::get('code');
-		$account->balance = Input::get('balance');
+		//$account->balance = Input::get('balance');
 		if(Input::get('active')){
 			$account->active = TRUE;
 		}
 		else {
 			$account->active = FALSE;
 		}
-		
-		$account->update();
 
-		}
-
-		} else {
-
-		$account->category = Input::get('category');
-		$account->name = Input::get('name');
-		$account->code = Input::get('code');
-		$account->balance = Input::get('balance');
-		$account->active = Input::get('active');
 		$account->update();
 
 		}
 		
-		Audit::logaudit('Accounts', 'updated an account', 'updated account '.$account->name.' '.$account->code.' in the system');
+		Audit::logaudit('Accounts', 'update', 'updated: '.$account->name.' '.$account->code);
 
 
 		return Redirect::route('accounts.index');

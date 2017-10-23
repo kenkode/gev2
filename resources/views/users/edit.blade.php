@@ -1,24 +1,33 @@
-@extends('layouts.system')
+@extends('system')
 @section('content')
 
 
 
 <div class="row">
 
-	<div class="col-lg-5">
+	<div class="col-lg-6">
 
-		<br/>
+		<div class="box">
+      <div class="box-header with-border">
+        <h3 class="box-title">Edit User</h3>
+        <div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
+      <!-- /.box-header -->
+      <div class="box-body">
 
       <form method="POST" action="{{{ URL::to('users/update/'.$user->id) }}}" accept-charset="UTF-8">
-   
+   {{ csrf_field() }}
     <fieldset>
         <div class="form-group">
-            <label for="username">{{{ Lang::get('confide::confide.username') }}}</label>
-            <input class="form-control" placeholder="{{{ Lang::get('confide::confide.username') }}}" type="text" name="username" id="username" value="{{ $user->username }}">
+            <label for="username">Username</label>
+            <input class="form-control" placeholder="Username" type="text" name="username" id="username" value="{{ $user->name }}" required="">
         </div>
         <div class="form-group">
-            <label for="email">{{{ Lang::get('confide::confide.e_mail') }}} <small>{{ Lang::get('confide::confide.signup.confirmation_required') }}</small></label>
-            <input class="form-control" placeholder="{{{ Lang::get('confide::confide.e_mail') }}}" type="text" name="email" id="email" value="{{ $user->email }}">
+            <label for="email">Email Address <small>*</small></label>
+            <input class="form-control" placeholder="Email Address" type="email" name="email" id="email" value="{{ $user->email }}" required="">
         </div>
         
 
@@ -56,7 +65,8 @@
 
   </div>
 </div>
-
+</div>
+</div>
 
 
 

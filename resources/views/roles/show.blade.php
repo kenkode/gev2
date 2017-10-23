@@ -7,16 +7,8 @@ function asMoney($value) {
 
 ?>
 
-@extends('layouts.system')
+@extends('system')
 @section('content')
-
-<br><div class="row">
-  <div class="col-lg-12">
-  <h3>{{$role->name}}</h3>
-
-<hr>
-</div>  
-</div>
 
 
 <div class="row">
@@ -40,10 +32,16 @@ function asMoney($value) {
    <div class="row">
 
 <div class="col-lg-12">
-  <br>
-
-
-
+  <div class="box">
+      <div class="box-header with-border">
+        <h3 class="box-title"><h3>{{$role->name}}</h3></h3>
+        <div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
+      <!-- /.box-header -->
+      <div class="box-body">
         <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
 
         <?php $i = 1; ?>
@@ -104,8 +102,9 @@ function asMoney($value) {
   
 </div>
 
-    
-
+</div>
+ 
+</div>
 
 </div>
 

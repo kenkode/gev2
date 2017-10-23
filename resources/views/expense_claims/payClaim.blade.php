@@ -4,16 +4,10 @@
 	}
 ?>
 
-@extends('layouts.accounting')
+@extends('accounting')
 @section('content')
 
 <!-- PAGE -->
-<div class="row">
-	<div class="col-lg-12">
-		<h4><font color="green">Pay Claim</font></h4>
-		<hr>
-	</div>
-</div>
 
 <!-- ERROR MESSAGE -->
 @if(Session::has('error'))
@@ -25,8 +19,19 @@
 @endif
 
 <div class="row">
-	<div class="col-lg-5">
+	<div class="col-lg-6">
+		<div class="box">
+      <div class="box-header with-border">
+        <h3 class="box-title">Pay Claim</h3>
+        <div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
+      <!-- /.box-header -->
+      <div class="box-body">
 		<form action="{{ URL::to('expense_claims/payClaim') }}" method="POST">
+			{{ csrf_field() }}
 			<input type="hidden" name="claim_id" value="{{$id}}">
 			<div class="form-group">
 				<label>From Account: <span><font color="red">*</font></span></label>
@@ -66,5 +71,6 @@
 		</form>
 	</div>
 </div>
-
+</div>
+</div>
 @stop

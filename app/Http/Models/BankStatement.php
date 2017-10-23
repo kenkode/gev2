@@ -1,6 +1,12 @@
 <?php
 
-Class BankStatement extends Eloquent{
+namespace App\Http\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+use DB;
+
+Class BankStatement extends Model{
 
 	protected $table = 'bank_statements';
 
@@ -8,13 +14,13 @@ Class BankStatement extends Eloquent{
 	 * Link with BankAcount
 	 */
 	public function bankAccount(){
-		return $this->belongsTo('BankAccount');
+		return $this->belongsTo('App\Http\Models\BankAccount');
 	}
 
 	/**
 	 * Link with Bank Statement Transactions
 	 */
 	public function stmtTransaction(){
-		return $this->hasMany('StmtTransaction');
+		return $this->hasMany('App\Http\Models\StmtTransaction');
 	}
 }

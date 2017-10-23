@@ -94,7 +94,7 @@ if($(this).val() == "CREDIT"){
 
         <div class="form-group">
             <label for="username">Account Category</label>
-            <select class="form-control" name="category1" id="category">
+            <select class="form-control select2" name="category1" id="category">
                 <option value="">select category</option>
                 <option>--------------------------</option>
                 <option value="CREDIT">CREDIT</option>
@@ -170,7 +170,7 @@ if($(this).val() == "CREDIT"){
         
         <div class="form-group">
             <label>Category</label>
-            <select name="category" class="form-control">
+            <select name="category" class="form-control select2">
                 <option value="">----Select a category----</option>
                 <option value="Institutional">Institutional</option>
                 <option value="Domestic">Domestic</option>

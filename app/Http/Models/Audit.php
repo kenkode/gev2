@@ -33,7 +33,7 @@ class Audit extends Model {
 
     $audit->date = date('Y-m-d');
     $audit->description = $description;
-    $audit->user = Auth::user()->username;
+    $audit->user = Auth::user()->name;
     $audit->entity = $entity;
     $audit->action = $action;
     $audit->save();

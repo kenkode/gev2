@@ -1,6 +1,25 @@
 <?php
 
-class PettyCashController extends BaseController{
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use App\Http\Models\Audit;
+use App\Http\Models\Asset;
+use App\Http\Models\Notification;
+use App\Http\Models\Account;
+use App\Http\Models\AccountTransaction;
+use App\Http\Models\PettycashItem;
+use App\Http\Models\Journal;
+use Illuminate\Http\Request;
+use Redirect;
+use Entrust;
+use Session;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Auth;
+use DB;
+
+class PettyCashController extends Controller{
 
 	/**
 	 * Display a listing of expenses
@@ -33,10 +52,12 @@ class PettyCashController extends BaseController{
 		}
 
 		//return $ac_transactions;
+		$header='Petty Cash';
+		$description='View Petty Cash';
 
 		Audit::logaudit('Petty Cash', 'viewed petty cash', 'viewed petty cash in the system');
 
-		return View::make('petty_cash.index', compact('accounts', 'assets', 'liabilities', 'petty', 'petty_account', 'ac_transactions'));
+		return view('petty_cash.index', compact('accounts', 'assets', 'liabilities', 'petty', 'petty_account', 'ac_transactions','header','description'));
 	}
 }
 
@@ -111,8 +132,10 @@ class PettyCashController extends BaseController{
 	public function receiptTransactions($id){
 		
 		$items = PettycashItem::where('ac_trns', $id)->get();
+		$header='Petty Cash';
+		$description='New Petty Cash Transaction';
 
-		return View::make('petty_cash.receiptTransactions', compact('items'));
+		return view('petty_cash.receiptTransactions', compact('items','header','description'));
 	
 	}
 
@@ -134,7 +157,7 @@ class PettyCashController extends BaseController{
 			'credit_account' => Input::get('ac_from'),
 			'description' => "Transferred cash from $ac_name->name account to Petty Cash Account",
 			'amount' => Input::get('amount'),
-			'initiated_by' => Confide::user()->username
+			'initiated_by' => Auth::user()->name
 		);
 
 		DB::table('accounts')->where('id', Input::get('ac_from'))->decrement('balance', Input::get('amount'));
@@ -170,7 +193,7 @@ class PettyCashController extends BaseController{
 			'credit_account' => Input::get('cont_acFrom'),
 			'description' => "Transferred Money to Petty Cash Account from $contName",
 			'amount' => Input::get('cont_amount'),
-			'initiated_by' => Confide::user()->username
+			'initiated_by' => Auth::user()->name
 		);
 
 		DB::table('accounts')->where('id', Input::get('cont_acFrom'))->decrement('balance', Input::get('cont_amount'));
@@ -216,8 +239,10 @@ class PettyCashController extends BaseController{
 		}
 
 		$trItems = Session::get('trItems');
+		$header='Petty Cash';
+		$description='New Petty Cash Transaction';
 
-		return View::make('petty_cash.transactionItems', compact('newTr', 'trItems'));
+		return view('petty_cash.transactionItems', compact('newTr', 'trItems','header','description'));
 	
 	}
 
@@ -241,8 +266,10 @@ class PettyCashController extends BaseController{
 
 		//return Session::get('trItems');
 		$trItems = Session::get('trItems');
+		$header='Petty Cash';
+		$description='New Petty Cash Transaction';
 
-		return View::make('petty_cash.transactionItems', compact('newTr', 'trItems'));
+		return view('petty_cash.transactionItems', compact('newTr', 'trItems','header','description'));
 	
 	}
 
@@ -256,7 +283,7 @@ class PettyCashController extends BaseController{
 		$trItems = Session::get('trItems');
 
 		if($trItems == NULL){
-			return View::make('petty_cash.transactionItems', compact('newTr', 'trItems'));
+			return view('petty_cash.transactionItems', compact('newTr', 'trItems'));
 		}
 
 		$total = 0;
@@ -270,7 +297,7 @@ class PettyCashController extends BaseController{
 			'credit_account' => $newTr['credit_ac'],
 			'description' => $newTr['description'],
 			'amount' => $total,
-			'initiated_by' => Confide::user()->username
+			'initiated_by' => Auth::user()->name
 		);
 
 		DB::table('accounts')->where('id', $newTr['credit_ac'])->decrement('balance', $total);

@@ -21,7 +21,6 @@
       </div>
     </form> -->
 
-Sales Order
     <ul class="sidebar-menu">
       <li class="header">NAVIGATION</li>
       <!-- @foreach($navigation as $navigation)

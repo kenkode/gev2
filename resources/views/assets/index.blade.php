@@ -2,33 +2,37 @@
 	function asMoney($value){
 		return number_format($value, 2);
 	}
+	use App\Http\Models\Asset;
 ?>
 
-@extends('layouts.accounting')
+@extends('accounting')
 @section('content')
 
-<div class="row">
-	<div class="col-lg-12">
-		<h4><font color="green">Fixed Assets</font></h4>
-		<hr>
-	</div>
-</div>
 
 <div class="row">	
 	<!-- QUICK LINK BUTTONS -->
-	<div class="col-lg-12">
-		<a href="{{ URL::to('assetManagement/create') }}" class="btn btn-info btn-sm"><i class="fa fa-plus fa-fw"></i> New Asset</a>&emsp;
-		<!-- <a href="" class="btn btn-warning btn-sm"> Run Depreciation</a>&emsp; -->
-		<hr>
-	</div><!-- ./END -->
+	<!-- ./END -->
 
 	<!-- FIXED ASSETS BODY SECTION -->
 	<div class="col-lg-12">
+		<div class="row">
+	<div class="box">
+      <div class="box-header with-border">
+        <h3 class="box-title">Fixed Assets</h3>
+        <div class="box-tools pull-right">
+        <a href="{{ URL::to('assetManagement/create') }}" class="btn btn-info btn-sm"><i class="fa fa-plus fa-fw"></i> New Asset</a>&emsp;
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
+      <!-- /.box-header -->
+      <div class="box-body">
 		<!-- TAB LINKS -->
 		<ul class="nav nav-tabs">
 			<li class="active"><a data-toggle="tab" href="#registeredAssets">Registered ({{ Asset::where('status', 'new')->count() }})</a></li>
 			<li><a data-toggle="tab" href="#soldDisposedAssets">Sold & Disposed ({{ Asset::where('status', '<>', 'new')->count() }})</a></li>
 		</ul>
+		<br>
 
 		<!-- TAB CONTENT -->
 		<div class="tab-content">
@@ -149,5 +153,6 @@
 	</div><!-- ./End of body section -->
 
 </div>
-
+</div>
+</div>
 @stop

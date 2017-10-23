@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Http\Models;
+
 /**
  * Class UserRepository
  *
@@ -68,7 +70,7 @@ class UserRepository
         $user->email    = array_get($input, 'email');
         $user->password = array_get($input, 'password');
         $user->user_type = array_get($input, 'user_type');
-        $user->username = array_get($input, 'username');
+        $user->name = array_get($input, 'username');
         $user->organization_id = 1;
 
         // The password confirmation will be removed from model

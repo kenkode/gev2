@@ -2,28 +2,36 @@
 	function asMoney($value){
 		return number_format($value, 2);
 	}
+	use App\Http\Models\ClaimReceipt;
+use App\Http\Models\ClaimReceiptItem;
 ?>
 
-@extends('layouts.accounting')
+@extends('accounting')
 @section('content')
 
-<div class="row">
-	<div class="col-lg-12">
-		<h4><font color="green">Approve Claim</font></h4>
-		<h6><font>Expense claim submitted {{ date('M d, Y') }}</font></h6>
-		<hr>
-	</div>
-</div>
 
 <div class="row">
 	<div class="col-lg-12">
+		<div class="box">
+      <div class="box-header with-border">
+        <h4><font color="green">Approve Claim</font></h4>
+		<h6><font>Expense claim submitted {{ date('M d, Y') }}</font></h6>
+        <div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
+      <!-- /.box-header -->
+      <div class="box-body">
 		@if( Entrust::can('approve_expense_claim') )
 		<a href="{{ URL::to('expense_claims/approve/'.$id) }}" class="btn btn-success btn-sm"><i class="fa fa-check fa-fw"></i> Approve Claim</a>&emsp;
 		@endif
 		@if( Entrust::can('decline_expense_claim') )
 		<a href="{{ URL::to('expense_claims/decline/'.$id) }}" class="btn btn-danger btn-sm"><i class="fa fa-times fa-fw"></i> Decline Claim</a>
 		@endif
+		
 		<hr>
+
 
 		<table class="table table-condensed table-bordered table-responsive table-hover">
 			<thead>
@@ -57,6 +65,7 @@
 		</table>
 	</div>
 </div>
-
+</div>
+</div>
 
 @stop

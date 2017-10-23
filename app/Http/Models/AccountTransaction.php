@@ -1,6 +1,11 @@
 <?php
 
-class AccountTransaction extends Eloquent{
+namespace App\Http\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+
+class AccountTransaction extends Model{
 
 	protected $table = 'account_transactions';
 
@@ -11,7 +16,7 @@ class AccountTransaction extends Eloquent{
 
 	// Link with Account model
 	public function account(){
-		return $this->belongsTo('Account');
+		return $this->belongsTo('App\Http\Models\Account');
 	}
 
 	// Link bank account StmtTransaction Model

@@ -1,6 +1,21 @@
 <?php
 
-class JournalsController extends \BaseController {
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use App\Http\Models\Audit;
+use App\Http\Models\Journal;
+use App\Http\Models\Account;
+use App\Http\Models\Notification;
+use Illuminate\Http\Request;
+use Redirect;
+use Entrust;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Auth;
+use DB;
+
+class JournalsController extends Controller {
 
 	/**
 	 * Display a listing of journals
@@ -10,10 +25,12 @@ class JournalsController extends \BaseController {
 	public function index()
 	{
 		$journals = Journal::all();
+		$header='Journal Entries';
+		$description='View Journal Entries';
 
 		Audit::logaudit('Journals', 'viewed journal entries', 'viewed journal entries in the system');
 
-		return View::make('journals.index', compact('journals'));
+		return view('journals.index', compact('journals','header','description'));
 	}
 
 	/**
@@ -25,7 +42,9 @@ class JournalsController extends \BaseController {
 	{
 
 		$accounts = Account::all();
-		return View::make('journals.create', compact('accounts'));
+		$header='Journal Entries';
+		$description='View Journal Entries';
+		return view('journals.create', compact('accounts','header','description'));
 	}
 
 	/**
@@ -79,7 +98,7 @@ class JournalsController extends \BaseController {
 
 		Audit::logaudit('Journals', 'viewed journal entry details', 'viewed journal entry details for account '.$account->name.' in the system');
 
-		return View::make('journals.show', compact('journal'));
+		return view('journals.show', compact('journal'));
 	}
 
 	/**
@@ -92,7 +111,7 @@ class JournalsController extends \BaseController {
 	{
 		$journal = Journal::find($id);
 
-		return View::make('journals.edit', compact('journal'));
+		return view('journals.edit', compact('journal'));
 	}
 
 	/**

@@ -1,10 +1,12 @@
-@extends('layouts.accounting')
+@extends('accounting')
 @section('content')
 
 <?php
 	function asMoney($value) {
 	  return number_format($value, 2);
 	}
+use Illuminate\Support\Facades\Input;
+use App\Http\Models\BankAccount;
 ?>
 
 <script type="text/javascript">
@@ -57,12 +59,7 @@
 <!--
 BEGINNING OF PAGE
 -->
-<div class="row">
-	<div class="col-lg-12">
-  	<h4><font color='green'>Bank Accounts</font></h4>
-		<hr>
-	</div>	
-</div>
+
 
 <!-- SUCCESS MESSAGE -->
 @if(Session::has('success'))
@@ -74,6 +71,16 @@ BEGINNING OF PAGE
 @endif
 
 <div class="row">
+	<div class="box">
+      <div class="box-header with-border">
+        <h3 class="box-title">Bank Accounts</h3>
+        <div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
+      <!-- /.box-header -->
+      <div class="box-body">
 	<div class="col-lg-12">
 		<a href="{{{ URL::to('bankAccounts/create') }}}" class="btn btn-info btn-sm"><i class="fa fa-plus fa-fw"></i>&nbsp; Add Bank Account</a>
 		<hr>
@@ -156,6 +163,7 @@ BEGINNING OF PAGE
 							<div class="modal-dialog" role="document">
 								<div class="modal-content">
 								<form action="{{ URL::to('bankAccounts/reconcile/'.$account->id) }}" method="GET" accept-charset="utf-8">
+									{{ csrf_field() }}
 									<div class="modal-header">
 										<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 											<span aria-hidden="true">&times;</span>
@@ -192,6 +200,7 @@ BEGINNING OF PAGE
 					<tr>
 						<?php $acSt = BankAccount::getStatement($account->id); ?>
 						<form role="form" action="{{ URL::to('bankAccounts/reconcile/'.$account->id) }}" method="GET">
+							{{ csrf_field() }}
 							@if(count($acSt) > 0)
 								@if($acSt->bal_bd !== null && $acSt->is_reconciled === 0)
 									<td>
@@ -254,6 +263,7 @@ BEGINNING OF PAGE
 							File upload form
 						-->
 						<form role="form" action="{{{ URL::to('bankAccounts/uploadStatement') }}}" method="POST" enctype="multipart/form-data">
+							{{ csrf_field() }}
 							<input type="hidden" name="bnk_id" value="{{$account->id}}">
 							<div class="modal-header">
 								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -315,7 +325,8 @@ BEGINNING OF PAGE
 		@endif
 	</div>
 </div>
-
+</div>
+</div>
 
 @stop
 

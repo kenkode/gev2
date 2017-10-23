@@ -4,7 +4,7 @@
 	}
 ?>
 
-@extends('layouts.accounting')
+@extends('accounting')
 @section('content')
 
 <style type="text/css" media="screen">
@@ -13,13 +13,19 @@
 
 <div class="row">
 	<div class="col-lg-12">
-		<h4><font color="green">Add New Asset</font></h4>
-	</div>
-</div>
-
-<div class="row">
-	<div class="col-lg-12">
+		<div class="box">
+      <div class="box-header with-border">
+        <h3 class="box-title">Add New Asset</h3>
+        <div class="box-tools pull-right">
+        
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
+      <!-- /.box-header -->
+      <div class="box-body">
 		<form class="form-inline" role="form" action="{{ URL::to('assetManagement') }}" method="POST">
+			{{ csrf_field() }}
 			<h4 style="color: #0BAEED">Asset Details</h4><hr>
 			<div class="form-group">
 				<label>Asset Name: </label><br>
@@ -114,6 +120,9 @@
 
 		</form>
 	</div>
+</div>
+
+</div>
 </div>
 
 <script type="text/javascript">

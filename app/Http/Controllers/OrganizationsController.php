@@ -1,6 +1,19 @@
 <?php
 
-class OrganizationsController extends \BaseController {
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use App\Http\Models\Organization;
+use App\Http\Models\Audit;
+use Illuminate\Http\Request;
+use Redirect;
+use Entrust;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Auth;
+use DB;
+
+class OrganizationsController extends Controller {
 
 	/**
 	 * Display a listing of organizations
@@ -13,6 +26,9 @@ class OrganizationsController extends \BaseController {
 		$banks = DB::table('banks')
 		->join('organizations', 'banks.id', '=', 'organizations.bank_id')
 		->get();
+
+		$header='Organization';
+		$description='View Organization Details';
 
 		$bbranches = DB::table('bank_branches')
         ->join('organizations', 'bank_branches.id', '=', 'organizations.bank_branch_id')
@@ -27,7 +43,7 @@ class OrganizationsController extends \BaseController {
 
 		Audit::logaudit('Organization', 'viewed organization details', 'viewed organization details in the system');
 
-		return View::make('organizations.index', compact('organization','banks','bbranches','banks_db','bbranches_db'));
+		return view('organizations.index', compact('organization','banks','bbranches','banks_db','bbranches_db','header','description'));
 	
 	}
 
@@ -38,7 +54,7 @@ class OrganizationsController extends \BaseController {
 	 */
 	public function create()
 	{
-		return View::make('organizations.create');
+		return view('organizations.create');
 	}
 
 	/**
@@ -83,7 +99,7 @@ class OrganizationsController extends \BaseController {
 
 		Audit::logaudit('Organization', 'viewed organization details', 'viewed organization details in the system');
 
-		return View::make('organizations.show', compact('organization','banks','bbranches'));
+		return view('organizations.show', compact('organization','banks','bbranches'));
 	}
 
 	/**
@@ -96,7 +112,7 @@ class OrganizationsController extends \BaseController {
 	{
 		$organization = Organization::find($id);
 
-		return View::make('organizations.edit', compact('organization'));
+		return view('organizations.edit', compact('organization'));
 	}
 
 	/**
@@ -165,7 +181,7 @@ class OrganizationsController extends \BaseController {
 		$license_key = $organization->license_key_generator($license_code);
 
 
-		return View::make('admin.license_view', compact('license_key','org_name','license_code'));
+		return view('admin.license_view', compact('license_key','org_name','license_code'));
 
 
 	}
@@ -177,7 +193,7 @@ class OrganizationsController extends \BaseController {
 		$organization = Organization::findOrFail($id);
 
 
-		return View::make('activate', compact('organization'));
+		return view('activate', compact('organization'));
 	}
 
 
@@ -202,7 +218,7 @@ class OrganizationsController extends \BaseController {
 
 		} else {
 
-			return View::make('activate', compact('organization'))->withErrors('License activation failed. License Key not valid');
+			return view('activate', compact('organization'))->withErrors('License activation failed. License Key not valid');
 
 		}
 

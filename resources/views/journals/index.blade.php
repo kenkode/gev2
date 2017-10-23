@@ -1,4 +1,4 @@
-@extends('layouts.accounting')
+@extends('accounting')
 @section('content')
 <br/>
 
@@ -13,23 +13,34 @@ function asMoney($value) {
 
 <div class="row">
 	<div class="col-lg-12">
-  <h3>Journal Entries</h3>
 
-<hr>
-</div>	
-</div>
+    @if (Session::has('flash_message'))
 
+      <div class="alert alert-success">
+      {{ Session::get('flash_message') }}
+     </div>
+    @endif
 
-<div class="row">
-	<div class="col-lg-12">
+    @if (Session::has('delete_message'))
 
-    <div class="panel panel-default">
-      <div class="panel-heading">
+      <div class="alert alert-danger">
+      {{ Session::get('delete_message') }}
+     </div>
+    @endif
+
+    <div class="box">
+      <div class="box-header with-border">
+        <h3 class="box-title">Journal Entries</h3>
+        <div class="box-tools pull-right">
           <a class="btn btn-info btn-sm" href="{{ URL::to('journals/create')}}">new journal entry</a>
-        </div>
-        <div class="panel-body">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
+      <!-- /.box-header -->
+      <div class="box-body">
 
-
+  
     <table id="users" class="table table-condensed table-bordered table-responsive table-hover">
 
 
@@ -81,8 +92,8 @@ echo asMoney($journal->amount);
           
                   <ul class="dropdown-menu" role="menu">
                    
-                    <li><a href="{{URL::to('journals/show/'.$journal->id)}}">View</a></li>
-                    <li><a href="{{URL::to('journals/delete/'.$journal->id)}}">Void</a></li>
+                    <!-- <li><a href="{{URL::to('journals/show/'.$journal->id)}}">View</a></li> -->
+                    <li><a href="{{URL::to('journals/delete/'.$journal->id)}}" onclick="return (confirm('Are you sure you want to void this entry?'))">Void</a></li>
                    
                     
                   </ul>
@@ -106,6 +117,10 @@ echo asMoney($journal->amount);
 
 
   </div>
+
+</div>
+
+</div>
 
 </div>
 

@@ -1,4 +1,4 @@
-@extends('layouts.accounting')
+@extends('accounting')
 @section('content')
 
 <?php
@@ -77,11 +77,20 @@
 BEGINNING OF PAGE
 -->
 <div class="row">
+	
 	<div class="col-lg-12">
-		<h4><font color='green'>Bank Reconciliation</font></h4>
-		<hr>
-	</div>
-	<div class="col-lg-12">
+		<div class="box">
+      <div class="box-header with-border">
+        <h3 class="box-title">Bank Reconciliation</h3>
+        <div class="box-tools pull-right">
+          
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
+
+      <!-- /.box-header -->
+      <div class="box-body">
 		@if(isset($bnkAccount))
 
 			<div class="col-lg-12" style="margin-top: 0; background: #E1F5FE !important;">
@@ -189,6 +198,7 @@ BEGINNING OF PAGE
 							<!-- ITEM RECONCILIATION FORM STARTS HERE -->
 							<tr>
 							<form role="form" class="form-inline" action="{{ URL::to('bankAccount/reconcile') }}" method="POST">
+								{{ csrf_field() }}
 								<td>{{ $count }}</td>
 								<td>
 									<table class="table bord"> 
@@ -355,6 +365,10 @@ BEGINNING OF PAGE
 		</div>
 		
 	</div>
+
+</div>
+
+</div>
 
 </div>
 

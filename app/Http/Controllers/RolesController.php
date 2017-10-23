@@ -1,6 +1,18 @@
 <?php
 
+namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
+use App\Http\Models\Role;
+use App\Http\Models\Audit;
+use App\Http\Models\Permission;
+use Illuminate\Http\Request;
+use Redirect;
+use Entrust;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Auth;
+use DB;
 
 /**
  * rolesController Class
@@ -17,10 +29,12 @@ class RolesController extends Controller
     public function index(){
 
         $roles = Role::all();
+        $header='System Roles';
+        $description='View System Roles';
 
         Audit::logaudit('Roles', 'viewed user roles', 'viewed user roles in the system');
 
-        return View::make('roles.index')->with('roles', $roles);
+        return view('roles.index',compact('roles','header','description'));
     }
 
 
@@ -36,8 +50,11 @@ class RolesController extends Controller
         foreach ($role->perms()->get() as $p) {
             $roleperm[] = $p->name;
         }
+
+        $header='System Roles';
+        $description='Update Role';
         
-       return View::make('roles.edit', compact('role', 'permissions', 'categories', 'roleperm'));
+       return view('roles.edit', compact('role', 'permissions', 'categories', 'roleperm', 'header', 'description'));
     }
 
 
@@ -75,9 +92,10 @@ class RolesController extends Controller
 
         $categories = DB::table('permissions')->select('category')->distinct()->get();
         $permissions = Permission::all();
+        $header='System Roles';
+        $description='Update Role';
         
-        
-        return View::make('roles.create', compact('permissions', 'categories'));
+        return view('roles.create', compact('permissions', 'categories','header','description'));
     }
 
     /**
@@ -127,7 +145,12 @@ class RolesController extends Controller
         $role = Role::find($id);
 
         
-        $role->delete();
+        /*$role->delete();*/
+
+        $role->users()->sync([]); // Delete relationship data
+        $role->perms()->sync([]); // Delete relationship data
+
+        $role->forceDelete();
 
         Audit::logaudit('Roles', 'deleted a user role', 'deleted user role '.$role->name.' in the system');
 
@@ -145,9 +168,12 @@ class RolesController extends Controller
         foreach ($role->perms()->get() as $p) {
             $roleperm[] = $p->name;
         }
+
+        $header='System Roles';
+        $description='View Role';
         
        Audit::logaudit('Roles', 'viewed a user role', 'viewed user role '.$role->name.' in the system');
-       return View::make('roles.show', compact('role', 'permissions', 'categories', 'roleperm'));
+       return view('roles.show', compact('role', 'permissions', 'categories', 'roleperm','header','description'));
     }
 
 

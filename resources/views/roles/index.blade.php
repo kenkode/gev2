@@ -1,4 +1,4 @@
-@extends('layouts.system')
+@extends('system')
 @section('content')
 
 
@@ -8,13 +8,17 @@
 
 	<div class="col-lg-12">
 
-		<br/>
-
-		<div class="panel panel-default">
-			<div class="panel-heading">
-    			<a class="btn btn-info btn-sm" href="{{ URL::to('roles/create')}}">new role</a>
-  			</div>
-  			<div class="panel-body">
+		<div class="box">
+      <div class="box-header with-border">
+        <h3 class="box-title">System Roles</h3>
+        <div class="box-tools pull-right">
+          <a class="btn btn-info btn-sm" href="{{ URL::to('roles/create')}}">new role</a>
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
+      <!-- /.box-header -->
+      <div class="box-body">
 
 				<table id="users" class="display compact table table-bordered table-striped" cellspacing="0" width="100%">
 					<thead>
@@ -42,7 +46,7 @@
                     <li><a href="{{URL::to('roles/edit/'.$role->id)}}">Edit</a></li>
 
     								
-    								<li><a href="{{URL::to('roles/destroy/'.$role->id)}}">Delete</a></li>
+    								<li><a href="{{URL::to('roles/delete/'.$role->id)}}" onclick="return (confirm('Are you sure you want to delete this user?'))">Delete</a></li>
   								</ul>
 							</div>
 
@@ -56,10 +60,7 @@
 			</div>	
 		</div>	
 	</div>	
-
-
-
-</div>
+</div>  
 
 
 

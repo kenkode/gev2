@@ -1,6 +1,26 @@
 <?php
 
-class ExpenseClaimController extends \BaseController {
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use App\Http\Models\Audit;
+use App\Http\Models\ExpenseClaim;
+use App\Http\Models\Notification;
+use App\Http\Models\Account;
+use App\Http\Models\ClaimReceipt;
+use App\Http\Models\ClaimReceiptItem;
+use App\Http\Models\AccountTransaction;
+use App\Http\Models\Journal;
+use Illuminate\Http\Request;
+use Redirect;
+use Entrust;
+use Session;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Auth;
+use DB;
+
+class ExpenseClaimController extends Controller {
 
 	/**
 	 * Display a listing of the resource.
@@ -21,11 +41,14 @@ class ExpenseClaimController extends \BaseController {
 		$settledClaims = ExpenseClaim::where('status', 'Payed')->get();
 		$declinedClaims = ExpenseClaim::where('status', 'Declined')->get();
 
+		$header='Expense Claims';
+		$description='View Expense Claims';
+
 		$receipts = ClaimReceipt::where('status', 'New')->get();
 
 		Audit::logaudit('Expense Claims', 'viewed expense claims', 'viewed expense claims in the system');
 
-		return View::make('expense_claims.index', compact('receipts', 'waitingClaims', 'paymentClaims', 'settledClaims', 'declinedClaims'));
+		return view('expense_claims.index', compact('receipts', 'waitingClaims', 'paymentClaims', 'settledClaims', 'declinedClaims','header','description'));
 	}
 	}
 
@@ -70,7 +93,10 @@ class ExpenseClaimController extends \BaseController {
 
 		Audit::logaudit('Expense Claims', 'viewed expense claim details', 'viewed expense claim details in the system');
 
-		return View::make('expense_claims.newReceipt', compact('receiptDetails', 'receiptItems'));
+        $header='Expense Claims';
+		$description='View Expense Claim';
+
+		return view('expense_claims.newReceipt', compact('receiptDetails', 'receiptItems','header','description'));
 	}
 	}
 
@@ -89,8 +115,9 @@ class ExpenseClaimController extends \BaseController {
         }else{
 		$receipts = ClaimReceipt::where('id', $id)->get();
 		$items = ClaimReceiptItem::where('claimReceiptID', $id)->get();
-
-		return View::make('expense_claims.editReceipt', compact('items', 'receipts'));
+        $header='Expense Claims';
+		$description='Update Expense Claim';
+		return view('expense_claims.editReceipt', compact('items', 'receipts','header','description'));
 	}
 	}
 
@@ -127,7 +154,9 @@ class ExpenseClaimController extends \BaseController {
         {
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
-		return View::make('expense_claims.newReceipt');
+        $header='Expense Claims';
+		$description='Add Expense Claim';
+		return view('expense_claims.newReceipt',compact('header','description'));
 	}
 	}
 
@@ -186,7 +215,7 @@ class ExpenseClaimController extends \BaseController {
 
 		$total = 0;
 		foreach($items as $trItem){
-			$total += ($trItem['quantity'] * $trItem['unit_price']);
+			$total += ($trItem['quantity'] * $trItem['unitPrice']);
 		}
 		
 		$claimReceipt = new ClaimReceipt;
@@ -230,7 +259,7 @@ class ExpenseClaimController extends \BaseController {
 			if(is_array($receipts_checked)){
 			 	// Create a new expense claim
 			 	$expenseClaim = new ExpenseClaim;
-			 	$expenseClaim->claimer = Confide::user()->username;
+			 	$expenseClaim->claimer = Auth::user()->name;
 			 	$expenseClaim->date_submitted = date('Y-m-d');
 			 	$expenseClaim->status = 'New';
 			 	$expenseClaim->save();
@@ -240,7 +269,7 @@ class ExpenseClaimController extends \BaseController {
 			 	DB::table('claim_receipts')->whereIn('id', $receipts_checked)
 			 	    ->update(array('claim_id'=>$claimID, 'status'=>'Awaiting Review'));
 
-			 	Audit::logaudit('Expense Claims', 'submitted expense claim for review', 'submitted expense claim for review for claimer '.Confide::user()->username.' in the system');
+			 	Audit::logaudit('Expense Claims', 'submitted expense claim for review', 'submitted expense claim for review for claimer '.Auth::user()->name.' in the system');
 
 			 	return Redirect::action('ExpenseClaimController@index')->with('success', 'Successfully submitted for review.');
 
@@ -254,8 +283,9 @@ class ExpenseClaimController extends \BaseController {
 	 */
 	public function approveClaimView($id){
 		$receipts = ClaimReceipt::where('claim_id', $id)->get();
-
-		return View::make('expense_claims.approveClaim', compact('receipts', 'id'));
+        $header='Expense Claims';
+		$description='Approve Expense Claims';
+		return view('expense_claims.approveClaim', compact('receipts', 'id', 'header', 'description'));
 	}
 
 
@@ -266,7 +296,7 @@ class ExpenseClaimController extends \BaseController {
 		ClaimReceipt::where('claim_id', $id)->update(array('status'=>'Awaiting Payment'));
 		ExpenseClaim::where('id', $id)->update(array('status'=>'Approved'));
 
-		Audit::logaudit('Expense Claims', 'approved expense claim', 'approved expense claim for claimer '.Confide::user()->username.' in the system');
+		Audit::logaudit('Expense Claims', 'approved expense claim', 'approved expense claim for claimer '.Auth::user()->name.' in the system');
 
 		return Redirect::action('ExpenseClaimController@index')->with('success', 'Claim successfully Approved, Awaiting payment.');
 	}
@@ -279,7 +309,7 @@ class ExpenseClaimController extends \BaseController {
 		ClaimReceipt::where('claim_id', $id)->update(array('status'=>'Declined'));
 		ExpenseClaim::where('id', $id)->update(array('status'=>'Declined'));
 
-		Audit::logaudit('Expense Claims', 'declined expense claim', 'declined expense claim for claimer '.Confide::user()->username.' in the system');
+		Audit::logaudit('Expense Claims', 'declined expense claim', 'declined expense claim for claimer '.Auth::user()->name.' in the system');
 
 		return Redirect::action('ExpenseClaimController@index')->with('success', 'Claim Declined!!!');
 	}
@@ -293,7 +323,10 @@ class ExpenseClaimController extends \BaseController {
 		$toAccounts = Account::where('category', 'LIABILITY')->get();
 		$amount = ClaimReceiptItem::getTotals(ClaimReceipt::getId($id))->grand;
 
-		return View::make('expense_claims.payClaim', compact('fromAccounts', 'toAccounts', 'amount', 'id'));
+		$header='Expense Claims';
+		$description='Pay Expense Claim';
+
+		return view('expense_claims.payClaim', compact('fromAccounts', 'toAccounts', 'amount', 'id', 'header', 'description'));
 	}
 
 
@@ -311,7 +344,7 @@ class ExpenseClaimController extends \BaseController {
 		// Save input in an Array
 		$data = array(
 			'date' => date('Y-m-d'),
-			'initiated_by' => Confide::user()->username,
+			'initiated_by' => Auth::user()->name,
 			'amount' => array_get($input, 'claim_amount'),
 			'debit_account' => array_get($input, 'to_account'),
 			'credit_account' => array_get($input, 'from_account'),
@@ -342,7 +375,7 @@ class ExpenseClaimController extends \BaseController {
 		$debit = Account::find($data['debit_account']);
 
 
-		Audit::logaudit('Expense Claims', 'paid expense claim', 'paid expense claim for claimer '.Confide::user()->username.' amount '.array_get($input, 'claim_amount').' credited to account '.$credit->name.' and debited to account '.$debit->name.' in the system');
+		Audit::logaudit('Expense Claims', 'paid expense claim', 'paid expense claim for claimer '.Auth::user()->name.' amount '.array_get($input, 'claim_amount').' credited to account '.$credit->name.' and debited to account '.$debit->name.' in the system');
 
 		return Redirect::action('ExpenseClaimController@index')->with('success', 'Expense Claim successfully paid');
 	}

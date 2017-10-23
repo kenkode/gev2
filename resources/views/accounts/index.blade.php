@@ -1,4 +1,4 @@
-@extends('layouts.accounting')
+@extends('accounting')
 @section('content')
 
 <?php
@@ -11,22 +11,32 @@ function asMoney($value) {
 
 <div class="row">
 	<div class="col-lg-12">
-  <h3>Chart of Accounts</h3>
 
-<hr>
-</div>	
-</div>
+    @if (Session::has('flash_message'))
 
+      <div class="alert alert-success">
+      {{ Session::get('flash_message') }}
+     </div>
+    @endif
 
-<div class="row">
-	<div class="col-lg-12">
+    @if (Session::has('delete_message'))
 
-    <div class="panel panel-default">
-      <div class="panel-heading">
+      <div class="alert alert-danger">
+      {{ Session::get('delete_message') }}
+     </div>
+    @endif
+
+    <div class="box">
+      <div class="box-header with-border">
+        <h3 class="box-title">Chart of Accounts</h3>
+        <div class="box-tools pull-right">
           <a class="btn btn-info btn-sm" href="{{ URL::to('accounts/create')}}">new account</a>
-        </div>
-        <div class="panel-body">
-
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
+      <!-- /.box-header -->
+      <div class="box-body">
 
     <table id="users" class="table table-condensed table-bordered table-responsive table-hover">
 
@@ -76,8 +86,8 @@ function asMoney($value) {
           
                   <ul class="dropdown-menu" role="menu">
                     <li><a href="{{URL::to('accounts/edit/'.$account->id)}}">Update</a></li>                   
-                    <li><a href="{{URL::to('accounts/delete/'.$account->id)}}">Delete</a></li>
-                     <li><a href="{{URL::to('accounts/show/'.$account->id)}}">Show</a></li>
+                    <li><a href="{{URL::to('accounts/delete/'.$account->id)}}" onclick="return (confirm('Are you sure you want to delete this account?'))">Delete</a></li>
+                     <!-- <li><a href="{{URL::to('accounts/show/'.$account->id)}}">Show</a></li> -->
                     
                   </ul>
               </div>
@@ -97,7 +107,8 @@ function asMoney($value) {
 
     </table>
   </div>
-
+</div>
+</div>
 
   </div>
 

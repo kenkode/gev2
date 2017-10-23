@@ -4,7 +4,7 @@
 	}
 ?>
 
-@extends('layouts.accounting')
+@extends('accounting')
 @section('content')
 
 <style type="text/css">
@@ -24,12 +24,6 @@
 
 </style>
 
-<div class="row">
-	<div class="col-lg-12">
-		<h4><font color="green">New Receipt</font></h4>
-		<hr>
-	</div>
-</div>
 
 <!-- ERROR MESSAGE -->
 @if(Session::has('error'))
@@ -40,10 +34,22 @@
 </div>
 @endif
 
+<div class="box">
+      <div class="box-header with-border">
+        <h3 class="box-title">New Receipt</h3>
+        <div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
+      <!-- /.box-header -->
+      <div class="box-body">
+
 <div class="row">
 	<div class="col-lg-12">
 		<div class="form">
 			<form class="receiptDetails" action="{{ URL::to('expense_claims/newItem') }}" method="POST">
+				{{ csrf_field() }}
 				<div class="form-inline top-form">
 					<h5><font color="#0BAEED">Receipt Details</font></h5>
 
@@ -110,6 +116,7 @@
 	<div class="col-lg-12">
 		<div class="receiptItems">
 			<form action="{{URL::to('expense_claims/commitTransaction')}}" method="POST">
+				{{ csrf_field() }}
 				<h5><font color="#40AEED">Receipt Items</font></h5>
 				<table class="table table-condensed table-bordered table-responsive table-hover">
 					<thead>
@@ -164,5 +171,6 @@
 	</div>
 </div>
 
-
+</div>
+</div>
 @stop

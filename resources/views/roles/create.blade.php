@@ -1,16 +1,29 @@
-@extends('layouts.system')
+@extends('system')
 @section('content')
 
+<?php
+use Illuminate\Support\Facades\Input;
+?>
 
+<div class="box">
+      <div class="box-header with-border">
+        <h3 class="box-title">Create Role</h3>
+        <div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
+      <!-- /.box-header -->
+      <div class="box-body">
 
 <div class="row">
 
-	<div class="col-lg-5">
+	<div class="col-lg-6">
 
-		<br/>
+		
 
       <form method="POST" action="{{{ URL::to('roles') }}}" accept-charset="UTF-8">
-        
+       {{ csrf_field() }} 
    
     <fieldset>
         <div class="form-group">
@@ -115,6 +128,8 @@
   </div>
 </div>
 
+</div>
+</div>
 
 
 

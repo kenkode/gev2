@@ -1,4 +1,4 @@
-@extends('layouts.system')
+@extends('system')
 @section('content')
 
 <br/>
@@ -13,12 +13,22 @@
             </div>
         @endif
 
-	<div class="col-lg-5">
+	<div class="col-lg-6">
 
+<div class="box">
+      <div class="box-header with-border">
+        <h3 class="box-title"><h3>Profile</h3></h3>
+        <div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
+      <!-- /.box-header -->
+      <div class="box-body">
 		<table class="table table-condensed table-bordered">
 
             <tr>
-                <td>username</td><td>{{ $user->username}}</td>
+                <td>username</td><td>{{ $user->name}}</td>
             </tr>
             <tr>
                 <td>email</td><td>{{ $user->email}}</td>
@@ -40,6 +50,8 @@
 
 
 
+</div>
+</div>
 
 
 

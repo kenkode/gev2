@@ -1,19 +1,27 @@
-@extends('layouts.accounting')
+@extends('accounting')
 @section('content')
 
 <!--
 	BEGINNING OF PAGE
 -->
-<div class="row">
-	<div class="col-lg-12">
-		<h4><font color='green'>Select Options</font></h4>
-		<hr>
-	</div>
-</div>
+
 
 <div class="row">
 	<div class="col-lg-6">
-		<form action="{{ URL::to('bankReconciliartion/generateReport') }}" method="POST" accept-charset="utf-8">
+		<div class="box">
+      <div class="box-header with-border">
+        <h3 class="box-title">Select Options</h3>
+        <div class="box-tools pull-right">
+          
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
+
+      <!-- /.box-header -->
+      <div class="box-body">
+		<form target="_blank" action="{{ URL::to('bankReconciliartion/generateReport') }}" method="POST" accept-charset="utf-8">
+			{{ csrf_field() }}
 			<div class="form-group">
 				<label>Bank Account:</label>
 				<select name="bank_account" class="form-control" required>
@@ -44,6 +52,8 @@
 			</div>
 		</form>
 	</div>
+</div>
+</div>
 </div>
 
 @stop

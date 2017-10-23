@@ -1,10 +1,11 @@
 @extends('accounting')
 @section('content')
 
+
 <div class="row">
     <div class="col-lg-6">
     
-       @if ( count( $errors ) > 0 )
+        @if ( count( $errors ) > 0 )
         <div class="alert alert-danger">
             @foreach ($errors->all() as $error)
                 {{ $error }}<br>        
@@ -14,8 +15,9 @@
 
         <div class="box">
       <div class="box-header with-border">
-        <h3 class="box-title">Approve Expense</h3>
+        <h3 class="box-title">Check Expense</h3>
         <div class="box-tools pull-right">
+          
           <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
           </button>
       </div>
@@ -23,8 +25,8 @@
       <!-- /.box-header -->
       <div class="box-body">
 
-         <form method="POST" action="{{{ URL::to('notificationapproveexpense') }}}" accept-charset="UTF-8">
-   {{ csrf_field() }}
+         <form method="POST" action="{{{ URL::to('notificationcheckexpense') }}}" accept-charset="UTF-8">
+    {{ csrf_field() }}
     <fieldset>
         <div class="form-group">
             <label for="username">Expense Name <span style="color:red">*</span> :</label>
@@ -59,13 +61,15 @@
 
         <div class="form-actions form-group">
         
-          <button type="submit" class="btn btn-primary btn-sm">Approve Expense</button>
+          <button type="submit" class="btn btn-primary btn-sm">Check Expense</button>
         </div>
 
     </fieldset>
 </form>
         
+</div>
 
+</div>
   </div>
 
 </div>

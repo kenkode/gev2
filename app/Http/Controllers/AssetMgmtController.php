@@ -1,6 +1,23 @@
 <?php
 
-class AssetMgmtController extends \BaseController {
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use App\Http\Models\Audit;
+use App\Http\Models\Asset;
+use App\Http\Models\Notification;
+use App\Http\Models\Account;
+use App\Http\Models\AccountTransaction;
+use App\Http\Models\Journal;
+use Illuminate\Http\Request;
+use Redirect;
+use Entrust;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Auth;
+use DB;
+
+class AssetMgmtController extends Controller {
 
 	/**
 	 * Display a listing of the resource.
@@ -11,8 +28,10 @@ class AssetMgmtController extends \BaseController {
 	{
 		// INDEX PAGE
 		$assets = Asset::all();
+		$header='Asset Management';
+		$description='View Asset Management';
 		Audit::logaudit('Asset Management', 'viewed asset management', 'viewed asset management in the system');
-		return View::make('assets.index', compact('assets'));
+		return view('assets.index', compact('assets','header','description'));
 	}
 
 
@@ -25,7 +44,9 @@ class AssetMgmtController extends \BaseController {
 	{
 		// NEW ASSET PAGE
 		$assetNum = 'AST_000'.(Asset::all()->count()+1);
-		return View::make('assets.create', compact('assetNum'));
+		$header='Asset Management';
+		$description='Create Asset';
+		return view('assets.create', compact('assetNum','header','description'));
 	}
 
 
@@ -74,8 +95,10 @@ class AssetMgmtController extends \BaseController {
 	{
 		// DISPLAY ASSET INFORMATION
 		$asset = Asset::find($id);
+		$header='Asset Management';
+		$description='View Asset';
 		Audit::logaudit('Items', 'viewed items', 'viewed items in the system');
-		return View::make('assets.show', compact('asset'));
+		return view('assets.show', compact('asset','header','description'));
 	}
 
 
@@ -89,7 +112,9 @@ class AssetMgmtController extends \BaseController {
 	{
 		// DISPLAY EDIT PAGE
 		$asset = Asset::find($id);
-		return View::make('assets.edit', compact('asset'));
+		$header='Asset Management';
+		$description='Update Asset';
+		return view('assets.edit', compact('asset','header','description'));
 	}
 
 
@@ -156,7 +181,7 @@ class AssetMgmtController extends \BaseController {
 			'debit_account' => $debitAc,
 			'credit_account' => $creditAc,
 			'description' => "Depreciated $item->asset_name on ". date('jS M, Y'),
-			'initiated_by' => Confide::user()->username,
+			'initiated_by' => Auth::user()->name,
 		];
 
 		if($depDiff < $item->salvage_value){
@@ -198,7 +223,7 @@ class AssetMgmtController extends \BaseController {
 				'credit_account' => $debitAc,
 				'description' => "Reversed depreciation on $item->asset_name on ". date('jS M, Y'),
 				'amount' => $lastDepAmnt,
-				'initiated_by' => Confide::user()->username
+				'initiated_by' => Auth::user()->name
 			];
 
 			// Reverse Existing Depreciation

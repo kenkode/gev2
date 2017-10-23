@@ -1,12 +1,16 @@
 <?php 
 
-class ClaimReceipt extends Eloquent{
+namespace App\Http\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class ClaimReceipt extends Model{
 
 	protected $table = 'claim_receipts';
 
 	// Link with Claim receipt item table
 	public function claimReceitItems(){
-		return $this->hasMany('ClaimReceiptItem');
+		return $this->hasMany('App\Http\Models\ClaimReceiptItem');
 	}
 
 	/**

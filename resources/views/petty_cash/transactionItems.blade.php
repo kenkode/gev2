@@ -4,7 +4,7 @@
 	}
 ?>
 
-@extends('layouts.accounting')
+@extends('accounting')
 @section('content')
 
 <style>
@@ -31,22 +31,27 @@
 
 </style>
 
+<!-- INPUT FORM -->
 <div class="row">
 	<div class="col-lg-12">
-		<h4>
+		<div class="box">
+      <div class="box-header with-border">
+        <h4>
 			<font color="green">Transaction Items</font>&emsp;|&emsp;
 			<font color="green">Transact To:&nbsp;{{ $newTr['transactTo'] }}</font>&emsp;|&emsp;
 			<font color="green">Date:&nbsp;{{ $newTr['trDate'] }}</font>
 		</h4>
-		<hr>
-	</div>
-</div>
-
-<!-- INPUT FORM -->
-<div class="row">
-	<div class="col-lg-12">
+        <div class="box-tools pull-right">
+          
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
+      <!-- /.box-header -->
+      <div class="box-body">
 		<div class="top-header">
 			<form class="form-inline" action="{{ URL::to('petty_cash/newTransaction') }}" method="POST">
+				{{ csrf_field() }}
 			<h5>Add Receipt Items</h5>
 				<input type="hidden" name="transact_to" value="{{ $newTr['transactTo'] }}">
 				<input type="hidden" name="tr_date" value="{{ $newTr['trDate'] }}">
@@ -81,11 +86,12 @@
 			</form>
 		</div>
 		<hr>
-	</div>
+	
 
 	<div class="col-lg-12">
 		<div>
 			<form action="{{URL::to('petty_cash/commitTransaction')}}" method="POST">
+				{{ csrf_field() }}
 				<h4><font color="#40AEED">Receipt Items</font></h4>
 				<table class="table table-condensed table-bordered table-responsive table-hover">
 					<thead>
@@ -141,5 +147,7 @@
 		</div>
 	</div>
 </div>
-
+</div>
+</div>
+</div>
 @stop

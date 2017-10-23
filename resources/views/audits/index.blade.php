@@ -1,28 +1,24 @@
-@extends('layouts.system')
+@extends('system')
 @section('content')
-<br/><br/>
 
-<div class="row">
-	<div class="col-lg-1">
-
-
-
-</div>	
-
-<div class="col-lg-12">
 
 	@if (Session::get('error'))
             <div class="alert alert-danger">{{{ Session::get('error') }}}</div>
         @endif
 
-<p>Audit Trail</p>
-<hr>
-
-<br>
-</div>	
-
-
+<div class="row">
 <div class="col-lg-12 ">
+    <div class="box">
+      <div class="box-header with-border">
+        <h3 class="box-title">Audit Trail</h3>
+        <div class="box-tools pull-right">
+          
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
+      <!-- /.box-header -->
+      <div class="box-body">
 
 	
 <table class="table table-bordered table-responsive table-hover" id="users">
@@ -52,8 +48,8 @@
 </table>
 
 </div>	
-
-
+</div>
+</div>
 
 </div>
 

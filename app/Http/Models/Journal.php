@@ -1,6 +1,11 @@
 <?php
 
-class Journal extends \Eloquent {
+namespace App\Http\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+
+class Journal extends Model {
 
 	// Add your validation rules here
 	public static $rules = [
@@ -14,13 +19,13 @@ class Journal extends \Eloquent {
 
 	public function branch(){
 
-		return $this->belongsTo('Branch');
+		return $this->belongsTo('App\Http\Models\Branch');
 	}
 
 
 	public function account(){
 
-		return $this->belongsTo('Account');
+		return $this->belongsTo('App\Http\Models\Account');
 	}
 
 
@@ -68,7 +73,7 @@ class Journal extends \Eloquent {
 
 
 	
-		$journal->account()->associate($account);
+		$journal->account_id = str_replace(array('[',']'),'',$data['credit_account']);
 
 		$journal->date = $data['date'];
 		$journal->trans_no = $trans_no;
@@ -90,7 +95,7 @@ class Journal extends \Eloquent {
 
 
 	
-		$journal->account()->associate($account);
+		$journal->account_id = str_replace(array('[',']'),'',$data['debit_account']);
 
 		$journal->date = $data['date'];
 		$journal->trans_no = $trans_no;

@@ -11,17 +11,22 @@
       <span class="sr-only">Toggle navigation</span>
     </a>
     <div class="navbar-custom-menu">
+      
       <ul class="nav navbar-nav">
+        <li >
+          <a href="{{URL::to('/')}}">
+            <i class="fa fa-home"></i>
+            Home
+          </a>
+          
+        </li> 
          <li class="dropdown notifications-menu">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
            Administration
           </a>
           <ul class="dropdown-menu">
-             <li><a href="{{ URL::to('organizations') }}"><i class="fa fa-home fa-fw"></i>  Organization</a>
+             <li><a href="{{ URL::to('system') }}"><i class="fa fa-home fa-fw"></i>  System</a>
                              <li class="divider"></li>
-                       
-                        <li><a href="{{ URL::to('system') }}"><i class="fa fa-sign-out fa-fw"></i> System</a>
-                        </li><li class="divider"></li>
                         <li>
                             <a  href="{{ URL::to('accounts')}}">
                                 <i class="fa fa-calculator fa-fw"></i>  
@@ -70,6 +75,11 @@
               </div>
             </li> -->
             <li class="user-footer">
+              <div class="pull-left">
+              <form action="{{ URL::to('users/profile/'.Auth::user()->id) }}" method="get">
+              <button class="btn btn-default btn-flat">Profile</button>
+            </form>
+          </div>
               <div class="pull-right">
                 <form action="{{ route('logout') }}" method="post">
                   {{ csrf_field() }}

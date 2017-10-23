@@ -4,7 +4,7 @@
 	}
 ?>
 
-@extends('layouts.accounting')
+@extends('accounting')
 @section('content')
 
 {{$receipts}}

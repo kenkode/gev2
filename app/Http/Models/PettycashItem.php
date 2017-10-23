@@ -1,6 +1,11 @@
 <?php 
 
-class PettycashItem extends Eloquent{
+namespace App\Http\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+
+class PettycashItem extends Model{
 
 	protected $table = 'pettycash_items';
 
@@ -11,7 +16,7 @@ class PettycashItem extends Eloquent{
 
 	// Link with AccountTransaction controller
 	public function accountTransaction(){
-		return $this->belongsTo('AccountTransaction');
+		return $this->belongsTo('App\Http\Models\AccountTransaction');
 	}
 
 }

@@ -1,20 +1,27 @@
-@extends('layouts.system')
+@extends('system')
 @section('content')
 
 
-
+<?php
+use App\Http\Models\Role;
+use Illuminate\Support\Facades\Input;
+?>
 
 <div class="row">
 
 	<div class="col-lg-12">
 
-		<br/>
-
-		<div class="panel panel-default">
-			<div class="panel-heading">
-    			<a class="btn btn-info btn-sm" href="{{ URL::to('users/create')}}">new user</a>
-  			</div>
-  			<div class="panel-body">
+		<div class="box">
+      <div class="box-header with-border">
+        <h3 class="box-title">System Users</h3>
+        <div class="box-tools pull-right">
+          <a class="btn btn-info btn-sm" href="{{ URL::to('users/create')}}">new user</a>
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
+      <!-- /.box-header -->
+      <div class="box-body">
 
 				<table id="users" class="display compact table table-bordered table-striped" cellspacing="0" width="100%">
 					<thead>
@@ -30,7 +37,7 @@
               			 @foreach($users as $user)
               			 <tr>
                			
-               			<td>{{ $user->username }}</td>
+               			<td>{{ $user->name }}</td>
                			<td>{{ $user->email }}</td>
                     <td>{{ Role::getRole($user->id) }}</td>
                			<td>{{ $user->created_at }}</td>
@@ -53,13 +60,13 @@
 
                     <!--<li><a href="{{URL::to('tellers/create/'.$user->id)}}">Make Teller</a></li>-->
                     
-    								<li><a href="{{URL::to('users/deactivate/'.$user->id)}}">Deactivate</a></li>
+    								<li><a href="{{URL::to('users/deactivate/'.$user->id)}}" onclick="return (confirm('Are you sure you want to deactivate this user?'))">Deactivate</a></li>
 
 
     								<?php } else { ?>
-    								<li><a href="{{URL::to('users/activate/'.$user->id)}}">Activate</a></li>
+    								<li><a href="{{URL::to('users/activate/'.$user->id)}}" onclick="return (confirm('Are you sure you want to activate this user?'))">Activate</a></li>
     								<?php } ?>
-    								<li><a href="{{URL::to('users/destroy/'.$user->id)}}">Delete</a></li>
+    								<li><a href="{{URL::to('users/destroy/'.$user->id)}}" onclick="return (confirm('Are you sure you want to delete this user?'))">Delete</a></li>
   								</ul>
 							</div>
 
@@ -69,16 +76,12 @@
 
  
 					</tbody>
-				</table>
-			</div>	
-		</div>	
-	</div>	
-
-
+				</table> 
 
 </div>
-
-
+  </div>
+</div>
+</div>
 
 
 <!-- Modal -->
@@ -94,7 +97,7 @@
 
       	
       	<form method="POST" action="{{{ URL::to('users/newuser') }}}" accept-charset="UTF-8">
-   
+   {{ csrf_field() }}
     <fieldset>
         <div class="form-group">
             <label for="username">{{{ Lang::get('confide::confide.username') }}}</label>
@@ -141,7 +144,7 @@
         	<button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Close</button>
           <button type="submit" class="btn btn-primary btn-sm">{{{ Lang::get('confide::confide.signup.submit') }}}</button>
         </div>
-
+</div>
     </fieldset>
 </form>
       </div>

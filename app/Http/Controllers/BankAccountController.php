@@ -1,6 +1,21 @@
 <?php
 
-class BankAccountController extends \BaseController {
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use App\Http\Models\Audit;
+use App\Http\Models\BankAccount;
+use App\Http\Models\BankStatement;
+use App\Http\Models\Notification;
+use Illuminate\Http\Request;
+use Redirect;
+use Entrust;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Auth;
+use DB;
+
+class BankAccountController extends Controller {
 
 	/**
 	 * Display a listing of the resource.
@@ -24,10 +39,13 @@ class BankAccountController extends \BaseController {
 						->select('id','category','name')
 						->get();
 
+		$header='Bank Accounts';
+		$description='View Bank Accounts';
+
 
 		Audit::logaudit('Bank Accounts', 'viewed bank accounts', 'viewed bank accounts in the system');
 
-		return View::make('banking.index', compact('bnkAccount','bkAccounts'));
+		return view('banking.index', compact('bnkAccount','bkAccounts','header','description'));
 	}
 
 
@@ -38,7 +56,9 @@ class BankAccountController extends \BaseController {
 	 */
 	public function create()
 	{
-		return View::make('banking.create');
+		$header='Bank Accounts';
+		$description='View Bank Accounts';
+		return view('banking.create',compact('header','description'));
 	}
 
 
@@ -303,7 +323,7 @@ class BankAccountController extends \BaseController {
 						->orderBy('stmt_month', 'DESC')
 						->first();
 
-		return View::make('banking.createReconcile', compact('bnkAccount', 'bAcc', 'bAccStmt', 'stmt_transactions', 'ac_transaction', 'ac_stmt_id', 'rec_month', 'bnk_stmt_id', 'bkTotal', 'count', 'lastRec'));
+		return view('banking.createReconcile', compact('bnkAccount', 'bAcc', 'bAccStmt', 'stmt_transactions', 'ac_transaction', 'ac_stmt_id', 'rec_month', 'bnk_stmt_id', 'bkTotal', 'count', 'lastRec'));
 	}
 
 
@@ -367,7 +387,7 @@ class BankAccountController extends \BaseController {
 							->select('*')
 							->get();
 
-		return View::make('banking.addMissingTrans', compact('bnk_trans_id', 'bnk_stmt_id', 'accounts', 'bookStmtID'));
+		return view('banking.addMissingTrans', compact('bnk_trans_id', 'bnk_stmt_id', 'accounts', 'bookStmtID'));
 		//return $bnk_trans_id .' - '. $bnk_stmt_id;
 	}
 

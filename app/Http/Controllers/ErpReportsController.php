@@ -9,6 +9,8 @@ use App\Http\Models\Erporder;
 use App\Http\Models\Audit;
 use App\Http\Models\Item;
 use App\Http\Models\Organization;
+use App\Http\Models\BankAccount;
+use App\Http\Models\Account;
 use App\Http\Models\Notification;
 use Illuminate\Http\Request;
 use Redirect;
@@ -1259,7 +1261,10 @@ public function kenya($id){
                         ->where('category', 'ASSET')
                         ->get();
 
-        return view('erpreports.recOptions', compact('bankAccounts','bookAccounts'));
+        $header='Reconciliation Report';
+        $description='Reconciliation Report';
+
+        return view('erpreports.recOptions', compact('bankAccounts','bookAccounts','header','description'));
     }
 
     public function showRecReport(){

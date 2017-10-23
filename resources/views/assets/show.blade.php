@@ -4,19 +4,24 @@
 	}
 ?>
 
-@extends('layouts.accounting')
+@extends('accounting')
 @section('content')
 
-<div class="row">
-	<div class="col-lg-12">
-		<h4><font color="green">Asset Details <small><strong>({{ $asset->asset_name }})</strong></small></font></h4>
-		<hr>
-	</div>
-</div>
 
 <div class="row">
-	<h4 style="margin-left: 15px;"><font color="#0BAEED">Asset Details</font></h4>
+	<div class="box">
+      <div class="box-header with-border">
+       <h4><font color="green">Asset Details <small><strong>({{ $asset->asset_name }})</strong></small></font></h4>
+        <div class="box-tools pull-right">
+        
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
+      <!-- /.box-header -->
+      <div class="box-body">
 	<div class="col-lg-4">
+		
 		<table class="table table-stripped table-condensed">
 			<tr>
 				<td><strong>Asset Name: </strong></td>
@@ -125,5 +130,7 @@
 		@endif
 	</div>
 </div><hr>
-
+</div>
+</div>
+</div>
 @stop

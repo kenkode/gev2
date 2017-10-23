@@ -1,6 +1,11 @@
 <?php 
 
-class Asset extends \Eloquent{
+namespace App\Http\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+
+class Asset extends Model{
 	public $table = 'assets';
 
 	public static $rules = [

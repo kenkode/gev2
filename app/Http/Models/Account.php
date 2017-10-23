@@ -20,13 +20,13 @@ class Account extends Model {
 
 	public function journals(){
 
-		return $this->hasMany('Journal');
+		return $this->hasMany('App\Http\Models\Journal');
 	}
 
 
 	public function savingProduct(){
 
-		return $this->belongsTo('Saving');
+		return $this->belongsTo('App\Http\Models\Saving');
 	}
 
 

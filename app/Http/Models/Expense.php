@@ -1,6 +1,10 @@
 <?php
 
-class Expense extends \Eloquent {
+namespace App\Http\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Expense extends Model {
 
 	// Add your validation rules here
 	public static $rules = [
@@ -21,7 +25,7 @@ class Expense extends \Eloquent {
 
 
 	public function account(){
-		return $this->belongsTo('Account');
+		return $this->belongsTo('App\Http\Models\Account');
 	}
 
 }

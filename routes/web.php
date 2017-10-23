@@ -21,6 +21,9 @@ use App\Http\Models\TaxOrder;
 use App\Http\Models\Account;
 use App\Http\Models\Accounts;
 use App\Http\Models\Paymentmethod;
+use App\Http\Models\Expense;
+use App\Http\Models\Bank;
+use App\Http\Models\BBranch;
 use Illuminate\Support\Facades\Input;
 /*
 |--------------------------------------------------------------------------
@@ -59,7 +62,7 @@ Route::middleware("auth")->group(function() {
 
     Route::get('/orders/{order}', 'GeController\GeController@orderDetails');
 
-    Route::get('/users', 'GeController\GeController@users')->name('users');
+    //Route::get('/users', 'GeController\GeController@users')->name('users');
 
     Route::get('/manage', 'GeController\GeController@manage')->name('manage');
 
@@ -172,7 +175,7 @@ Route::get('mail', function(){
 Route::resource('payable', 'PayableController');
 
 // Confide routes
-/*Route::resource('users', 'UsersController');
+Route::get('users', 'UsersController@index')->name('users');
 Route::get('users/create', 'UsersController@create');
 Route::get('users/edit/{user}', 'UsersController@edit');
 Route::post('users/update/{user}', 'UsersController@update');
@@ -193,7 +196,7 @@ Route::get('users/destroy/{user}', 'UsersController@destroy');
 Route::get('users/password/{user}', 'UsersController@Password');
 Route::post('users/password/{user}', 'UsersController@changePassword2');
 Route::get('users/profile/{user}', 'UsersController@profile');
-Route::get('users/show/{user}', 'UsersController@show');*/
+Route::get('users/show/{user}', 'UsersController@show');
 
 Route::get('notifications/index', 'NotificationController@index');
 Route::get('notifications/markasread/{id}', 'NotificationController@markasread');
@@ -224,8 +227,10 @@ Route::get('system', function(){
 
 
     $organization = Organization::find(1);
+    $header='System Version';
+    $description='View System Version';
 
-    return view('system.index', compact('organization'));
+    return view('system.index', compact('organization','header','description'));
 });
 
 });
@@ -1442,8 +1447,53 @@ Route::get('notificationshowexpense/{name}/{type}/{amount}/{date}/{account}/{rec
   $notification->update();
 
   $acc = Account::find($account);
+  $header='Expenses';
+  $description='Check Expense';
+  return view('expenses.checkexpense', compact('name','type','amount','date','account','receiver','confirmer','key','acc','header','description'));
+}else{
+  return Redirect::to('notifications/index')->withDeleteMessage("Expense for item ".$name." already checked!");
+}
+});
 
-  return view('expenses.showexpense', compact('name','type','amount','date','account','receiver','confirmer','key','acc'));
+Route::post('notificationcheckexpense', function(){
+
+    $notification = Notification::where('confirmation_code',Input::get("key"))->first();
+    $notification->is_read = 1;
+    $notification->update();
+
+  $username = Auth::user()->name;
+
+  $u = DB::table("users")->where("id",Input::get("receiver"))->first();
+
+    $users = DB::table('roles')
+    ->join('assigned_roles', 'roles.id', '=', 'assigned_roles.role_id')
+    ->join('users', 'assigned_roles.user_id', '=', 'users.id')
+    ->join('permission_role', 'roles.id', '=', 'permission_role.role_id') 
+    ->select("users.id","email","users.name")
+    ->where("permission_id",141)->get();
+
+        $key = md5(uniqid());
+
+    foreach ($users as $user) {
+
+    Notification::notifyUser($user->id,"Hello, Please approve expense inserted for item ".Input::get('name'),"approve expense","notificationshowapproveexpense/".Input::get('name')."/".Input::get('type')."/".Input::get('amount')."/".date("Y-m-d",strtotime(Input::get('date')))."/".Input::get('account')."/".Auth::user()->id."/".$user->id."/".Input::get("receiver")."/".$key,$key);
+      }
+   Audit::logaudit('Expenses', 'checked an expense', 'checked expense '.Input::get('name').' created by user '.$u->name.' in the system');
+
+  return Redirect::to('notifications/index')->withFlashMessage("Expense for item ".Input::get('item')." confirmed as checked! A final approval is required");
+});
+
+Route::get('notificationshowapproveexpense/{name}/{type}/{amount}/{date}/{account}/{checker}/{confirmer}/{receiver}/{key}', function($name,$type,$amount,$date,$account,$checker,$confirmer,$receiver,$key){
+  $expense = Expense::where('approve_code',$key)->count();
+  if($expense == 0){
+  $notification = Notification::where('confirmation_code',$key)->where('user_id',$confirmer)->first();
+  $notification->is_read = 1;
+  $notification->update();
+
+  $acc = Account::find($account);
+  $header='Expenses';
+  $description='Approve Expense';
+  return view('expenses.showexpense', compact('name','type','amount','date','account','receiver','confirmer','checker','key','acc','header','description'));
 }else{
   return Redirect::to('notifications/index')->withDeleteMessage("Expense for item ".$name." already approved!");
 }
@@ -1505,7 +1555,7 @@ Route::post('notificationapproveexpense', function(){
     $notification->is_read = 1;
     $notification->update();
 
-  Audit::logaudit('Expenses', 'approved an expense', 'approved expense '.Input::get('name').' created by user '.$user->username.' in the system');
+  Audit::logaudit('Expenses', 'approved an expense', 'approved expense '.Input::get('name').' created by user '.$user->name.' in the system');
 
   return Redirect::to('notifications/index')->withFlashMessage("Expense for item ".Input::get('item')." confirmed as approved!");
 });
@@ -2544,6 +2594,11 @@ Route::get('api/getmodel', function(){
     return $erporderitems->item_id;
 });
 
+Route::get('api/bankbranches', function(){
+    $id = Input::get('option');
+    $bbranch = Bank::find($id)->bankbranch;
+    return $bbranch->pluck('bank_branch_name', 'id');
+});
 
 Route::get('api/dropdown', function(){
     $id = Input::get('option');

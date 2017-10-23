@@ -1,14 +1,24 @@
-@extends('layouts.system')
+@extends('system')
 @section('content')
-<br/><br/><br/><br/>
-<br/><br/><br/><br/>
 
+<?php
+use App\Http\Models\Organization;
+?>
+
+
+<div class="box">
+      <div class="box-header with-border">
+        <h3 class="box-title">System Version</h3>
+        <div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
+      <!-- /.box-header -->
+      <div class="box-body">
 <div class="row">
-	<div class="col-lg-1">
-
-
-
-</div>	
+	
+	
 
 <div class="col-lg-3">
 
@@ -18,7 +28,8 @@
 </div>	
 
 
-<div class="col-lg-5 ">
+<div class="col-lg-6 ">
+
 
 	<table class="table table-bordered table-condensed">
 
@@ -43,6 +54,12 @@
 															</table>
 
 
+
+</div>	
+
+
+
+</div>
 
 </div>	
 

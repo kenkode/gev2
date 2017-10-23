@@ -1,6 +1,21 @@
 <?php
 
-class ExpensesController extends \BaseController {
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use App\Http\Models\Expense;
+use App\Http\Models\Audit;
+use App\Http\Models\Account;
+use App\Http\Models\Notification;
+use Illuminate\Http\Request;
+use Redirect;
+use Entrust;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Auth;
+use DB;
+
+class ExpensesController extends Controller {
 
 	/**
 	 * Display a listing of expenses
@@ -13,11 +28,13 @@ class ExpensesController extends \BaseController {
         {
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
-		$expenses = Expense::all();
+		$expenses = Expense::whereNotNull('confirmed_id')->whereNotNull('receiver_id')->get();
+		$header='Expenses';
+		$description='View Expenses';
 
 		Audit::logaudit('Expenses', 'viewed expenses', 'viewed expenses in the system');
 
-		return View::make('expenses.index', compact('expenses'));
+		return view('expenses.index', compact('expenses','header','description'));
 	    }
 	}
 
@@ -33,7 +50,9 @@ class ExpensesController extends \BaseController {
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
 		$accounts = Account::all();
-		return View::make('expenses.create',compact('accounts'));
+		$header='Expenses';
+		$description='Create Expense';
+		return view('expenses.create',compact('accounts','header','description'));
 	}
 	}
 
@@ -54,20 +73,20 @@ class ExpensesController extends \BaseController {
 		if (! Entrust::can('approve_expense') ) // Checks the current user
         {
 
-        $username = Confide::user()->username;
+        $username = Auth::user()->username;
 
 		$users = DB::table('roles')
 		->join('assigned_roles', 'roles.id', '=', 'assigned_roles.role_id')
 		->join('users', 'assigned_roles.user_id', '=', 'users.id')
 		->join('permission_role', 'roles.id', '=', 'permission_role.role_id') 
-		->select("users.id","email","username")
+		->select("users.id","email","users.name")
 		->where("permission_id",141)->get();
 
         $key = md5(uniqid());
 
 		foreach ($users as $user) {
 
-		Notification::notifyUser($user->id,"Hello, Please approve expense inserted for item ".Input::get('name'),"expense","notificationshowexpense/".Input::get('name')."/".Input::get('type')."/".Input::get('amount')."/".date("Y-m-d",strtotime(Input::get('date')))."/".Input::get('account')."/".Confide::user()->id."/".$user->id."/".$key,$key);
+		Notification::notifyUser($user->id,"Hello, Please check expense inserted for item ".Input::get('name'),"check expense","notificationshowexpense/".Input::get('name')."/".Input::get('type')."/".Input::get('amount')."/".date("Y-m-d",strtotime(Input::get('date')))."/".Input::get('account')."/".Auth::user()->id."/".$user->id."/".$key,$key);
      	}
      	Audit::logaudit('Expenses', 'created an expense', 'created expense '.Input::get('name').' in the system and awaiting approval');
         return Redirect::to('expenses')->with('notice', 'Admin approval is needed to insert this expense');
@@ -80,8 +99,8 @@ class ExpensesController extends \BaseController {
 		$expense->amount = Input::get('amount');		
 		$expense->date = date("Y-m-d",strtotime(Input::get('date')));
 		$expense->account_id = Input::get('account');
-		$expense->receiver_id = Confide::user()->id;
-        $expense->confirmed_id = Confide::user()->id;
+		$expense->receiver_id = Auth::user()->id;
+        $expense->confirmed_id = Auth::user()->id;
 		$expense->save();
 
         DB::table('accounts')
@@ -110,8 +129,9 @@ class ExpensesController extends \BaseController {
 		$expense = Expense::findOrFail($id);
 
 		Audit::logaudit('Expenses', 'viewed expense details', 'viewed expense details for expense '.$expense->name.' in the system');
-
-		return View::make('expenses.show', compact('expense'));
+        $header='Expenses';
+		$description='View Expense';
+		return view('expenses.show', compact('expense','header','description'));
 	}
 	}
 
@@ -130,8 +150,9 @@ class ExpensesController extends \BaseController {
         }else{
 		$expense = Expense::find($id);
 		$accounts = Account::all();
-
-		return View::make('expenses.edit', compact('expense','accounts'));
+        $header='Expenses';
+		$description='Update Expense';
+		return view('expenses.edit', compact('expense','accounts','header','description'));
 	}
 	}
 

@@ -1,6 +1,50 @@
-@extends('layouts.organization')
+@extends('system')
 @section('content')
-<br/><br/>
+
+<?php
+use App\Http\Models\Organization;
+?>
+
+{{HTML::script('media/jquery-1.8.0.min.js') }}
+
+<script type="text/javascript">
+  $(document).ready(function(){
+  $('#bank_id').change(function(){
+        $.get("{{ url('api/bankbranches')}}", 
+        { option: $(this).val() }, 
+        function(data) {
+            $('#bbranch_id').empty(); 
+            $('#bbranch_id').append("<option>----------------select Bank Branch--------------------</option>");
+            $('#bbranch_id').append("<option value='cnew'>Create New</option>");
+            $.each(data, function(key, element) {
+            $('#bbranch_id').append("<option value='" + key +"'>" + element + "</option>");
+            });
+        });
+    });
+});
+
+  
+   
+</script>
+
+<style type="text/css">
+  span.select2-container {
+    z-index:10050;
+}
+</style>
+
+<div class="box">
+      <div class="box-header with-border">
+        <h3 class="box-title">Organization</h3>
+        <div class="box-tools pull-right">
+          
+         
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
+      <!-- /.box-header -->
+      <div class="box-body">
 
 <div class="row">
 	<div class="col-lg-12">
@@ -133,7 +177,7 @@
 
 
 <!-- organizations Modal -->
-<div class="modal fade" id="organization" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="organization" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -145,7 +189,7 @@
 
       	
       	<form method="POST" action="{{{ URL::to('organizations/update/'.$organization->id) }}}" accept-charset="UTF-8">
-   
+   {{ csrf_field() }}
     <fieldset>
         <div class="form-group">
             <label > Organization Name</label>
@@ -194,7 +238,7 @@
        
                     <div class="form-group">
                         <label>Bank</label>
-                        <select name="bank_id" class="form-control">
+                        <select name="bank_id" id="bank_id" class="form-control select2">
                             <option></option>
                             @foreach($banks_db as $bank)
                             <option value="{{ $bank->id }}"<?= ($organization->bank_id==$bank->id)?'selected="selected"':''; ?>> {{ $bank->bank_name }}</option>
@@ -207,7 +251,7 @@
                       
                      <div class="form-group">
                         <label >Bank Branch</label>
-                        <select name="bbranch_id" class="form-control">
+                        <select name="bbranch_id" id="bbranch_id" class="form-control select2">
                             <option></option>
                             @foreach($bbranches_db as $bbranch)
                             <option value="{{$bbranch->id }}"<?= ($organization->bank_branch_id==$bbranch->id)?'selected="selected"':''; ?>> {{ $bbranch->bank_branch_name }}</option>
@@ -281,7 +325,7 @@
 
       	
       	<form method="POST" action="{{{ URL::to('organizations/logo/'.$organization->id) }}}" accept-charset="UTF-8" enctype="multipart/form-data">
-   
+   {{ csrf_field() }}
     <fieldset>
         <div class="form-group">
             <label > Upload Logo</label>
@@ -326,7 +370,8 @@
   </div>
 </div>
 
-
+</div>
+</div>
 
 
 

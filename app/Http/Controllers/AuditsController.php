@@ -1,6 +1,18 @@
 <?php
 
-class AuditsController extends \BaseController {
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use App\Http\Models\Audit;
+use Illuminate\Http\Request;
+use Redirect;
+use Entrust;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Auth;
+use DB;
+
+class AuditsController extends Controller {
 
 	/**
 	 * Display a listing of audits
@@ -10,10 +22,12 @@ class AuditsController extends \BaseController {
 	public function index()
 	{
 		$audits = Audit::all();
+		$header='Audit Trails';
+		$description='View Audit Trails';
 
 		Audit::logaudit('Audit Trails', 'viewed audit trails', 'viewed audit trails in the system');
 
-		return View::make('audits.index', compact('audits'));
+		return view('audits.index', compact('audits','header','description'));
 	}
 
 	/**
@@ -23,7 +37,7 @@ class AuditsController extends \BaseController {
 	 */
 	public function create()
 	{
-		return View::make('audits.create');
+		return view('audits.create');
 	}
 
 	/**
@@ -55,7 +69,7 @@ class AuditsController extends \BaseController {
 	{
 		$audit = Audit::findOrFail($id);
 
-		return View::make('audits.show', compact('audit'));
+		return view('audits.show', compact('audit'));
 	}
 
 	/**
@@ -68,7 +82,7 @@ class AuditsController extends \BaseController {
 	{
 		$audit = Audit::find($id);
 
-		return View::make('audits.edit', compact('audit'));
+		return view('audits.edit', compact('audit'));
 	}
 
 	/**

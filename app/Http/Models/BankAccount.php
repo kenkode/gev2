@@ -1,6 +1,12 @@
 <?php
 
-Class BankAccount extends Eloquent{
+namespace App\Http\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+use DB;
+
+Class BankAccount extends Model{
 
 	protected $table = 'bank_accounts';
 

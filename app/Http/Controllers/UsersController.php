@@ -1,6 +1,20 @@
 <?php
 
+namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
+use App\Http\Models\User;
+use App\Http\Models\UserRepository;
+use App\Http\Models\Audit;
+use App\Http\Models\Role;
+use Illuminate\Http\Request;
+use Redirect;
+use Entrust;
+use Hash;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
+use DB;
 
 /**
  * UsersController Class
@@ -17,13 +31,15 @@ class UsersController extends Controller
     public function index(){
 
         $users = User::all();
+        $header='System Users';
+        $description='View System Users';
 
         if (! Entrust::can('view_users') ) // Checks the current user
         {
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
         Audit::logaudit('System', 'viewed users', 'viewed system users');
-        return View::make('users.index')->with('users', $users);
+        return view('users.index',compact('users','header','description'));
     }
     }
 
@@ -38,8 +54,9 @@ class UsersController extends Controller
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
         $user = User::find($user);
-
-        return View::make('users.edit')->with('user', $user);
+        $header='System Users';
+        $description='Update User';
+        return view('users.edit',compact('user','header','description'));
     }
     }
 
@@ -51,11 +68,11 @@ class UsersController extends Controller
 
         $user = User::find($user);
 
-        $user->username = Input::get('username');
+        $user->name = Input::get('username');
         $user->email = Input::get('email');
         $user->update();
 
-        Audit::logaudit('System', 'updated profile', 'User '.Confide::user()->username.' updated their profile');
+        Audit::logaudit('System', 'updated profile', 'User '.Auth::user()->name.' updated their profile');
 
         return Redirect::to('users/profile/'.$user->id);
     }
@@ -75,7 +92,9 @@ class UsersController extends Controller
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
         $roles = Role::all();
-        return View::make('users.create', compact('roles'));
+        $header='System Users';
+        $description='Create User';
+        return view('users.create', compact('roles','header','description'));
     }
     }
 
@@ -134,11 +153,11 @@ class UsersController extends Controller
      */
     public function login()
     {
-        if (Confide::user()) {
+        if (Auth::user()) {
             return Redirect::to('/dashboard');
 
         } else {
-            return View::make('login');
+            return view('login');
         }
     }
 
@@ -155,7 +174,7 @@ class UsersController extends Controller
         if ($repo->login($input)) {
             return Redirect::intended('/dashboard');
 
-            Audit::logaudit('System', 'login', 'User '.Confide::user()->username.' logged into the system');
+            Audit::logaudit('System', 'login', 'User '.Auth::user()->username.' logged into the system');
 
         } else {
             if ($repo->isThrottled($input)) {
@@ -201,7 +220,7 @@ class UsersController extends Controller
      */
     public function forgotPassword()
     {
-        return View::make(Config::get('confide::forgot_password_form'));
+        return view(Config::get('confide::forgot_password_form'));
     }
 
     /**
@@ -234,7 +253,7 @@ class UsersController extends Controller
      */
     public function resetPassword($token)
     {
-        return View::make(Config::get('confide::reset_password_form'))
+        return view(Config::get('confide::reset_password_form'))
                 ->with('token', $token);
     }
 
@@ -275,7 +294,7 @@ class UsersController extends Controller
     public function logout()
     {
 
-        Audit::logaudit('System', 'logout', 'User '.Confide::user()->username.' logged out of the system');
+        Audit::logaudit('System', 'logout', 'User '.Auth::user()->username.' logged out of the system');
 
         Confide::logout();
 
@@ -379,7 +398,9 @@ class UsersController extends Controller
     public function password($user){
 
         $user = User::find($user);
-        return View::make('users.password', compact('user'));
+        $header='System Users';
+        $description='Update Password';
+        return view('users.password', compact('user','header','description'));
 
     }
 
@@ -390,9 +411,11 @@ class UsersController extends Controller
     public function profile($user){
 
         $user = User::find($user);
+        $header='System Users';
+        $description='User Profile';
 
-        Audit::logaudit('System', 'viewed profile', 'User '.Confide::user()->username.' has viewed their profile');
-        return View::make('users.profile', compact('user'));
+        Audit::logaudit('System', 'viewed profile', 'User '.Auth::user()->username.' has viewed their profile');
+        return view('users.profile', compact('user','header','description'));
     }
 
 
@@ -422,25 +445,27 @@ class UsersController extends Controller
 
     public function changePassword2(){
 
-        $user_id = Confide::user()->id;
+        $user_id = Auth::user()->id;
+
+        $oldpass = DB::table("users")->where("id",$user_id)->first();
 
         
 
         $password_confirmation = Input::get('password_confirmation');
         $password = Input::get('password');
 
-        if($password != $password_confirmation){
+        if (!password_verify(Input::get("oldpassword"), $oldpass->password)){
+
+            return Redirect::back()->with('error', 'old password does not match your current password');
+        }
+        else if($password != $password_confirmation){
 
             return Redirect::back()->with('error', 'passwords do not match');
-        } 
+        }  
         else
         {
-
-
-
-
-            
-        $pass = Hash::make($password);
+    
+        $pass = bcrypt($password);
 
         DB::table('users')->where('id', $user_id)->update(array('password' => $pass));
 
@@ -462,8 +487,8 @@ class UsersController extends Controller
 
     public function password2(){
 
-        $user = Confide::user()->id;
-        return View::make('css.password', compact('user'));
+        $user = Auth::user()->id;
+        return view('css.password', compact('user'));
 
     }
 
@@ -472,7 +497,7 @@ class UsersController extends Controller
 
         $tellers = DB::table('users')->where('user_type', '=', 'teller')->get();
 
-        return View::make('tellers.index', compact('tellers'));
+        return view('tellers.index', compact('tellers'));
     }
 
     public function createteller($id){
@@ -513,12 +538,33 @@ class UsersController extends Controller
 
     public function newuser(){
 
+        if(Input::get("password") != Input::get("password_confirmation")){
+        return Redirect::to('users/create')->with("notice","Passwords don`t match!");
+        }else{
         $input = Input::all();
 
         $roles = Input::get('role');
 
-        $repo = App::make('UserRepository');
-        $user = $repo->register($input);
+        /*$repo = App::make('UserRepository');
+        $user = $repo->register($input);*/
+
+        $user = new User;
+
+        $user->email    = array_get($input, 'email');
+        $user->password = bcrypt(array_get($input, 'password'));
+        $user->type = 1;
+        $user->name = array_get($input, 'username');
+        $user->organization_id = 1;
+
+        // The password confirmation will be removed from model
+        // before saving. This field will be used in Ardent's
+        // auto validation.
+
+        // Generate a random confirmation code
+        $user->confirmation_code     = md5(uniqid(mt_rand(), true));
+
+        // Save if valid. Password field will be hashed before save
+        $user->save();
          
 
             foreach ($roles as $role) {
@@ -526,9 +572,10 @@ class UsersController extends Controller
                 $user->attachRole($role);
             }
         
-        Audit::logaudit('System', 'created user', 'created user '.$user->username.' in the system');
+        Audit::logaudit('System', 'created user', 'created user '.$user->name.' in the system');
 
         return Redirect::to('users');
+    }
     }
 
 

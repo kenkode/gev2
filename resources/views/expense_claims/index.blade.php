@@ -2,9 +2,11 @@
 	function asMoney($value){
 		return number_format($value, 2);
 	}
+	use App\Http\Models\ClaimReceipt;
+use App\Http\Models\ClaimReceiptItem;
 ?>
 
-@extends('layouts.accounting')
+@extends('accounting')
 @section('content')
 
 <script type="text/javascript">
@@ -39,12 +41,7 @@ $(document).ready(function(){
 </style>
 
 <!-- PAGE -->
-<div class="row">
-	<div class="col-lg-12">
-		<h4><font color="green">Expense Claims</font></h4>
-		<hr>
-	</div>
-</div>
+
 
 <!-- SUCCESS MESSAGE -->
 @if(Session::has('success'))
@@ -67,6 +64,16 @@ $(document).ready(function(){
 <!-- BODY SECTION -->
 <div class="row">
 	<div class="col-lg-12">
+		<div class="box">
+      <div class="box-header with-border">
+        <h3 class="box-title">Expense Claims</h3>
+        <div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
+      <!-- /.box-header -->
+      <div class="box-body">
 		<!-- TAB LINKS -->
 		<ul class="nav nav-tabs">
 			<li class="active"><a data-toggle="tab" href="#claimReceipts">Claim Receipts</a></li>
@@ -82,6 +89,7 @@ $(document).ready(function(){
 			<!-- CURRENT CLAIMS TAB -->
 			<div id="claimReceipts" class="tab-pane fade in active">
 				<form action="{{ URL::to('expense_claims/submitClaim') }}" method="POST">
+					{{ csrf_field() }}
 				<hr>
 					<a href="{{ URL::to('expense_claims/newReceipt') }}" class="btn btn-info btn-sm"><i class="fa fa-plus-square fa-fw"></i> Add Receipt</a>&emsp;
 					<button type="submit" class="btn btn-warning btn-sm"><i class="fa fa-paper-plane fa-fw"></i> Submit for Approval</button>
@@ -273,6 +281,7 @@ $(document).ready(function(){
 		</div>
 	</div>
 </div>
-
+</div>
+</div>
 
 @stop
