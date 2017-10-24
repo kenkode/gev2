@@ -5,45 +5,37 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
 <style type="text/css">
-
-body{
- /*  background-image: url('{{ asset('public/uploads/logo/ADmzyppq2eza.png') }}');
- background-opacity: 0.1 !important; */
-}
-
-body:before{
-  /* width: 50% !important; */
+*{
+  font-size: 10px !important;
 }
 
 table {
   max-width: 100%;
   background-color: transparent;
-  border-collapse: collapse !important;
 }
 
-table, tr, td, th, tbody, thead, tfoot {
-    page-break-inside: avoid !important;
+
+table.data{
+  border-collapse: collapse;
+  border: 1px solid #BBB;
+}
+
+table.data th, table.data td{
+  padding: 5px 10px;
+  border: 1px solid #BBB;
 }
 
 th,td{
   padding: 2px 7px !important;
-  vertical-align: top !important;
 }
 
 th {
   text-align: left;
-  padding: 2px 7px !important;
-  border: 1px solid #ccc !important;
 }
 .table {
   width: 100%;
-  margin-bottom: 150px;
+   margin-bottom: 150px;
 }
-td{
-  padding: 3px 7px !important;
-  //border: 1px solid #ccc !important;
-}
-
 hr {
   margin-top: 1px;
   margin-bottom: 2px;
@@ -66,7 +58,8 @@ body {
  .footer .page:after { content: counter(page, upper-roman); }
 
 
-img.watermark{
+
+img#watermark{
   position: fixed;
   width: 100%;
   z-index: 10;
@@ -76,9 +69,10 @@ img.watermark{
 </style>
 
 <?php
-
+if (!function_exists('asMoney'))   {
 function asMoney($value) {
   return number_format($value, 2);
+}
 }
 
 ?>
@@ -289,58 +283,7 @@ function asMoney($value) {
 <br><br>
 <hr>
 
-<!-- <div align="center"><strong>Clients' Balances as at {{date('d-M-Y')}}</strong></div><br>   
 
-    <table class="table table-bordered" border='0' cellspacing='0' cellpadding='0'>
-
-      <tr>   
-
-        <th width='20'><strong># </strong></th>
-        <th><strong>Name </strong></th>        
-        <th align="center"><strong>Customer % Discount</strong></th>
-        <th><strong>Amount</strong></th>
-      </tr>
-      <?php $i =1; ?>
-      @foreach($clients_customer as $client)
-      
-
-
-      <?php  
-
-
-    $order = 0;
-         
-    $order = DB::table('erporders')
-           ->join('erporderitems','erporders.id','=','erporderitems.erporder_id')
-           ->join('clients','erporders.client_id','=','clients.id')           
-           ->where('clients.id',$client->id) ->selectRaw('(SUM(price * quantity))-COALESCE(SUM(discount_amount),0)- COALESCE(SUM(erporderitems.client_discount),0)  as total')
-           ->pluck('total');
-
-         /*}*/
-
-    $paid = DB::table('clients')
-           ->join('payments','clients.id','=','payments.client_id')
-           ->where('clients.id',$client->id) ->selectRaw('COALESCE(SUM(amount_paid),0) as due')
-           ->pluck('due');
-
-             $due= $order-$paid;
-           
-           if($due>0){
-
-?>
-
-      <tr>
-       <td td width='20'>{{$i}}</td>
-        <td> {{ $client->name }}</td>          
-        <td> {{ asMoney($due)}}</td>
-        </tr>
-      <?php $i++;
-
-      } ?>
-   
-    @endforeach
-
-    </table> -->
   
 </div>
 

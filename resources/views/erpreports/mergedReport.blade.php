@@ -1,7 +1,10 @@
 <?php
-	function asMoney($value) {
-	  return number_format($value, 2);
-	}
+	if (!function_exists('asMoney'))   {
+function asMoney($value) {
+  return number_format($value, 2);
+}
+}
+	use App\Http\Models\Client;
 ?>
 
 <!DOCTYPE html>

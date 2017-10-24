@@ -42,12 +42,15 @@ class ErpReportsController extends Controller {
 
         $organization = Organization::find(1);
 
-        $pdf = PDF::loadView('erpreports.clientsReport', compact('clients', 'organization'))->setPaper('a4', 'landscape');
+        ini_set("memory_limit", "-1");
+        ini_set("max_execution_time", "-1");
+
+        $pdf = PDF::loadView('erpreports.cReport', compact('clients', 'organization'))->setPaper('a4', 'landscape');
 
         Audit::logaudit('Client', 'viewed clients report', 'viewed clients report in the system');
     
         return $pdf->stream('Client List.pdf');
-        //return view('erpreports.clientsReport', compact('clients', 'organization'));
+        return view('erpreports.clientsReport', compact('clients', 'organization'));
         
     }
 
@@ -592,11 +595,11 @@ public function kenya($id){
         $accounts = DB::table('accounts')
                         ->get();
 
-
         $pdf = PDF::loadView('erpreports.salesSummaryReport', compact('sales','accounts','discount_amount','total_sales_todate','discount_amount_todate','total_payment','clients_customer','target','organization','percentage_discount','from','to','sales_target','discount_amount_target','from_target','to_target'))->setPaper('a4', 'landscape');
         //return view('erpreports.salesSummaryReport', compact('sales','accounts','discount_amount','total_sales_todate','discount_amount_todate','total_payment','clients_customer','target','organization','percentage_discount','from','to','sales_target','discount_amount_target','from_target','to_target'));
 
         Audit::logaudit('Sales Order', 'viewed sales summary report', 'viewed sales summary report in the system');
+        //return view('erpreports.salesSummaryReport', compact('sales','accounts','discount_amount','total_sales_todate','discount_amount_todate','total_payment','clients_customer','target','organization','percentage_discount','from','to','sales_target','discount_amount_target','from_target','to_target'));
         return $pdf->stream('Summary Report.pdf');
     }
 
@@ -1434,7 +1437,7 @@ public function kenya($id){
 
         $monthlyTarget = DB::table('sales_targets')
                             ->where('month', date('M-Y'))
-                            ->pluck('target_amount');
+                            ->sum("target_amount");
 
         if(($monthlyTarget) == ''){
             $monthlyTarget = 10000000;
@@ -1445,6 +1448,10 @@ public function kenya($id){
                      'totalSales', 'monthlyTarget', 'lastMonthSales'))->setPaper('a4');
 
         Audit::logaudit('Merged Report', 'viewed merged report report', 'viewed merged report in the system');
+
+        /*return view('erpreports.mergedReport', compact('clients', 'accounts', 'organization', 
+                     'dailyCollections', 'iSubTotal', 'dSubTotal', 'sales', 'expenses', 
+                     'totalSales', 'monthlyTarget', 'lastMonthSales'));*/
 
         return $pdf->stream('General Report');
     }

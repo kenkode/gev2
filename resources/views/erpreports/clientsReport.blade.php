@@ -7,13 +7,17 @@
 
 <style type="text/css">
 *{
-  font-size: 12px !important;
+  font-size: 10px !important;
 }
 
 table {
   max-width: 100%;
   background-color: transparent;
 }
+
+table, tr, td, th, tbody, thead, tfoot {
+          page-break-inside: avoid !important;
+      }
 
 table.data{
   border-collapse: collapse;
@@ -73,7 +77,7 @@ img#watermark{
 
   <body>
     <?php
-
+ini_set("memory_limit","120M");
 if (!function_exists('asMoney'))   {
 function asMoney($value) {
   return number_format($value, 2);
@@ -132,7 +136,7 @@ use App\Http\Models\Client;
 
    
 
-    <table class="table table-bordered" border='1' cellspacing='0' cellpadding='0'>
+    <table  border='1' cellspacing='0' cellpadding='0'>
 
       <tr>
 
