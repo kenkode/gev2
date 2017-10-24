@@ -3,10 +3,10 @@
 function asMoney($value) {
   return number_format($value, 2);
 }
-
+use App\Http\Models\Price;
 ?>
 
-@extends('layouts.erp')
+@extends('template')
 
 {{ HTML::script('media/js/jquery.js') }}
 
@@ -40,9 +40,9 @@ $(document).ready(function(){
     });
     
     // Enable or disable links
-    var user_type = "{{Confide::user()->user_type}}";
+    var type = "{{Auth::user()->type}}";
     var status = $('#status').html();
-    if(status === 'REJECTED' || status === 'APPROVED' || user_type !== 'admin'){
+    if(status === 'REJECTED' || status === 'APPROVED' || type != 1){
         $('a.action_lnk').addClass('disabled');
     } else{
         if($('a.action_lnk').hasClass('disabled')){
@@ -87,15 +87,6 @@ $(document).ready(function(){
 
 @section('content')
 
-<br><div class="row">
-    <div class="col-lg-12">
-    <p hidden id="status">{{$order->status}}</p>
-    <h4><font color='green'>Quote Number : {{$order->order_number}} &emsp;| &emsp;Client: {{$order->client->name}}  &emsp; |&emsp; Date: {{$order->date}} &emsp; |&emsp; Status: {{$order->status}} </font> </h4>
-    <br>
-<hr>
-</div>  
-</div>
-
 <!-- ========================================================================== -->
 <!-- MODAL WINDOW FOR COMMENT -->
 <div id="commentModal" class="modal fade">
@@ -107,6 +98,7 @@ $(document).ready(function(){
             </div>
             <div class="modal-body">
                 <form id="commentForm" role="form" action="" method="POST">
+                    {{ csrf_field() }}
                      <!-- HIDDEN FIELDS -->
                     <input type="hidden" name="order_id" value="{{$order->id}}">
 
@@ -136,6 +128,7 @@ $(document).ready(function(){
             </div>
             <div class="modal-body">
                 <form role="form" action="{{URL::to('erpquotations/mail')}}" method="POST">
+                    {{ csrf_field() }}
                     <!-- HIDDEN FIELDS -->
                     <input type="hidden" name="order_id" value="{{$order->id}}">
 
@@ -169,6 +162,17 @@ $(document).ready(function(){
 <!-- END MODAL MAIL -->
 <!-- ========================================================================= -->
 
+<div class="box">
+      <div class="box-header with-border">
+        <p hidden id="status">{{$order->status}}</p>
+    <h4><font color='green'>Quote Number : {{$order->order_number}} &emsp;| &emsp;Client: {{$order->client->name}}  &emsp; |&emsp; Date: {{$order->date}} &emsp; |&emsp; Status: {{$order->status}} </font> </h4>
+        <div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
+      <!-- /.box-header -->
+      <div class="box-body">
 <div class="row">
     <!-- ALERT MESSAGE BOX {SUCCESS OR FAILURE OF SENDING EMAIL} -->
     <?php
@@ -196,6 +200,7 @@ $(document).ready(function(){
     
     <!-- FUNCTION BUTTONS {LINKS} -->
     <div class="col-lg-12">
+        
         <!-- <a href="#" class="btn btn-primary"> Generate Invoice</a> -->
         <a href="{{URL::to('erpReports/quotation/'.$order->id)}}" class="lnk btn btn-primary btn-sm" target="_blank">
             <span class="glyphicon glyphicon-file"></span>&nbsp; View Quotation
@@ -261,7 +266,7 @@ $(document).ready(function(){
 
     <hr>
         
-        @if ($errors->has())
+       @if ( count( $errors ) > 0 )
         <div class="alert alert-danger">
             @foreach ($errors->all() as $error)
                 {{ $error }}<br>        
@@ -273,12 +278,15 @@ $(document).ready(function(){
 
     <thead>
         <!--<th><input type="checkbox" id="select_all" value=""></th>-->
+        <th>#</th>
         <th>Item</th>
         <th>Quantity</th>
         <th>Price</th>
+        <th>Total Amount</th>
+        <th>Discount</th>
         <!-- <th>Amount</th>
         <th>Duration</th> -->
-        <th>Total Amount</th>
+        <th>Payable Amount</th>
         <!--<th>Actions</th>-->
        
     </thead>
@@ -286,23 +294,28 @@ $(document).ready(function(){
     <tbody>
 
    
-        <?php $total = 0; ?>
+        <?php $total = 0; $payable = 0;$i=1; ?>
         @foreach($order->erporderitems as $orderitem)
 
             <?php
 
+
                 $amount = $orderitem['price'] * $orderitem['quantity'];
+                $payable = $payable + $orderitem['price'] * $orderitem['quantity'] - Price::discount($order->client->id,$orderitem['item_id']);
                 /*$total_amount = $amount * $orderitem['duration'];*/
-                $total = $total + $amount;
+                $total = $total + $amount - Price::discount($order->client->id,$orderitem['item_id']);
             ?>
             <tr>
                 <!--<td><input type="checkbox" class="checkbox" name="{{$orderitem->item->id}}" value=""></td>-->
-                <td>{{$orderitem->item->name}}</td>
+                <td>{{$i}}</td>
+                <td>{{$orderitem->item->item_make}}</td>
                 <td>{{$orderitem['quantity']}}</td>
                 <td>{{asMoney($orderitem['price'])}}</td>
                 <!-- <td>{{$amount}}</td>
                 <td>{{$orderitem['duration']}}</td> -->
                 <td>{{asMoney($amount) }}</td>
+                <td>{{asMoney(Price::discount($order->client->id,$orderitem['item_id'])) }}</td>
+                <td>{{asMoney($orderitem['price'] * $orderitem['quantity'] - Price::discount($order->client->id,$orderitem['item_id'])) }}</td>
                 <!--<td>
                     <!--<div class="btn-group">
                       <a href="{{URL::to('erpquotations/edit/'.$orderitem->id)}}" class="btn btn-success"> Edit </a>
@@ -313,23 +326,28 @@ $(document).ready(function(){
                 <!--</td>-->
                 
             </tr>
-
+        <?php $i++; ?>
         @endforeach
 
-        <!-- <tr>
+         <tr>
            <td></td>
+            <td></td>
             <td></td>            
-            <td></td> -->
-           <!--  <td></td>
+            <td></td>
+            <td></td>
             <td><strong><font color = "red">Grand Total</strong></font></td>
             <td><strong><font color = "red">{{asMoney($total)}}</strong></font></td>
           
-        </tr> --> 
+        </tr>  
     </tbody>
         
     </table>        
 
   </div>
+
+</div>
+
+</div>
 
 </div>
 

@@ -762,7 +762,9 @@ if (! Entrust::can('view_erp_reports') ) // Checks the current user
         {
         return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
-    return view('erpreports.erpReports');
+    $header='Reports';
+    $description='View Reports';
+    return view('erpreports.erpReports',compact('header','description'));
   }
 });
 
@@ -853,9 +855,10 @@ Route::get('erpmgmt', function(){
 
 Route::get('financialreports', function(){
 
-    
+    $header='Reports';
+    $description='Financial Report';
 
-    return view('pdf.financials.reports');
+    return view('pdf.financials.reports',compact('header','description'));
 });
 
 
@@ -1029,12 +1032,15 @@ Route::get('quotationorders', function(){
   $items = Item::all();
   $locations = Location::all();
 
+  $header='Quotations';
+  $description='View Quotations';
+
   if (! Entrust::can('view_quotation') ) // Checks the current user
         {
         return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
 
-  return view('erpquotations.index', compact('items', 'locations', 'quotations'));
+  return view('erpquotations.index', compact('items', 'locations', 'quotations','header','description'));
 }
 });
 
@@ -1087,11 +1093,14 @@ Route::get('quotationorders/create', function(){
 
   $clients = Client::all();
 
+  $header='Quotations';
+  $description='Create Quotation';
+
 if (! Entrust::can('create_quotation') ) // Checks the current user
         {
         return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
-  return view('erpquotations.create', compact('items', 'locations', 'order_number', 'clients'));
+  return view('erpquotations.create', compact('items', 'locations', 'order_number', 'clients','header','description'));
 }
 });
 
@@ -1243,7 +1252,10 @@ Route::post('erpquotations/create', function(){
   $locations = Store::all();
   $taxes = Tax::all();
 
-  return view('erpquotations.quotationitems', compact('items', 'locations','taxes','orderitems'));
+  $header='Quotations';
+  $description='Create Quotation';
+
+  return view('erpquotations.quotationitems', compact('items', 'locations','taxes','orderitems','header','description'));
 
 });
 
@@ -1345,7 +1357,7 @@ Route::post('quotationitems/create', function(){
 
   $item = Item::findOrFail(array_get($data, 'item'));
 
-  $item_name = $item->name;
+  $item_name = $item->item_make;
   $price = $item->selling_price;
   $quantity = Input::get('quantity');
   $duration = Input::get('duration');
@@ -1369,7 +1381,10 @@ Route::post('quotationitems/create', function(){
   $locations = Store::all();
   $taxes = Tax::all();
 
-  return view('erpquotations.quotationitems', compact('items', 'locations', 'taxes','orderitems'));
+  $header='Quotations';
+  $description='Create Quotation';
+
+  return view('erpquotations.quotationitems', compact('items', 'locations', 'taxes','orderitems','header','description'));
 
 });
 
@@ -2204,6 +2219,9 @@ Route::get('erpquotations/show/{id}', function($id){
 
   $client = Client::findorfail($order->client_id);
 
+  $header='Quotations';
+  $description='View Quotation';
+
   if (! Entrust::can('view_quotation') ) // Checks the current user
         {
         return Redirect::to('/')->with('notice', 'you do not have access to this resource. Contact your system admin');
@@ -2211,7 +2229,7 @@ Route::get('erpquotations/show/{id}', function($id){
 
   Audit::logaudit('Quotation', 'viewed quotation', 'viewed quotation for customer '.$client->name.' order number '.$order->order_number.' in the system');
 
-  return view('erpquotations.show', compact('order'));
+  return view('erpquotations.show', compact('order','header','description'));
 }
   
 });
@@ -2237,7 +2255,10 @@ Route::get('quotationitems/remove/{count}', function($count){
   $locations = Store::all();
   $taxes = Tax::all();
 
-  return view('erpquotations.quotationitems', compact('items', 'locations', 'taxes','orderitems'));
+  $header='Quotations';
+  $description='Create Quotation';
+
+  return view('erpquotations.quotationitems', compact('items', 'locations', 'taxes','orderitems','header','description'));
   //return Session::get('quotationitems')[$count];
 });
 
@@ -2248,7 +2269,9 @@ Route::get('quotationitems/remove/{count}', function($count){
 Route::get('quotationitems/edit/{count}', function($count){
   $editItem = Session::get('quotationitems')[$count];
 
-  return view('erpquotations.sessionedit', compact('editItem', 'count'));
+  $header='Quotations';
+  $description='Edit Quotation';
+  return view('erpquotations.sessionedit', compact('editItem', 'count','header','description'));
 });
 
 
@@ -2267,7 +2290,10 @@ Route::post('erpquotations/sessionedit/{count}', function($sesItemID){
   $locations = Store::all();
   $taxes = Tax::all();
 
-  return view('erpquotations.quotationitems', compact('items', 'locations', 'taxes','orderitems'));
+  $header='Quotations';
+  $description='Create Quotation';
+
+  return view('erpquotations.quotationitems', compact('items', 'locations', 'taxes','orderitems','header','description'));
 });
 
 
@@ -2300,7 +2326,7 @@ Route::get('orderitems/remove/{count}', function($count){
 Route::get('orderitems/edit/{count}', function($count){
   $editItem = Session::get('orderitems')[$count];
   $header='Sales Order';
-  $description='Create ERP Order';
+  $description='Edit ERP Order';
 
   return view('erporders.edit', compact('editItem', 'count','header','description'));
 });
@@ -2356,7 +2382,7 @@ Route::get('purchaseitems/remove/{count}', function($count){
 Route::get('purchaseitems/edit/{count}', function($count){
   $editItem = Session::get('purchaseitems')[$count];
   $header='Purchase Order';
-  $description='Create Purchase Order';
+  $description='Edit Purchase Order';
   return view('erppurchases.edit', compact('editItem', 'count','header','description'));
 });
 
@@ -2452,10 +2478,12 @@ Route::get('erpquotations/edit/{id}', function($id){
   $order = Erporder::findorfail($id);
   $items = Item::all();
   $taxes = Tax::all();
+  $header='Quotations';
+  $description='Edit Quotation';
   $tax_orders = TaxOrder::where('order_number', $order->order_number)->orderBy('tax_id', 'ASC')->get();
 
   //return $tax_orders;
-  return view('erpquotations.editquotation', compact('order', 'items', 'taxes', 'tax_orders'));
+  return view('erpquotations.editquotation', compact('order', 'items', 'taxes', 'tax_orders','header','description'));
 
 });
 
@@ -2532,7 +2560,9 @@ Route::post('erpquotations/edit/{id}', function($id){
 
     $order->status = 'EDITED';
     $order->update();
-    return view('erpquotations.show', compact('order'));
+    $header='Quotations';
+  $description='View Quotation';
+    return view('erpquotations.show', compact('order','header','description'));
 });
 
 

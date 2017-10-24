@@ -4,6 +4,7 @@ namespace App\Http\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use DB;
 
 class Erporder extends Model {
 
@@ -87,7 +88,7 @@ class Erporder extends Model {
 		//$payments = 0;
 		$user = User::find($id);
 		
-		return $user->username;
+		return $user->name;
 	}
 
 

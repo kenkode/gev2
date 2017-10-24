@@ -49,4 +49,9 @@ class Price extends Model {
 		return $price;
     }
 
+    public static function discount($clientid, $itemid){
+    $discount = Price::where('client_id',$clientid)->where('item_id',$itemid)->sum('Discount');
+    return $discount;
+    }
+
 }

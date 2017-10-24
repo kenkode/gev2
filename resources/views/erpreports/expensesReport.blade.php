@@ -110,7 +110,7 @@ body {
    </div>
 
 
-  <div class="content" style='margin-top:0px;'>
+  <div class="content" style='margin-top:0px;'><br><br>
    <!-- <div align="center"><strong>Expenditure Report as at {{date('d-M-Y')}}</strong></div><br> -->
    <div align="center"><strong>Expense Report as from:  {{$from}} To:  {{$to}}</strong></div><br>
 

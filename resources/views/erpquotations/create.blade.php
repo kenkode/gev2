@@ -1,21 +1,13 @@
-@extends('layouts.erp')
+@extends('template')
 @section('content')
-
-<br><div class="row">
-	<div class="col-lg-12">
-  <h3>New Quotation</h3>
-
-<hr>
-</div>	
-</div>
 
 
 <div class="row">
-	<div class="col-lg-5">
+	<div class="col-lg-6">
 
     
 		
-		 @if ($errors->has())
+		@if ( count( $errors ) > 0 )
         <div class="alert alert-danger">
             @foreach ($errors->all() as $error)
                 {{ $error }}<br>        
@@ -23,8 +15,19 @@
         </div>
         @endif
 
+        <div class="box">
+      <div class="box-header with-border">
+        <h3 class="box-title">New Quotation</h3>
+        <div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
+      <!-- /.box-header -->
+      <div class="box-body">
+
 		 <form method="POST" action="{{{ URL::to('erpquotations/create') }}}" accept-charset="UTF-8">
-   
+   {{ csrf_field() }}
     <fieldset>
         <font color="red"><i>All fields marked with * are mandatory</i></font>
         
@@ -73,7 +76,9 @@
 
     </fieldset>
 </form>
-		
+	</div>
+
+    </div>	
 
   </div>
 

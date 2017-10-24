@@ -1,26 +1,28 @@
 <html >
 
-<?php
-
-function asMoney($value) {
-  return number_format($value, 2);
-}
-
-?>
 <head>
 
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
 
 <style type="text/css">
+*{
+  font-size: 12px !important;
+}
 
 table {
   max-width: 100%;
   background-color: transparent;
 }
 
-table, tr, td, th, tbody, thead, tfoot {
-    page-break-inside: avoid !important;
+table.data{
+  border-collapse: collapse;
+  border: 1px solid #BBB;
+}
+
+table.data th, table.data td{
+  padding: 5px 10px;
+  border: 1px solid #BBB;
 }
 
 th,td{
@@ -30,23 +32,15 @@ th,td{
 th {
   text-align: left;
 }
-
 .table {
   width: 100%;
-   margin-bottom: 200px;
+   margin-bottom: 150px;
 }
 hr {
   margin-top: 1px;
   margin-bottom: 2px;
   border: 0;
   border-top: 2px dotted #eee;
-}
-
-img#watermark{
-  position: fixed;
-  width: 100%;
-  z-index: 10;
-  opacity: 0.1;
 }
 
 body {
@@ -63,20 +57,31 @@ body {
  .footer { position: fixed; left: 0px; bottom: -60px; right: 0px; height: 50px;  }
  .footer .page:after { content: counter(page, upper-roman); }
 
-      img.watermark{
-        position: fixed;
-        width: 100%;
-        z-index: 10;
-        opacity: 0.1;
-      }
 
 
-    </style>
+img#watermark{
+  position: fixed;
+  width: 100%;
+  z-index: 10;
+  opacity: 0.1;
+}
+
+</style>
   
   </head>
 
 
   <body>
+    <?php
+
+if (!function_exists('asMoney'))   {
+function asMoney($value) {
+  return number_format($value, 2);
+}
+}
+
+use App\Http\Models\Client;
+?>
   <!-- <img src="{{ asset('public/uploads/logo/ADmzyppq2eza.png') }}" class="watermark"> -->
   <div class="header">
        <table >
@@ -139,7 +144,6 @@ body {
         <th><strong>Contact Person </strong></th>        
         <th><strong>Phone </strong></th>
         <th><strong>Type </strong></th>
-        <th><strong>Client Discount </strong></th>
         <th><strong>Balance </strong></th>
       </tr>
       <?php $i =1; ?>
@@ -153,7 +157,6 @@ body {
         <td> {{ $client->contact_person }}</td>        
         <td> {{ $client->contact_person_phone }}</td>
         <td> {{ $client->type}}</td>
-        <td align="center"> {{ asMoney($client->percentage_discount)}}</td>
         <td align="right"> {{ Client::due($client->id)}}</td>
         </tr>
       <?php $i++; ?>

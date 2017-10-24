@@ -5,6 +5,7 @@ function asMoney($value) {
   return number_format($value, 2);
 }
 
+use App\Http\Models\Erporder;
 ?>
 <html >
 
@@ -44,7 +45,7 @@ div.mods:nth-child(even){
   margin-right: 0%;
 }
 
-@page { margin: 170px 20px; }
+@page { margin: 100px 20px; }
  .header { position: fixed; left: 0px; top: -150px; right: 0px; height: 150px;  text-align: center; }
  /* .content {margin-top: -120px; margin-bottom: -150px} */
  .footer { position: fixed; left: 0px; bottom: -180px; right: 0px; height: 50px;  }
@@ -259,7 +260,7 @@ Received the above goods in good order and condition
 <br>
 1. Received by: .............................................Signature: ....................................... Date: ......................
 <br>
-2. Desk: &emsp;&emsp; <strong style="border-bottom: 1px solid dotted;">{{ Confide::user()->username }}</strong> &emsp;&emsp; Signature: ....................................... Date: &emsp;&emsp; <strong style="border-bottom: 1px solid dotted;">{{ date('d-m-Y') }}</strong>
+2. Desk: &emsp;&emsp; <strong style="border-bottom: 1px solid dotted;">{{ Auth::user()->username }}</strong> &emsp;&emsp; Signature: ....................................... Date: &emsp;&emsp; <strong style="border-bottom: 1px solid dotted;">{{ date('d-m-Y') }}</strong>
 <br>
 @if($driver !== '')
 3. Driver: &emsp;&emsp; <strong style="border-bottom: 1px solid dotted;">{{ $driver }}</strong> &emsp;&emsp; Signature: ....................................... Date: &emsp;&emsp; <strong style="border-bottom: 1px solid dotted;">{{ date('d-m-Y') }}</strong>
@@ -440,7 +441,7 @@ Received the above goods in good order and condition
 <br>
 1. Received by: .............................................Signature: ....................................... Date: ......................
 <br>
-2. Desk: &emsp;&emsp; <strong style="border-bottom: 1px solid dotted;">{{ Confide::user()->username }}</strong> &emsp;&emsp; Signature: ....................................... Date: &emsp;&emsp; <strong style="border-bottom: 1px solid dotted;">{{ date('d-m-Y') }}</strong>
+2. Desk: &emsp;&emsp; <strong style="border-bottom: 1px solid dotted;">{{ Auth::user()->username }}</strong> &emsp;&emsp; Signature: ....................................... Date: &emsp;&emsp; <strong style="border-bottom: 1px solid dotted;">{{ date('d-m-Y') }}</strong>
 <br>
 @if($driver !== '')
 3. Driver: &emsp;&emsp; <strong style="border-bottom: 1px solid dotted;">{{ $driver }}</strong> &emsp;&emsp; Signature: ....................................... Date: &emsp;&emsp; <strong style="border-bottom: 1px solid dotted;">{{ date('d-m-Y') }}</strong>

@@ -80,14 +80,14 @@ class Client extends Model {
                      ->where('erporders.type','=','sales')
                      ->where('erporders.status','!=','cancelled')   
                      ->selectRaw('SUM(price * quantity)-COALESCE(SUM(discount_amount),0)- COALESCE(SUM(erporderitems.client_discount),0) + COALESCE(clients.balance,0)  as total')
-                     ->pluck('total');
+                     ->first('total');
           }
           else{
               $order = DB::table('erporders')
                      ->join('erporderitems','erporders.id','=','erporderitems.erporder_id')
                      ->join('clients','erporders.client_id','=','clients.id')           
                      ->where('clients.id',$id) ->selectRaw('SUM(price * quantity)as total')
-                     ->pluck('total');
+                     ->first('total');
                    
           }
 
@@ -95,7 +95,7 @@ class Client extends Model {
                  ->join('payments','clients.id','=','payments.client_id')
                  ->where('clients.id',$id) 
                  ->selectRaw('COALESCE(SUM(amount_paid),0) as due')
-                 ->pluck('due');
+                 ->first('due');
 
           /*$discount = DB::table('erporders')
                     ->join('erporderitems','erporders.id','=','erporderitems.erporder_id')
@@ -103,7 +103,7 @@ class Client extends Model {
                     ->select ('discount_amount')
                     ->get();*/
 
-      return ($order-$paid);
+      return ($order->total-$paid->due);
   }
 
 
@@ -126,7 +126,7 @@ class Client extends Model {
                  ->where('erporders.status','!=','cancelled') 
                  ->where('erporders.date',$today)   
                  ->selectRaw('SUM(price * quantity)-COALESCE(SUM(discount_amount),0)- COALESCE(SUM(erporderitems.client_discount),0) + COALESCE(clients.balance,0)  as total')
-                 ->pluck('total');
+                 ->first('total');
       }
       else{
           $order = DB::table('erporders')
@@ -134,7 +134,7 @@ class Client extends Model {
                  ->join('clients','erporders.client_id','=','clients.id')     
                  ->where('erporders.date',$today)         
                  ->where('clients.id',$id) ->selectRaw('SUM(price * quantity)as total')
-                 ->pluck('total');
+                 ->first('total');
                
       }
 
@@ -143,9 +143,9 @@ class Client extends Model {
              ->where('clients.id',$id) 
              ->where('payments.payment_date',$today)   
              ->selectRaw('COALESCE(SUM(amount_paid),0) as due')
-             ->pluck('due');
+             ->first('due');
 
-      return ($order-$paid);
+      return ($order->total-$paid->due);
   }
 
 /**
@@ -167,7 +167,7 @@ public static function due30($id){
                  ->where('erporders.status','!=','cancelled')  
                  ->whereBetween('erporders.date', array($from, $to)) 
                  ->selectRaw('SUM(price * quantity)-COALESCE(SUM(discount_amount),0)- COALESCE(SUM(erporderitems.client_discount),0) + COALESCE(clients.balance,0)  as total')
-                 ->pluck('total');
+                 ->first('total');
       }
       else{
           $order = DB::table('erporders')
@@ -175,7 +175,7 @@ public static function due30($id){
                  ->join('clients','erporders.client_id','=','clients.id') 
                  ->whereBetween('erporders.date', array($from, $to)) 
                  ->where('clients.id',$id) ->selectRaw('SUM(price * quantity)as total')
-                 ->pluck('total');
+                 ->first('total');
                
       }
 
@@ -184,9 +184,9 @@ public static function due30($id){
              ->where('clients.id',$id) 
              ->whereBetween('payments.payment_date', array($from, $to)) 
              ->selectRaw('COALESCE(SUM(amount_paid),0) as due')
-             ->pluck('due');
+             ->first('due');
 
-      return ($order-$paid);
+      return ($order->total-$paid->due);
   }
 
   /**
@@ -208,7 +208,7 @@ public static function due30($id){
                  ->where('erporders.status','!=','cancelled')  
                  ->whereBetween('erporders.date', array($from, $to)) 
                  ->selectRaw('SUM(price * quantity)-COALESCE(SUM(discount_amount),0)- COALESCE(SUM(erporderitems.client_discount),0) + COALESCE(clients.balance,0)  as total')
-                 ->pluck('total');
+                 ->first('total');
       }
       else{
           $order = DB::table('erporders')
@@ -216,7 +216,7 @@ public static function due30($id){
                  ->join('clients','erporders.client_id','=','clients.id')           
                  ->whereBetween('erporders.date', array($from, $to)) 
                  ->where('clients.id',$id) ->selectRaw('SUM(price * quantity)as total')
-                 ->pluck('total');
+                 ->first('total');
                
       }
 
@@ -225,9 +225,9 @@ public static function due30($id){
              ->where('clients.id',$id) 
              ->whereBetween('payments.payment_date', array($from, $to)) 
              ->selectRaw('COALESCE(SUM(amount_paid),0) as due')
-             ->pluck('due');
+             ->first('due');
 
-      return ($order-$paid);
+      return ($order->total-$paid->due);
   }
 
 
@@ -250,7 +250,7 @@ public static function due30($id){
                  ->where('erporders.status','!=','cancelled') 
                  ->whereBetween('erporders.date', array($from, $to))   
                  ->selectRaw('SUM(price * quantity)-COALESCE(SUM(discount_amount),0)- COALESCE(SUM(erporderitems.client_discount),0) + COALESCE(clients.balance,0)  as total')
-                 ->pluck('total');
+                 ->first('total');
       }
       else{
           $order = DB::table('erporders')
@@ -258,7 +258,7 @@ public static function due30($id){
                  ->join('clients','erporders.client_id','=','clients.id')     
                  ->whereBetween('erporders.date', array($from, $to))       
                  ->where('clients.id',$id) ->selectRaw('SUM(price * quantity)as total')
-                 ->pluck('total');
+                 ->first('total');
                
       }
 
@@ -267,9 +267,9 @@ public static function due30($id){
              ->where('clients.id',$id) 
              ->whereBetween('payments.payment_date', array($from, $to)) 
              ->selectRaw('COALESCE(SUM(amount_paid),0) as due')
-             ->pluck('due');
+             ->first('due');
 
-      return ($order-$paid);
+      return ($order->total-$paid->due);
   }
 
 
@@ -291,7 +291,7 @@ public static function due30($id){
                  ->where('erporders.status','!=','cancelled') 
                  ->where('erporders.date','<',$date)   
                  ->selectRaw('SUM(price * quantity)-COALESCE(SUM(discount_amount),0)- COALESCE(SUM(erporderitems.client_discount),0) + COALESCE(clients.balance,0)  as total')
-                 ->pluck('total');
+                 ->first('total');
       }
       else{
           $order = DB::table('erporders')
@@ -299,7 +299,7 @@ public static function due30($id){
                  ->join('clients','erporders.client_id','=','clients.id')     
                  ->where('erporders.date','<',$date)         
                  ->where('clients.id',$id) ->selectRaw('SUM(price * quantity)as total')
-                 ->pluck('total');
+                 ->first('total');
                
       }
 
@@ -308,9 +308,9 @@ public static function due30($id){
              ->where('clients.id',$id) 
              ->where('payments.payment_date','<',$date)   
              ->selectRaw('COALESCE(SUM(amount_paid),0) as due')
-             ->pluck('due');
+             ->first('due');
 
-      return ($order-$paid);
+      return ($order->total-$paid->due);
   }
 
 
@@ -328,18 +328,18 @@ public static function total($id){
            ->join('erporderitems','erporders.id','=','erporderitems.erporder_id')
            ->join('clients','erporders.client_id','=','clients.id')           
            ->where('clients.id',$id) ->selectRaw('SUM(price * quantity)-COALESCE(SUM(discount_amount),0)- COALESCE(SUM(erporderitems.client_discount),0)  as total')
-           ->pluck('total');
+           ->first('total');
            }
             else{
     $order = DB::table('erporders')
            ->join('erporderitems','erporders.id','=','erporderitems.erporder_id')
            ->join('clients','erporders.client_id','=','clients.id')           
            ->where('clients.id',$id) ->selectRaw('SUM(price * quantity)as total')
-           ->pluck('total');         
+           ->first('total');         
          }         
 
     
-           return $order;
+           return $order->total;
 
   }
 
@@ -347,9 +347,9 @@ public static function total($id){
     $paid = DB::table('clients')
           ->join('payments','clients.id','=','payments.client_id')
           ->where('clients.id',$id) ->selectRaw('COALESCE(SUM(amount_paid),0) as due')
-          ->pluck('due');                      
+          ->first('due');                      
           
-          return $paid;
+          return $paid->due;
   }
 
 
@@ -370,9 +370,9 @@ public static function total($id){
                           ->where('erporders.status','!=','cancelled') 
                           ->whereBetween('erporders.date', array($from, $to))
                           ->selectRaw('COALESCE(SUM((erporderitems.price * erporderitems.quantity) - erporderitems.client_discount),0) as clientTotal')
-                          ->pluck('clientTotal');
+                          ->first('clientTotal');
 
-              return $clientSalesTotal;
+              return $clientSalesTotal->clientTotal;
   }
 
 

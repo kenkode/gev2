@@ -6,15 +6,24 @@ use App\Http\Controllers\Controller;
 use App\Http\Models\Client;
 use App\Http\Models\Payment;
 use App\Http\Models\Erporder;
+use App\Http\Models\Erporderitem;
 use App\Http\Models\Audit;
 use App\Http\Models\Item;
+use App\Http\Models\Expense;
+use App\Http\Models\Paymentmethod;
 use App\Http\Models\Organization;
 use App\Http\Models\BankAccount;
 use App\Http\Models\Account;
+use App\Http\Models\ItemTracker;
 use App\Http\Models\Notification;
+use App\Http\Models\Store;
 use Illuminate\Http\Request;
 use Redirect;
 use Entrust;
+use Mail;
+use App\Mail\PurchaseOrder;
+use App\Mail\Quotation;
+use App\Mail\Report;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Auth;
@@ -22,24 +31,23 @@ use DB;
 use Barryvdh\DomPDF\Facade as PDF;
 use Session;
 
+set_time_limit(-1);
+
 class ErpReportsController extends Controller {
 
 
     public function clients(){
 
-       
-
         $clients = Client::all();       
 
         $organization = Organization::find(1);
-        ini_set("memory_limit", "1599M");
-        ini_set("max_execution_time", "-1");
 
         $pdf = PDF::loadView('erpreports.clientsReport', compact('clients', 'organization'))->setPaper('a4', 'landscape');
 
         Audit::logaudit('Client', 'viewed clients report', 'viewed clients report in the system');
     
         return $pdf->stream('Client List.pdf');
+        //return view('erpreports.clientsReport', compact('clients', 'organization'));
         
     }
 
@@ -409,7 +417,7 @@ public function kenya($id){
 
     public function locations(){
 
-        $locations = Location::all();
+        $locations = Store::all();
 
 
         $organization = Organization::find(1);
@@ -436,7 +444,7 @@ public function kenya($id){
 
         $organization = Organization::find(1);
 
-        $pdf = PDF::loadView('erpreports.stockReport', compact('items', 'organization','from','to'))->setPaper('a4')->setOrientation('landscape');
+        $pdf = PDF::loadView('erpreports.stockReport', compact('items', 'organization','from','to'))->setPaper('a4', 'landscape');
 
         Audit::logaudit('Stock', 'viewed stock movement report', 'viewed stock movement report in the system');
     
@@ -496,7 +504,7 @@ public function kenya($id){
                 ->first();
 
   $items = Item::all();
-  $locations = Location::all();
+  $locations = Store::all();
   $organization = Organization::find(1);
   $accounts = Account::all();
 
@@ -512,7 +520,7 @@ public function kenya($id){
  public function sales_summary(){      
     $fileName = 'Summary Report.pdf';
 
-    $filePath = 'app/views/temp/';
+    $filePath = 'resources/views/temp/';
 
     $from = date('Y-m-d');
     $to= date('Y-m-d');
@@ -579,7 +587,7 @@ public function kenya($id){
 
         $items = Item::all();
         $clients_customer = DB::table('clients')->where('clients.type','=','Customer')->get();
-        $locations = Location::all();
+        $locations = Store::all();
         $organization = Organization::find(1);
         $accounts = DB::table('accounts')
                         ->get();
@@ -600,8 +608,7 @@ public function kenya($id){
         $from = Input::get("from");
         $to= Input::get("to");
 
-        ini_set("memory_limit", "1599M");
-        ini_set("max_execution_time", "-1");
+        
 
         $purchases = DB::table('erporders')
                     ->join('erporderitems', 'erporders.id', '=', 'erporderitems.erporder_id')
@@ -617,8 +624,10 @@ public function kenya($id){
                       'discount_amount','erporders.date','erporders.order_number as order_number','price','description','erporders.type')
                     ->get();
 
+                    
+
       $items = Item::all();
-      $locations = Location::all();
+      $locations = Store::all();
       $organization = Organization::find(1);
 
       //return $organization;
@@ -628,6 +637,7 @@ public function kenya($id){
             Audit::logaudit('Purchase Order', 'viewed purchase orders report', 'viewed purchase orders report in the system');
         
             return $pdf->stream('Purchases List.pdf');
+            //return view('erpreports.purchasesReport', compact('purchases', 'organization','from','to'));
 
       
     }
@@ -696,7 +706,7 @@ public function kenya($id){
         $subject = Input::get('subject');
         $mail_body = Input::get('mail_body');
 
-        $filePath = 'app/views/temp/';
+        $filePath = 'resources/views/temp/';
         $fileName = 'Quotation.pdf';
 
         $orders = DB::table('erporders')
@@ -731,14 +741,18 @@ public function kenya($id){
 
         // SEND MAIL
         $from_name = 'Gas Express';
-        $from_mail = Mailsender::username();
+        //$from_mail = Mailsender::username();
         $data = array('body'=>$mail_body, 'from'=>$from_name, 'subject'=>$subject);
-        Mail::send('mails.mail_quotation', $data, function($message) use($subject, $mail_to, $from_name, $from_mail, $attach, $filePath, $fileName){
+        /*Mail::send('mails.mail_quotation', $data, function($message) use($subject, $mail_to, $from_name, $from_mail, $attach, $filePath, $fileName){
             $message->to($mail_to, '');
             $message->from($from_mail, $from_name);
             $message->subject($subject);
             $message->attach($filePath.$fileName);
-        });
+        });*/
+
+        $file = $filePath.$fileName;
+
+        Mail::to($mail_to)->send(new Quotation($subject,$mail_body,$client->name, $file));
 
         unlink($filePath.$fileName);
 
@@ -764,7 +778,7 @@ public function kenya($id){
         $subject = Input::get('subject');
         $mail_body = Input::get('mail_body');
 
-        $filePath = 'app/views/temp/';
+        $filePath = 'resources/views/temp/';
         $fileName = 'PurchaseOrder.pdf';
 
         $orders = DB::table('erporders')
@@ -786,6 +800,7 @@ public function kenya($id){
         $count = DB::table('tax_orders')->count();
 
         $erporder = Erporder::findorfail($id);
+        $client = Client::findorfail($erporder->client_id);
 
 
         $organization = Organization::find(1);
@@ -797,15 +812,19 @@ public function kenya($id){
         //unlink($filePath.$fileName);
 
         // SEND MAIL
-        $from_name = 'Gas Express';
+        /*$from_name = 'Gas Express';
         $from_mail = "info@lixnet.net";
-        $data = array('body'=>$mail_body, 'from'=>$from_name, 'subject'=>$subject);
-        Mail::send('mails.mail_po', $data, function($message) use($subject, $mail_to, $from_name, $from_mail, $attach, $filePath, $fileName){
+        $data = array('body'=>$mail_body, 'from'=>$from_name, 'subject'=>$subject);*/
+        $file = $filePath.$fileName;
+
+        Mail::to($mail_to)->send(new PurchaseOrder($subject,$mail_body,$client->name, $file));
+
+        /*Mail::send('mails.mail_po', $data, function($message) use($subject, $mail_to, $from_name, $from_mail, $attach, $filePath, $fileName){
             $message->to($mail_to, '');
             $message->from($from_mail, $from_name);
             $message->subject($subject);
             $message->attach($filePath.$fileName);
-        });
+        });*/
 
         unlink($filePath.$fileName);
 
@@ -1435,7 +1454,9 @@ public function kenya($id){
     public function selectSalesPeriod()
     {
         $sales = Erporder::all();
-        return view('erpreports.selectSalesPeriod',compact('sales'));
+        $header='Reports';
+        $description='Sales Report';
+        return view('erpreports.selectSalesPeriod',compact('sales','header','description'));
     }
 
     public function selectSalesComparisonPeriod(){
@@ -1451,7 +1472,9 @@ public function kenya($id){
     public function selectPurchasesPeriod()
     {
         $purchases = Erporder::all();
-        return view('erpreports.selectPurchasesPeriod',compact('purchases'));
+        $header='Reports';
+        $description='Purchase Report';
+        return view('erpreports.selectPurchasesPeriod',compact('purchases','header','description'));
     }
 
 
@@ -1464,25 +1487,33 @@ public function kenya($id){
      public function selectItemsPeriod()
     {
        $items = Item::all();
-        return view('erpreports.selectItemsPeriod',compact('items'));
+       $header='Reports';
+        $description='Item Report';
+        return view('erpreports.selectItemsPeriod',compact('items','header','description'));
     }
 
     public function selectExpensesPeriod()
     {
        $expenses = Expense::all();
-        return view('erpreports.selectExpensesPeriod',compact('expenses'));
+        $header='Reports';
+        $description='Expense Report';
+        return view('erpreports.selectExpensesPeriod',compact('expenses','header','description'));
     }
 
      public function selectPaymentsPeriod()
     {
        $payments = Payment::all();
-        return view('erpreports.selectPaymentsPeriod',compact('payments'));
+       $header='Reports';
+        $description='Payment Report';
+        return view('erpreports.selectPaymentsPeriod',compact('payments','header','description'));
     }
 
     public function selectStockPeriod()
     {
        $stocks = Item::all();
-        return view('erpreports.selectStocksPeriod',compact('stocks'));
+       $header='Reports';
+        $description='Stock Report';
+        return view('erpreports.selectStocksPeriod',compact('stocks','header','description'));
     }
 
     public function selectVehiclesPeriod()
@@ -1515,7 +1546,7 @@ public function kenya($id){
         
     $fileName = 'pricelist.pdf';
 
-    $filePath = 'app/views/temp/';
+    $filePath = 'resources/views/temp/';
 
     $pricelist = DB::table('items')
                     ->select('items.item_make as item','items.purchase_price','items.selling_price')
@@ -1528,7 +1559,7 @@ public function kenya($id){
 
     $pdf->save($filePath.$fileName);
 
-    $send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
+    /*$send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
     {   
     $message->from('info@lixnet.net', 'Gas Express');
 
@@ -1539,8 +1570,12 @@ public function kenya($id){
     $message->attach($filePath.$fileName);
 
     
-});
+});*/
 
+
+   $file = $filePath.$fileName;
+   $subject = "Price List Report!";
+   $send_mail = Mail::to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->send(new Report($subject,$file));
    unlink($filePath.$fileName);
    echo 'Price List Report Successfully Sent!';
     return $send_mail;
@@ -1552,7 +1587,7 @@ public function kenya($id){
         
     $fileName = 'Sales Report.pdf';
 
-    $filePath = 'app/views/temp/';
+    $filePath = 'resources/views/temp/';
 
 
     $time = strtotime(date('Y-m-d').' 8:01:00');
@@ -1613,7 +1648,7 @@ public function kenya($id){
                 ->first();
 
     $items = Item::all();
-    $locations = Location::all();
+    $locations = Store::all();
     $organization = Organization::find(1);
     $accounts = Account::all();
 
@@ -1623,7 +1658,7 @@ public function kenya($id){
 
     $pdf->save($filePath.$fileName);
 
-    $send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
+    /*$send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
     {   
     $message->from('info@lixnet.net', 'Gas Express');
     $message->to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->cc('chrispus.cheruiyot@lixnet.net', 'Crispus Cheruiyot')->cc('wangoken2@gmail.com', 'Crispus Cheruiyot')->subject('Daily Sales Report!');
@@ -1631,7 +1666,11 @@ public function kenya($id){
     $message->attach($filePath.$fileName);
 
     
-});
+});*/
+
+   $subject = "Daily Sales Report!";
+   $file = $filePath.$fileName;
+   $send_mail = Mail::to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->cc('chrispus.cheruiyot@lixnet.net', 'Crispus Cheruiyot')->cc('wangoken2@gmail.com', 'Crispus Cheruiyot')->send(new Report($subject,$file));
 
    unlink($filePath.$fileName);
    echo 'Sales Report Successfully Sent!';
@@ -1642,7 +1681,7 @@ public function kenya($id){
         
     $fileName = 'Sales Report.pdf';
 
-    $filePath = 'app/views/temp/';
+    $filePath = 'resources/views/temp/';
 
 
     $time = strtotime(date('Y-m-d').' 20:00:00');
@@ -1699,7 +1738,7 @@ public function kenya($id){
                 ->first();
 
     $items = Item::all();
-    $locations = Location::all();
+    $locations = Store::all();
     $organization = Organization::find(1);
     $accounts = Account::all();
 
@@ -1710,14 +1749,18 @@ public function kenya($id){
 
     $pdf->save($filePath.$fileName);
 
-    $send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
+    /*$send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
     {   
     $message->from('info@lixnet.net', 'Gas Express');
     $message->to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->cc('chrispus.cheruiyot@lixnet.net', 'Crispus Cheruiyot')->cc('wangoken2@gmail.com', 'Crispus Cheruiyot')->subject('Daily Sales Report!');
     $message->attach($filePath.$fileName);
 
     
-});
+});*/
+
+   $subject = "Daily Sales Report!";
+   $file = $filePath.$fileName;
+   $send_mail = Mail::to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->cc('chrispus.cheruiyot@lixnet.net', 'Crispus Cheruiyot')->cc('wangoken2@gmail.com', 'Crispus Cheruiyot')->send(new Report($subject,$file));
 
    unlink($filePath.$fileName);
    echo 'Sales Report Successfully Sent!';
@@ -1728,7 +1771,7 @@ public function kenya($id){
     // SEND MAIL - MERGED REPORT
     public function sendMail_MergedReport(){
         $fileName = 'MERGED REPORT.pdf';
-        $filePath = 'app/views/temp/';
+        $filePath = 'resources/views/temp/';
 
         $accounts = Account::all();
         $organization = Organization::find(1);
@@ -1788,11 +1831,15 @@ public function kenya($id){
 
         $pdf->save($filePath.$fileName);
 
-        $send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName){   
+        /*$send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName){   
             $message->from('info@lixnet.net', 'Gas Express');
             $message->to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->subject('Daily General Report!');
             $message->attach($filePath.$fileName);
-        });
+        });*/
+
+        $subject = "Daily General Report!";
+        $file = $filePath.$fileName;
+        $send_mail = Mail::to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->send(new Report($subject,$file));
 
         unlink($filePath.$fileName);
         //echo 'General Merged Report Successfully Sent!';
@@ -1806,7 +1853,7 @@ public function kenya($id){
         
    $fileName = 'Summary Report.pdf';
 
-    $filePath = 'app/views/temp/';
+    $filePath = 'resources/views/temp/';
 
     $time = strtotime(date('Y-m-d').' 8:01:00');
     $time1 = strtotime(date('Y-m-d').' 19:59:59');
@@ -1876,7 +1923,7 @@ public function kenya($id){
 
       $items = Item::all();
       $clients_customer = DB::table('clients')->where('clients.type','=','Customer')->get();
-      $locations = Location::all();
+      $locations = Store::all();
       $organization = Organization::find(1);
       $accounts = DB::table('accounts')
                     ->get();
@@ -1886,7 +1933,7 @@ public function kenya($id){
 
     $pdf->save($filePath.$fileName);
 
-    $send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
+    /*$send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
     {   
     $message->from('info@lixnet.net', 'Gas Express');
 
@@ -1898,7 +1945,11 @@ public function kenya($id){
     $message->attach($filePath.$fileName);
 
     
-});
+});*/
+
+    $subject = "Daily Summary Report!";
+        $file = $filePath.$fileName;
+        $send_mail = Mail::to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->send(new Report($subject,$file));
 
    unlink($filePath.$fileName);
    echo 'Daily Summary Report Successfully Sent!';
@@ -1910,7 +1961,7 @@ public function kenya($id){
         
     $fileName = 'Purchases Report.pdf';
 
-    $filePath = 'app/views/temp/';
+    $filePath = 'resources/views/temp/';
 
     $time = strtotime(date('Y-m-d').' 20:01:00');
     $time1 = strtotime(date('Y-m-d').' 7:59:59');
@@ -1935,7 +1986,7 @@ public function kenya($id){
                   'discount_amount','erporders.date','erporders.order_number as order_number','price','description','erporders.type')
                 ->get();
           $items = Item::all();
-          $locations = Location::all();
+          $locations = Store::all();
           $organization = Organization::find(1);
 
         $pdf = PDF::loadView('erpreports.purchasesReport', compact('purchases', 'organization','from','to'))->setPaper('a4');    
@@ -1943,18 +1994,22 @@ public function kenya($id){
 
     $pdf->save($filePath.$fileName);
 
-    $send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
+    /*$send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
     {   
     $message->from('info@lixnet.net', 'Gas Express');
 
     
     $message->to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->subject('Daily Purchases Report!');
-   /* $message->to('info@lixnet.net', 'Gas Express')->subject('Daily Purchases Report!');*/
+   
     
     $message->attach($filePath.$fileName);
 
     
-});
+});*/
+
+ $subject = "Daily Purchases Report!";
+        $file = $filePath.$fileName;
+        $send_mail = Mail::to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->send(new Report($subject,$file));
 
    unlink($filePath.$fileName);
    echo 'Purchases Report Successfully Sent!';
@@ -1965,7 +2020,7 @@ public function kenya($id){
         
     $fileName = 'Expenses Report.pdf';
 
-    $filePath = 'app/views/temp/';
+    $filePath = 'resources/views/temp/';
 
      $time = strtotime(date('Y-m-d').' 8:01:00');
     $time1 = strtotime(date('Y-m-d').' 7:59:59');
@@ -1986,7 +2041,7 @@ public function kenya($id){
 
     $pdf->save($filePath.$fileName);
 
-    $send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
+    /*$send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
     {   
     $message->from('info@lixnet.net', 'Gas Express');
 
@@ -1999,7 +2054,11 @@ public function kenya($id){
     $message->attach($filePath.$fileName);
 
     
-});
+});*/
+
+$subject = "Daily Expenses Report!";
+        $file = $filePath.$fileName;
+        $send_mail = Mail::to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->send(new Report($subject,$file));
 
    unlink($filePath.$fileName);
    echo 'Expenses Report Successfully Sent!';
@@ -2012,7 +2071,7 @@ public function kenya($id){
         
     $fileName = 'Payments Report.pdf';
 
-    $filePath = 'app/views/temp/';
+    $filePath = 'resources/views/temp/';
 
      
 
@@ -2048,19 +2107,21 @@ public function kenya($id){
 
     $pdf->save($filePath.$fileName);
 
-    $send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
+    /*$send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
     {   
     $message->from('info@lixnet.net', 'Gas Express');
 
     
     $message->to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->cc('chrispus.cheruiyot@lixnet.net', 'Crispus Cheruiyot')->cc('wangoken2@gmail.com', 'Ken Wango')->subject('Daily Payments Report!');
-    //$message->to('stephen.mangi@lixnet.net', 'Gas Express')->subject('Daily Payments Report!');
-
     
     $message->attach($filePath.$fileName);
 
     
-});
+});*/
+
+$subject = "Daily Payments Report!";
+        $file = $filePath.$fileName;
+        $send_mail = Mail::to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->cc('chrispus.cheruiyot@lixnet.net', 'Crispus Cheruiyot')->cc('wangoken2@gmail.com', 'Ken Wango')->send(new Report($subject,$file));
 
    unlink($filePath.$fileName);
    echo 'payments Report Successfully Sent!';
@@ -2071,7 +2132,7 @@ public function kenya($id){
         
     $fileName = 'Payments Report.pdf';
 
-    $filePath = 'app/views/temp/';
+    $filePath = 'resources/views/temp/';
 
      
 
@@ -2104,19 +2165,21 @@ public function kenya($id){
 
     $pdf->save($filePath.$fileName);
 
-    $send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
+    /*$send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
     {   
     $message->from('info@lixnet.net', 'Gas Express');
 
     
     $message->to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->cc('chrispus.cheruiyot@lixnet.net', 'Crispus Cheruiyot')->cc('wangoken2@gmail.com', 'Ken Wango')->subject('Daily Payments Report!');
-    //$message->to('stephen.mangi@lixnet.net', 'Gas Express')->subject('Daily Payments Report!');
-
     
     $message->attach($filePath.$fileName);
 
     
-});
+});*/
+
+$subject = "Daily Payments Report!";
+        $file = $filePath.$fileName;
+        $send_mail = Mail::to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->cc('chrispus.cheruiyot@lixnet.net', 'Crispus Cheruiyot')->cc('wangoken2@gmail.com', 'Ken Wango')->send(new Report($subject,$file));
 
    unlink($filePath.$fileName);
    echo 'payments Report Successfully Sent!';
@@ -2127,7 +2190,7 @@ public function kenya($id){
         
     $fileName = 'Stock Report.pdf';
 
-    $filePath = 'app/views/temp/';
+    $filePath = 'resources/views/temp/';
 
     $time = strtotime(date('Y-m-d').' 8:01:00');
     $time1 = strtotime(date('Y-m-d').' 19:59:59');
@@ -2150,7 +2213,7 @@ public function kenya($id){
 
     $pdf->save($filePath.$fileName);
 
-    $send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
+    /*$send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
     {   
     $message->from('info@lixnet.net', 'Gas Express');
 
@@ -2161,7 +2224,11 @@ public function kenya($id){
     $message->attach($filePath.$fileName);
 
     
-});
+});*/
+
+    $subject = "Daily Stock Report!";
+        $file = $filePath.$fileName;
+        $send_mail = Mail::to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->cc('chrispus.cheruiyot@lixnet.net', 'Crispus Cheruiyot')->cc('wangoken2@gmail.com', 'Ken Wango')->send(new Report($subject,$file));
 
    unlink($filePath.$fileName);
    echo 'Stock Report Successfully Sent!';
@@ -2172,7 +2239,7 @@ public function kenya($id){
         
     $fileName = 'Stock Report.pdf';
 
-    $filePath = 'app/views/temp/';
+    $filePath = 'resources/views/temp/';
 
     $time = strtotime(date('Y-m-d').' 20:00:00');
     $time1 = strtotime(date('Y-m-d').' 8:00:00');
@@ -2196,7 +2263,7 @@ public function kenya($id){
 
     $pdf->save($filePath.$fileName);
 
-    $send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
+    /*$send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
     {   
     $message->from('info@lixnet.net', 'Gas Express');
 
@@ -2207,7 +2274,11 @@ public function kenya($id){
     $message->attach($filePath.$fileName);
 
     
-});
+});*/
+
+$subject = "Daily Stock Report!";
+        $file = $filePath.$fileName;
+        $send_mail = Mail::to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->cc('chrispus.cheruiyot@lixnet.net', 'Crispus Cheruiyot')->cc('wangoken2@gmail.com', 'Ken Wango')->send(new Report($subject,$file));
 
    unlink($filePath.$fileName);
    echo 'Stock Report Successfully Sent!';
@@ -2219,7 +2290,7 @@ public function kenya($id){
         
     $fileName = 'Accounts Report.pdf';
 
-    $filePath = 'app/views/temp/';
+    $filePath = 'resources/views/temp/';
 
      $from = date('Y:m:d');
      $to= date('Y:m:d');
@@ -2237,7 +2308,7 @@ public function kenya($id){
 
     $pdf->save($filePath.$fileName);
 
-    $send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
+    /*$send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
     {   
     $message->from('info@lixnet.net', 'Gas Express');
 
@@ -2248,7 +2319,11 @@ public function kenya($id){
     $message->attach($filePath.$fileName);
 
     
-});
+});*/
+
+$subject = "Daily Accounts Report!";
+        $file = $filePath.$fileName;
+        $send_mail = Mail::to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->send(new Report($subject,$file));
 
    unlink($filePath.$fileName);
    echo 'Accounts Report Successfully Sent!';

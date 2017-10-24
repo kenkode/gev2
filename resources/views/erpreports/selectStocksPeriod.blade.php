@@ -1,22 +1,16 @@
-@extends('layouts.erp_ports')
+@extends('report')
 @section('content')
-<br/>
-
-<div class="row">
-	<div class="col-lg-12">
-  <h4>Select Period</h4>
-
-<hr>
-</div>	
-</div>
+<?php
+use Illuminate\Support\Facades\Input;
+?>
 
 
 <div class="row">
-	<div class="col-lg-5">
+  <div class="col-lg-6">
 
     
-		
-		 @if ($errors->has())
+    
+     @if ( count( $errors ) > 0 )
         <div class="alert alert-danger">
             @foreach ($errors->all() as $error)
                 {{ $error }}<br>        
@@ -24,8 +18,20 @@
         </div>
         @endif
 
+        <div class="box">
+      <div class="box-header with-border">
+        <h4>Select Period</h4>
+        <div class="box-tools pull-right">
+          
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
+      <!-- /.box-header -->
+      <div class="box-body">
+
 		 <form method="POST" action="{{URL::to('erpReports/stocks')}}" accept-charset="UTF-8" target="_blank">
-   
+   {{ csrf_field() }}
     <fieldset>
 
         <div class="form-group">
@@ -58,6 +64,10 @@
 		
 
   </div>
+
+</div>
+
+</div>
 
 </div>
 

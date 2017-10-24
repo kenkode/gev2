@@ -1,10 +1,11 @@
 <?php
 
-
+if (!function_exists('asMoney'))   {
 function asMoney($value) {
   return number_format($value, 2);
 }
-
+}
+use App\Http\Models\Erporder;
 ?>
 <html >
 
@@ -25,7 +26,7 @@ function asMoney($value) {
 
 <style>
 
-@page { margin: 170px 20px !important; }
+@page { margin: 50px 20px !important; }
  .header { position: fixed; left: 0px; top: -150px; right: 0px; height: 150px;  text-align: center; }
 /*  .content {margin-top: -120px; margin-bottom: -150px} */
  .footer { position: fixed; left: 0px; bottom: -180px; right: 0px; height: 50px;  }

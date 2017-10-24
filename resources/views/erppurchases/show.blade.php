@@ -66,7 +66,7 @@ $(document).ready(function(){
                         <input class="form-control" required type="text" name="subject" value="Purchase Order">
                     </div>
                     <div class="form-group">
-                        <label>Email:</label>
+                        <label>Body:</label>
                         <textarea class="form-control" name="mail_body" id="mail_body" rows="4"></textarea>
                     </div>
                     <hr>

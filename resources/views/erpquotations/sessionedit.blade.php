@@ -6,30 +6,16 @@ function asMoney($value) {
 
 ?>
 
-@extends('layouts.erp')
+@extends('template')
 
 {{ HTML::script('media/js/jquery.js') }}
 
 @section('content')
 
-<br><div class="row">
-  <div class="col-lg-12">
- <h4><font color='green'>Quote Number : {{Session::get('erporder')['order_number']}} &nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Client: {{Session::get('erporder')['client']['name']}}  &nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp; Date: {{Session::get('erporder')['date']}} </font></h4>
-
-<hr>
-</div>  
-</div>
-
-<div class="row">
-    
-</div>
-
 <div class="row">
   <div class="col-lg-12">
 
-    <hr>
-    
-    @if ($errors->has())
+    @if ( count( $errors ) > 0 )
         <div class="alert alert-danger">
             @foreach ($errors->all() as $error)
                 {{ $error }}<br>        
@@ -37,10 +23,21 @@ function asMoney($value) {
         </div>
         @endif
         
-        <div class="col-lg-5">
-            
-            <h2>Edit {{$editItem['item']}} Values:</h2>
+        <div class="col-lg-9">
+            <div class="box">
+      <div class="box-header with-border">
+        <h4><font color='green'>Quote Number : {{Session::get('erporder')['order_number']}} &nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Client: {{Session::get('erporder')['client']['name']}}  &nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp; Date: {{Session::get('erporder')['date']}} </font></h4>
+       
+        <div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
+      <!-- /.box-header -->
+      <div class="box-body">
+         <h2>Edit {{$editItem['item']}} Values:</h2>   
             <form action="{{{ URL::to('erpquotations/sessionedit/'.$count) }}}" method="POST" accept-charset="utf-8">
+                {{ csrf_field() }}
                 <input type="hidden" name="edit_id" value="{{$count}}">
                 <div class="form-actions form-group">
                     <label for="item-name">Quantity</label>

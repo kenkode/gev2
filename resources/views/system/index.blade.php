@@ -3,6 +3,7 @@
 
 <?php
 use App\Http\Models\Organization;
+$organization = Organization::find(1);
 ?>
 
 
@@ -22,8 +23,7 @@ use App\Http\Models\Organization;
 
 <div class="col-lg-3">
 
-{{ HTML::image("images/logo.png", "Logo") }}
-
+<img src="{{asset('public/uploads/logo/'.$organization->logo)}}" alt="logo" width="50%">
 
 </div>	
 

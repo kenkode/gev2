@@ -4,8 +4,10 @@ function asMoney($value) {
   return number_format($value, 2);
 }
 
+use Illuminate\Support\Facades\Input;
 ?>
-@extends('layouts.erp')
+
+@extends('template')
 {{ HTML::script('media/js/jquery.js') }}
 
 
@@ -26,24 +28,25 @@ $(document).ready(function() {
 
 @section('content')
 
-<br><div class="row">
-    <div class="col-lg-12">
-  <h4><font color='green'>Quote Number : {{Session::get('erporder')['order_number']}} &nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Client: {{Session::get('erporder')['client']['name']}}  &nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp; Date: {{Session::get('erporder')['date']}} </font></h4>
+<div class="box">
+      <div class="box-header with-border"><h4><font color='green'>Quote Number : {{Session::get('erporder')['order_number']}} &nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Client: {{Session::get('erporder')['client']['name']}}  &nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp; Date: {{Session::get('erporder')['date']}} </font></h4>
+        <div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
+      <!-- /.box-header -->
+      <div class="box-body">
 
-<hr>
-</div>  
-</div>
-
-
-<br><div class="row">
+<div class="row">
     
   <form class="form-inline" method="post" action="{{URL::to('quotationitems/create')}}">
       <font color="red"><i>All fields marked with * are mandatory</i></font>
       <div class="col-lg-12">
-
+    {{ csrf_field() }}
         <div class="form-group ">
             <label>Item<span style="color:red">*</span> :</label>
-            <select name="item" id="item" class="form-control" required>
+            <select name="item" id="item" class="form-control select2" required>
             <option></option>
             <option> .............select item..........</option>
                 @foreach($items as $item)
@@ -92,7 +95,7 @@ $(document).ready(function() {
 
     <hr>
         
-         @if ($errors->has())
+        @if ( count( $errors ) > 0 )
         <div class="alert alert-danger">
             @foreach ($errors->all() as $error)
                 {{ $error }}<br>        
@@ -182,7 +185,7 @@ $(document).ready(function() {
 <br>
 
 <form method="post" action="{{URL::to('erpquotation/commit')}}">
-
+{{ csrf_field() }}
 <table border="0" align="right" style="width:400px">
 <!-- <tr style="height:50px"><td>Order Discount:</td><td colspan="2"> <input type="text" name="discount" id="discount" onkeypress="grandTotal()" onkeyup="grandTotal()" onblur="grandTotal()" value="0" class="form-control"></td></tr> -->
 <tr style="height:50px"><td><strong>Payable Amount</strong></td><td colspan="2"> <input type="text" readonly="readonly" name="payable" id="payable" value="{{$total-Input::get('discount')}}" class="form-control"></td></tr>
@@ -232,6 +235,9 @@ $(document).ready(function(){
  </form>
 
  </div>
+
+ </div>
+
 
 <script type="text/javascript">
 

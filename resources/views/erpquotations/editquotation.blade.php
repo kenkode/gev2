@@ -2,9 +2,12 @@
 	function asMoney($value) {
 	  return number_format($value, 2);
 	}
+	use App\Http\Models\TaxOrder;
+	use App\Http\Models\Price;
+	use Illuminate\Support\Facades\Input;
 ?>
 
-@extends('layouts.erp')
+@extends('template')
 
 {{ HTML::script('media/js/jquery.js') }}
 <script type="text/javascript">
@@ -13,27 +16,33 @@
 </script>
 
 @section('content')
-<br>
-<div class="row">
-	<div class="col-lg-12">
-    	<p hidden id="status">{{$order->status}}</p>
+
+
+ <div class="box">
+      <div class="box-header with-border">
+        <p hidden id="status">{{$order->status}}</p>
     	<h4><font color='green'>Quote Number : {{$order->order_number}} &emsp;| &emsp;Client: {{$order->client->name}}  &emsp; |&emsp; Date: {{$order->date}} &emsp; |&emsp; Status: {{$order->status}} </font> </h4>
-		<hr>
-	</div>	
-</div>
+        <div class="box-tools pull-right">
+          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+          </button>
+      </div>
+    </div>
+      <!-- /.box-header -->
+      <div class="box-body">
 
 <div class="row">
 	<form class="form-inline" method="POST" id="addItem" action="{{{URL::to('erpquotations/edit/add')}}}">
+		{{ csrf_field() }}
 		<div class="col-lg-12">
 			<label>Add Items</label><br>
 			<font color="red"><i>All fields marked with * are mandatory</i></font><br>
 			<input type="hidden" name="order_id" value="{{$order->id}}">
 			<div class="form-group">
 				<label>Item&nbsp;<span style="color:red">*</span> :&emsp;</label>
-	            <select id="itemName" name="item_id" class="form-control input-sm" required>
+	            <select id="itemName" name="item_id" class="form-control input-sm select2" required>
 	            <option value=""> ------- select item ------- </option>
 	                @foreach($items as $item)
-	                    <option value="{{$item->id}}">{{$item->name}}</option>
+	                    <option value="{{$item->id}}">{{$item->item_make}}</option>
 	                @endforeach
 	            </select>
 			</div>&emsp;
@@ -65,24 +74,31 @@ Session::forget('error');
 <div class="row">
 	<div class="col-lg-12">
 		<form role="form" action="{{{URL::to('erpquotations/edit/'.$order->id)}}}" method="POST">
+			{{ csrf_field() }}
 			<table class="table table-bordered table-condensed">
 				<thead>
 					<th>Item</th>
 					<th>Quantity</th>
 					<th>Price</th>
-					<th>Amount</th>
+					<th>Total Amount</th>
+                    <th>Client Discount</th>
+                    <th>Payable Amount</th>
 					<th>Action</th>
 				</thead>
 				<tbody>
-					<?php $total=0; $count=0; ?>
+					<?php $total=0; $payable=0; $count=0; ?>
 					@foreach($order->erporderitems as $orderitem)
 						<?php 
+
+						    $discount_amount = $orderitem['discount_amount'];   
 							$amount = $orderitem['price'] * $orderitem['quantity'];
 			                $total = $total + $amount;
+			                $payable = $payable + $amount - Price::discount($order->client->id,$orderitem['item_id']);
+
 						?>
 
 						<tr>
-							<td>{{$orderitem->item->name}}</td>
+							<td>{{$orderitem->item->item_make}}</td>
 							<td>
 								<input type="number" id="newQty{{$count}}" class="form-control input-sm" name="newQty{{$orderitem->item_id}}" value="{{$orderitem['quantity']}}" onkeyup="calculate({{$count}});" onblur="getTotal({{$count}});" onfocus="removeCount({{$count}})">
 							</td>
@@ -91,6 +107,8 @@ Session::forget('error');
 							</td>
 							<!--<td id="{{$count}}">{{asMoney($orderitem['price'])}}</td>-->
 							<td id="amount{{$count}}">{{asMoney($amount)}}</td>	
+							<td id="discount{{$count}}">{{asMoney(Price::discount($order->client->id,$orderitem['item_id']))}}</td>	
+							<td id="payable{{$count}}">{{asMoney($amount - Price::discount($order->client->id,$orderitem['item_id']))}}</td>	
 							<td>
 								<div class="btn-group">
                   	<a href="{{URL::to('erpquotations/delete/'.$order->id.'/'.$orderitem->id)}}" class="btn btn-danger btn-sm" onclick="return (confirm('Are you sure you want to remove this item?'))"> Remove </a>
@@ -104,11 +122,10 @@ Session::forget('error');
 			</table>
 			
 			<table border="0" align="right" style="width:400px; box-shadow:none" class="tb-none">
-				<tr style="height:50px"><td>Discount:</td><td colspan="2"> <input type="text" name="discount" id="discount" onkeypress="grandTotal()" onkeyup="grandTotal()" onblur="grandTotal()" value="{{$order->discount_amount}}" class="form-control"></td></tr>
-				<tr style="height:50px"><td><strong>Payable Amount</strong></td><td colspan="2"> <input type="text" readonly="readonly" name="payable" id="payable" value="{{$total-($order->discount_amount);}}" class="form-control"></td></tr>
-
+				<!-- <tr style="height:50px"><td><strong>Payable Amount</strong></td><td colspan="2"> <input type="text" readonly="readonly" name="payable" id="payable" value="{{$payable}}" class="form-control"></td></tr>
+ -->
 				<?php $i = 1; ?>
-				@foreach($taxes as $tax)
+				<!-- @foreach($taxes as $tax)
 					<tr style="height:50px">
               <td>{{$tax->name}}</td>
               @if(count(TaxOrder::getAmount($tax->id,$order->order_number)) > 0)
@@ -121,7 +138,8 @@ Session::forget('error');
               @else
                   <td><input type="text" readonly="readonly" name="tax[]" id="{{'tax_amount_'.$i}}" value="0" class="form-control tax_check"></td>
               @endif
-          </tr>
+          </tr> -->
+
 
 				
 					<script type="text/javascript">
@@ -157,7 +175,7 @@ Session::forget('error');
 				<?php $i++; ?>
 				@endforeach
 				
-				<tr style="height:50px"><td><strong>Grand Total</strong></td><td colspan="2"><input type="text" name="grand" id="grand" readonly="readonly" value="{{$total-Input::get('discount')}}" class="form-control"></td></tr>
+				<tr style="height:50px"><td><strong>Grand Total</strong></td><td colspan="2"><input type="text" name="grand" id="grand" readonly="readonly" value="{{$payable}}" class="form-control"></td></tr>
 			
 			</table>
 						
@@ -243,6 +261,8 @@ Session::forget('error');
 		 	</div>
 		</form>
 	</div>
+</div>
+</div>
 </div>
 
 <script type="text/javascript">

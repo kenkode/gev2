@@ -4,6 +4,7 @@ namespace App\Http\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use DB;
 
 class Account extends Model {
 

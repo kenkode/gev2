@@ -1,3 +1,9 @@
+
+<?php
+
+use App\Http\Models\Erporder;
+
+?>
 <html >
 
 <head>
@@ -111,7 +117,7 @@ function asMoney($value) {
    </div>
 
 
-  <div class="content" style='margin-top:70px;'>
+  <div class="content" >
    <!-- <div align="center"><strong>Sales Report as at {{date('d-M-Y')}}</strong></div><br> -->
    <div align="center"><strong>Sales Report as from:  {{$from}} To:  {{$to}}</strong></div><br>
 

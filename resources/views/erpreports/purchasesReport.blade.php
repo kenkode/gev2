@@ -5,14 +5,23 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
 <style type="text/css">
+*{
+  font-size: 12px !important;
+}
 
 table {
   max-width: 100%;
   background-color: transparent;
 }
 
-table, tr, td, th, tbody, thead, tfoot {
-    page-break-inside: avoid !important;
+table.data{
+  border-collapse: collapse;
+  border: 1px solid #BBB;
+}
+
+table.data th, table.data td{
+  padding: 5px 10px;
+  border: 1px solid #BBB;
 }
 
 th,td{
@@ -59,9 +68,10 @@ img#watermark{
 </style>
 
 <?php
-
+if (!function_exists('asMoney'))   {
 function asMoney($value) {
   return number_format($value, 2);
+}
 }
 
 ?>

@@ -4,6 +4,7 @@
 function asMoney($value) {
   return number_format($value, 2);
 }
+use App\Http\Models\Stock;
 
 ?>
 
@@ -115,7 +116,7 @@ img#watermark{
    </div>
 
 
-	<div class="content" style='margin-top:0px;'>   
+	<div class="content" style='margin-top:0px;'>  <br><br><br> 
 
    <div align="center"><strong>Stock Movement Schedule as at {{$from}} to {{$to}}</strong></div><br>
 

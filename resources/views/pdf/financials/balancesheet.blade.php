@@ -1,3 +1,7 @@
+<?php
+use App\Http\Models\Account;
+?>
+
 <html>
   <head>
    <style>
@@ -44,7 +48,7 @@ function asMoney($value) {
        
         <td style="width:150px">
 
-            <img src="{{ '../images/logo.png' }}" alt="{{ $organization->logo }}" width="90px"/>
+            <img src="{{asset('public/uploads/logo/'.$organization->logo)}}" alt="logo" width="50%">
     
         </td>
 

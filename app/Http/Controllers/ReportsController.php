@@ -1,6 +1,22 @@
 <?php
 
-class ReportsController extends \BaseController {
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use App\Http\Models\Account;
+use App\Http\Models\Organization;
+use App\Http\Models\Audit;
+use Illuminate\Http\Request;
+use Redirect;
+use Entrust;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Auth;
+use DB;
+use Barryvdh\DomPDF\Facade as PDF;
+use Session;
+
+class ReportsController extends Controller {
 
 	
 

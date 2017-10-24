@@ -2,6 +2,7 @@
 	function asMoney($value){
 		return number_format($value, 2);
 	}
+  use App\Http\Models\Client;
 ?>
 
 <html>
@@ -9,7 +10,7 @@
   <meta charset="utf-8">
 
   <style type="text/css" media="screen">
-    @page { margin: 50px 30px; ;}
+    @page { margin: 50px 30px; }
    .header { position: top; left: 0px; top: -150px; right: 0px; height: 100px;  text-align: center; }
    .content {margin-top: -100px; margin-bottom: -150px}
    .footer { position: fixed; left: 0px; bottom: -60px; right: 0px; height: 50px;  }
@@ -69,7 +70,7 @@
 	<div style="text-align: center">
 		<h3>Gas Express</h3>
     <h4>A/R Aging Summary (Values in Home Currency)</h4>
-    <h5>As of {{ date("F j, Y"); }}</h5>
+    <h5>As of {{ date("F j, Y") }}</h5>
     <hr>
 	</div>
 </div>
@@ -115,7 +116,7 @@
     			<table>
             <tr class="top">
     					<td class="dum">#</td>
-    					<td class="dum">Name</td>
+    					<td class="dum" style="text-align: left !important">Name</td>
     					<!-- <th>Discount (%)</th> -->
               <td>Current</td>
               <td>1-30</td>
@@ -139,7 +140,7 @@
   						@if(Client::due($client->id) > 0)
   						<tr class="body">
   							<td class="dum">{{ $count }}</td>
-  							<td class="dum">{{ $client->name }}</td>
+  							<td class="dum" style="text-align: left !important">{{ $client->name }}</td>
   							<!-- <td align="center">{{ asMoney($client->percentage_discount) }}</td> -->
                 <td> {{ asMoney(Client::dueToday($client->id)) }} </td>
                 <td> {{ asMoney(Client::due30($client->id)) }} </td>

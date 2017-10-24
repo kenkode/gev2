@@ -82,7 +82,7 @@ $(document).ready(function(){
          {{ csrf_field() }}
           <font color="red"><i>All fields marked with * are mandatory</i></font>
             <div class="form-group">
-                <select name="driver" id="driver" class="form-control input-sm select2" style="width: 250px;" required>
+                <select name="driver" id="driver" class="form-control input-sm select2" style="width: 250px;" >
                     <option value="">Please select a driver</option>
                     @if(count($driver) > 0)
                     @foreach($driver as $driver)
