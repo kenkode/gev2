@@ -1600,7 +1600,7 @@ public function kenya($id){
 
     $time = strtotime(date('Y-m-d').' 8:01:00');
     $time1 = strtotime(date('Y-m-d').' 19:59:59');
-    $time2 = strtotime(date('Y-m-01').' 8:01:00');
+    $time2 = strtotime(date('Y-m-01').' 00:00:00');
 
     $sdate = date('Y-m-d H:i:s',$time);
 
@@ -1688,7 +1688,7 @@ public function kenya($id){
 
     $time = strtotime(date('Y-m-d').' 20:00:00');
     $time1 = strtotime(date('Y-m-d').' 8:00:00');
-    $time2 = strtotime(date('Y-m-01').' 20:00:00');
+    $time2 = strtotime(date('Y-m-01').' 00:00:00');
 
     $sdate = date('Y-m-d H:i:s',$time);
 
