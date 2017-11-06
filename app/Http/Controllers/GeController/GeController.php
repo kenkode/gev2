@@ -267,9 +267,12 @@ class GeController extends GeBaseController {
         ->select('accessories.id as id', 'accessories.name as name', 'accessories.price as price')
         ->get();
 
+    $suppliers = Supplier::where('status', 1)
+      ->orderby('created_at', 'desc')->get();
+
     $gases = Size::join('gas', 'gas.id', 'sizes.gas_id')->get();
 
-    return view('stock', ['header'=>'Stock', 'description'=>'Live Stock', 'accessories'=>$accessories, 'gases'=>$gases]);
+    return view('stock', ['header'=>'Stock', 'description'=>'Live Stock', 'accessories'=>$accessories, 'gases'=>$gases,  'suppliers'=>$suppliers]);
   }
 
   public function addStock(Request $request) {
@@ -427,6 +430,7 @@ class GeController extends GeBaseController {
     );
 
     $stock = Stock::where($array)->first()['stock'];
+    
 
     $data = array(
       'suppliers' => $suppliers,

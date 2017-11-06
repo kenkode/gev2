@@ -274,6 +274,7 @@ Ajax Setup
 
 
   $('.stock_update_button').click(function() {
+    alert();
     $("#current_stock_spinner").show();
     $('#update_modal').modal();
     var id = $(this).data('id');
